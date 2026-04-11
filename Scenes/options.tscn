@@ -1,0 +1,137 @@
+[gd_scene format=3 uid="uid://brw0h61rf8ccb"]
+
+[ext_resource type="Script" uid="uid://1t08opd64dyq" path="res://Scripts/options.gd" id="1_4tmxy"]
+[ext_resource type="Texture2D" uid="uid://ccxn2dxxwtg6" path="res://images/99adfdb2-57d5-4629-bb54-0a39722429ef.png" id="2_qyyw6"]
+[ext_resource type="Script" uid="uid://rly3iu6syjqd" path="res://Scripts/full_screen_control.gd" id="3_qyyw6"]
+[ext_resource type="Script" uid="uid://bpjwe1wt60itf" path="res://Scripts/scale_control.gd" id="3_ww8vx"]
+[ext_resource type="Script" uid="uid://dumxcdgvl4b5n" path="res://Scripts/atras.gd" id="5_kftxf"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_ww8vx"]
+color = Color(1, 1, 1, 1)
+thickness = 10
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_kftxf"]
+color = Color(0.67359084, 0.22907421, 0, 1)
+thickness = 10
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_hvj8k"]
+color = Color(0.44070798, 0.16592428, 0.0062557943, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kftxf"]
+bg_color = Color(0.8117647, 0.44705883, 0.2627451, 1)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_38txh"]
+color = Color(0.6034552, 0.32741585, 0.0572773, 1)
+
+[node name="Options" type="Control" unique_id=1444843476]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4tmxy")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1065514243]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = 1.0
+offset_right = -1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.87144, 0.9619346, 0.9441926, 1)
+
+[node name="TextureRect" type="TextureRect" parent="ColorRect" unique_id=1873866386]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_qyyw6")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=797562183]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -239.0
+offset_top = -103.0
+offset_right = 594.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.57479304, 0.48414832)
+theme_override_constants/separation = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ColorRect/VBoxContainer" unique_id=1309053863]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="ColorRect/VBoxContainer/HBoxContainer" unique_id=454053762]
+layout_mode = 2
+text = "Volumen Musica
+ "
+
+[node name="HSlider" type="HSlider" parent="ColorRect/VBoxContainer/HBoxContainer" unique_id=1791333058]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/slider = SubResource("StyleBoxLine_ww8vx")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_kftxf")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_kftxf")
+value = 50.0
+
+[node name="ScaleControl" type="OptionButton" parent="ColorRect/VBoxContainer" unique_id=1306021706]
+layout_mode = 2
+selected = 0
+item_count = 4
+popup/item_0/text = "100%"
+popup/item_0/id = 0
+popup/item_1/text = "75%"
+popup/item_1/id = 1
+popup/item_2/text = "50%"
+popup/item_2/id = 2
+popup/item_3/text = "25%"
+popup/item_3/id = 3
+script = ExtResource("3_ww8vx")
+
+[node name="FullScreenControl" type="CheckButton" parent="ColorRect/VBoxContainer" unique_id=630250937]
+layout_mode = 2
+theme_override_styles/disabled = SubResource("StyleBoxLine_hvj8k")
+button_pressed = true
+text = "FullScreen"
+script = ExtResource("3_qyyw6")
+
+[node name="BoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=508280835]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 1.0
+offset_top = 57.0
+offset_right = 519.0
+offset_bottom = 302.0
+grow_vertical = 2
+scale = Vector2(0.402527, 0.4888137)
+theme_override_constants/separation = 19
+
+[node name="Atras" type="Button" parent="ColorRect/BoxContainer" unique_id=726535759]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_kftxf")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxLine_38txh")
+text = "Atras
+"
+script = ExtResource("5_kftxf")
+
+[connection signal="item_selected" from="ColorRect/VBoxContainer/ScaleControl" to="ColorRect/VBoxContainer/ScaleControl" method="_on_item_selected"]
+[connection signal="toggled" from="ColorRect/VBoxContainer/FullScreenControl" to="ColorRect/VBoxContainer/FullScreenControl" method="_on_toggled"]
+[connection signal="pressed" from="ColorRect/BoxContainer/Atras" to="ColorRect/BoxContainer/Atras" method="_on_pressed"]
