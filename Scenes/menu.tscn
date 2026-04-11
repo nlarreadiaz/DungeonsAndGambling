@@ -5,6 +5,30 @@
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_cayip"]
 [ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="4_158mb"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2qsap"]
+bg_color = Color(0.043137256, 0.08235294, 0.08235294, 0.72)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7176471, 0.8392157, 0.7137255, 0.95)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_e1m8r"]
+font = ExtResource("4_158mb")
+font_size = 29
+font_color = Color(0.9647059, 0.95686275, 0.8235294, 1)
+outline_size = 6
+outline_color = Color(0.16470589, 0.1254902, 0.08627451, 0.95)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_offset = Vector2(0, 2)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_158mb"]
 atlas = ExtResource("3_cayip")
 region = Rect2(0, 160, 32, 16)
@@ -86,25 +110,45 @@ grow_vertical = 2
 texture = ExtResource("2_xhh6f")
 expand_mode = 1
 
+[node name="MenuCard" type="Panel" parent="." unique_id=1842140826]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 15.0
+offset_right = 391.0
+offset_bottom = 247.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2qsap")
+
+[node name="Title" type="Label" parent="MenuCard" unique_id=100995352]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 18.0
+offset_right = 276.0
+offset_bottom = 57.0
+text = "DUNGEON AND GAMBLING"
+label_settings = SubResource("LabelSettings_e1m8r")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="start" type="TextureButton" parent="." unique_id=699134698]
 layout_mode = 0
-offset_left = 153.00002
-offset_top = 44.0
-offset_right = 185.00002
-offset_bottom = 60.0
-scale = Vector2(4.950392, 3.6844773)
+offset_left = 145.0
+offset_top = 72.0
+offset_right = 177.0
+offset_bottom = 88.0
+scale = Vector2(6, 4.3)
 texture_normal = SubResource("AtlasTexture_158mb")
 texture_pressed = SubResource("AtlasTexture_wwsa2")
 texture_hover = SubResource("AtlasTexture_jsrd8")
+ignore_texture_size = true
 
 [node name="Label" type="Label" parent="start" unique_id=949573918]
 texture_filter = 1
 layout_mode = 0
-offset_left = 4.040081
-offset_top = 2.9854975
-offset_right = 60.51666
-offset_bottom = 25.985497
-scale = Vector2(0.42563665, 0.3501788)
+offset_left = 0.16666651
+offset_top = 2.0930228
+offset_right = 112.166664
+offset_bottom = 42.09302
+scale = Vector2(0.28, 0.24)
 text = "JUGAR"
 label_settings = SubResource("LabelSettings_wwsa2")
 horizontal_alignment = 1
@@ -113,23 +157,24 @@ script = SubResource("GDScript_158mb")
 
 [node name="options" type="TextureButton" parent="." unique_id=1191298766]
 layout_mode = 0
-offset_left = 153.0
-offset_top = 99.0
-offset_right = 185.00002
-offset_bottom = 115.0
-scale = Vector2(4.950392, 3.6844773)
+offset_left = 145.0
+offset_top = 124.0
+offset_right = 177.0
+offset_bottom = 140.0
+scale = Vector2(6, 4.3)
 texture_normal = SubResource("AtlasTexture_158mb")
 texture_pressed = SubResource("AtlasTexture_wwsa2")
 texture_hover = SubResource("AtlasTexture_jsrd8")
+ignore_texture_size = true
 
 [node name="Label2" type="Label" parent="options" unique_id=694270608]
 texture_filter = 1
 layout_mode = 0
-offset_left = 4.040085
-offset_top = 2.9855003
-offset_right = 60.516663
-offset_bottom = 25.9855
-scale = Vector2(0.42563665, 0.3501788)
+offset_left = 0.16666651
+offset_top = 2.325581
+offset_right = 112.166664
+offset_bottom = 42.32558
+scale = Vector2(0.28, 0.24)
 text = "OPCIONES"
 label_settings = SubResource("LabelSettings_wwsa2")
 horizontal_alignment = 1
@@ -138,25 +183,30 @@ script = SubResource("GDScript_158mb")
 
 [node name="exit" type="TextureButton" parent="." unique_id=668310116]
 layout_mode = 0
-offset_left = 151.99998
-offset_top = 154.0
-offset_right = 183.99998
-offset_bottom = 170.0
-scale = Vector2(4.950392, 3.6844773)
+offset_left = 145.0
+offset_top = 176.0
+offset_right = 177.0
+offset_bottom = 192.0
+scale = Vector2(6, 4.3)
 texture_normal = SubResource("AtlasTexture_158mb")
 texture_pressed = SubResource("AtlasTexture_wwsa2")
 texture_hover = SubResource("AtlasTexture_jsrd8")
+ignore_texture_size = true
 
 [node name="Label3" type="Label" parent="exit" unique_id=1285674212]
 texture_filter = 1
 layout_mode = 0
-offset_left = 4.040085
-offset_top = 2.9855042
-offset_right = 60.516663
-offset_bottom = 25.985504
-scale = Vector2(0.42563665, 0.3501788)
+offset_left = 0.16666651
+offset_top = 2.325581
+offset_right = 112.166664
+offset_bottom = 42.32558
+scale = Vector2(0.28, 0.24)
 text = "SALIR"
 label_settings = SubResource("LabelSettings_wwsa2")
 horizontal_alignment = 1
 vertical_alignment = 1
 script = SubResource("GDScript_158mb")
+
+[connection signal="pressed" from="start" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="exit" to="." method="_on_quit_pressed"]
