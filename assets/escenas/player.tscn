@@ -539,4 +539,4 @@ animation = &"daño"
 frame_progress = 0.12073322
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=709968110]
-zoom = Vector2(1.5, 1.5)
+zoom = Vector2(1.35, 1.35)
