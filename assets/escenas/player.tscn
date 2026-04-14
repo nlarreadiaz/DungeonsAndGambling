@@ -6,7 +6,7 @@
 resource_name = "scriptplayer"
 script/source = "extends CharacterBody2D
 
-@export var SPEED = 300.0
+@export var SPEED = 150.0
 @export var JUMP_FORCE = 400.0
 @export var FAKE_GRAVITY = 1500.0
 
