@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d2kndlat42ggr"
-path="res://.godot/imported/Water_coasts.png-cc1061779701179f41f62d18d56d75a3.ctex"
+uid="uid://do5wb2xx5i43e"
+path="res://.godot/imported/ground_grasss.png-73df1bf91f20b333474a57fe61a8aca8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Water_coasts.png"
-dest_files=["res://.godot/imported/Water_coasts.png-cc1061779701179f41f62d18d56d75a3.ctex"]
+source_file="res://assets/ground_grasss.png"
+dest_files=["res://.godot/imported/ground_grasss.png-73df1bf91f20b333474a57fe61a8aca8.ctex"]
 
 [params]
 

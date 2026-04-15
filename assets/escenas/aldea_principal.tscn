@@ -1,8 +1,8 @@
 [gd_scene format=4 uid="uid://caxvbtid7prdv"]
 
 [ext_resource type="Texture2D" uid="uid://diw6kipyipmwj" path="res://water.png" id="1_d5mya"]
-[ext_resource type="Texture2D" uid="uid://cknflv4sla3ux" path="res://ground_grasss.png" id="2_70vlp"]
-[ext_resource type="Texture2D" uid="uid://d2kndlat42ggr" path="res://Water_coasts.png" id="3_vqm8v"]
+[ext_resource type="Texture2D" uid="uid://do5wb2xx5i43e" path="res://assets/ground_grasss.png" id="2_70vlp"]
+[ext_resource type="Texture2D" uid="uid://bg70qchfsm56w" path="res://assets/Water_coasts.png" id="3_vqm8v"]
 [ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://assets/escenas/player.tscn" id="4_bax37"]
 [ext_resource type="Script" uid="uid://0gmv04ess6qh" path="res://Scripts/aldea_principal.gd" id="5_7361x"]
 

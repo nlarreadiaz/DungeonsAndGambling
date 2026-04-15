@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cknflv4sla3ux"
-path="res://.godot/imported/ground_grasss.png-f55ae71f0cd9ce1e8a088a4da63d780f.ctex"
+uid="uid://osfc8bm8nvbn"
+path="res://.godot/imported/NightBorne.png-267a655b4a6146a9adc2d25c1f17ed15.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ground_grasss.png"
-dest_files=["res://.godot/imported/ground_grasss.png-f55ae71f0cd9ce1e8a088a4da63d780f.ctex"]
+source_file="res://assets/NightBorne.png"
+dest_files=["res://.godot/imported/NightBorne.png-267a655b4a6146a9adc2d25c1f17ed15.ctex"]
 
 [params]
 

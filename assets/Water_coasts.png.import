@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpb3hq1tlsiig"
-path="res://.godot/imported/NightBorne.png-f5e2e92d75746ab47dc17c615f9ef23c.ctex"
+uid="uid://bg70qchfsm56w"
+path="res://.godot/imported/Water_coasts.png-6ba7c37e8a53561d2252a94c2850b83a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://NightBorne.png"
-dest_files=["res://.godot/imported/NightBorne.png-f5e2e92d75746ab47dc17c615f9ef23c.ctex"]
+source_file="res://assets/Water_coasts.png"
+dest_files=["res://.godot/imported/Water_coasts.png-6ba7c37e8a53561d2252a94c2850b83a.ctex"]
 
 [params]
 
