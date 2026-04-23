@@ -1,17 +1,19 @@
 extends Control
 
+const DisplaySettings = preload("res://Scripts/display_settings.gd")
+
 @onready var volume_slider: HSlider = $ColorRect/VBoxContainer/HBoxContainer/HSlider
 @onready var full_screen_toggle: CheckButton = $ColorRect/VBoxContainer/FullScreenControl
 
 
 func _ready() -> void:
+	DisplaySettings.configure_window(get_window())
+
 	var master_bus = AudioServer.get_bus_index("Master")
 	var master_db = AudioServer.get_bus_volume_db(master_bus)
 	volume_slider.value = snapped(_db_to_percent(master_db), 1.0)
 
-	full_screen_toggle.button_pressed = (
-		DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
-	)
+	full_screen_toggle.set_pressed_no_signal(DisplaySettings.is_fullscreen_enabled())
 
 
 func _on_quit_pressed() -> void:

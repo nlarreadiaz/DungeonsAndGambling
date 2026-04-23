@@ -4,7 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://ccxn2dxxwtg6" path="res://images/99adfdb2-57d5-4629-bb54-0a39722429ef.png" id="2_qyyw6"]
 [ext_resource type="Script" uid="uid://rly3iu6syjqd" path="res://Scripts/full_screen_control.gd" id="3_qyyw6"]
 [ext_resource type="Script" uid="uid://bpjwe1wt60itf" path="res://Scripts/scale_control.gd" id="3_ww8vx"]
-[ext_resource type="Script" uid="uid://dumxcdgvl4b5n" path="res://Scripts/atras.gd" id="5_kftxf"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="4_x2w1q"]
+[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="5_8sl7w"]
+[ext_resource type="Script" path="res://Scripts/menu_button_label.gd" id="6_1a2tm"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_ww8vx"]
 color = Color(1, 1, 1, 1)
@@ -17,11 +19,23 @@ thickness = 10
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_hvj8k"]
 color = Color(0.44070798, 0.16592428, 0.0062557943, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kftxf"]
-bg_color = Color(0.8117647, 0.44705883, 0.2627451, 1)
+[sub_resource type="AtlasTexture" id="AtlasTexture_8mm65"]
+atlas = ExtResource("4_x2w1q")
+region = Rect2(0, 192, 32, 16)
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_38txh"]
-color = Color(0.6034552, 0.32741585, 0.0572773, 1)
+[sub_resource type="AtlasTexture" id="AtlasTexture_j5d2r"]
+atlas = ExtResource("4_x2w1q")
+region = Rect2(64, 192, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wh5w8"]
+atlas = ExtResource("4_x2w1q")
+region = Rect2(32, 192, 32, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_bf71v"]
+font = ExtResource("5_8sl7w")
+stacked_outline_count = 1
+stacked_shadow_count = 1
+stacked_shadow_0/offset = Vector2(1, 1)
 
 [node name="Options" type="Control" unique_id=1444843476]
 layout_mode = 3
@@ -109,30 +123,33 @@ button_pressed = true
 text = "FullScreen"
 script = ExtResource("3_qyyw6")
 
-[node name="BoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=508280835]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 1.0
-offset_top = 57.0
-offset_right = 519.0
-offset_bottom = 302.0
-grow_vertical = 2
-scale = Vector2(0.402527, 0.4888137)
-theme_override_constants/separation = 19
+[node name="Atras" type="TextureButton" parent="ColorRect" unique_id=726535759]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 204.0
+offset_right = 56.0
+offset_bottom = 220.0
+scale = Vector2(5.3, 4.1)
+texture_normal = SubResource("AtlasTexture_8mm65")
+texture_pressed = SubResource("AtlasTexture_j5d2r")
+texture_hover = SubResource("AtlasTexture_wh5w8")
+ignore_texture_size = true
 
-[node name="Atras" type="Button" parent="ColorRect/BoxContainer" unique_id=726535759]
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 50
-theme_override_styles/normal = SubResource("StyleBoxFlat_kftxf")
-theme_override_styles/normal_mirrored = SubResource("StyleBoxLine_38txh")
-text = "Atras
-"
-script = ExtResource("5_kftxf")
+[node name="Label" type="Label" parent="ColorRect/Atras"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 0.16666651
+offset_top = 2.325581
+offset_right = 112.166664
+offset_bottom = 42.32558
+scale = Vector2(0.28, 0.24)
+text = "ATRAS"
+label_settings = SubResource("LabelSettings_bf71v")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("6_1a2tm")
 
 [connection signal="value_changed" from="ColorRect/VBoxContainer/HBoxContainer/HSlider" to="." method="_on_volume_slider_value_changed"]
 [connection signal="item_selected" from="ColorRect/VBoxContainer/ScaleControl" to="ColorRect/VBoxContainer/ScaleControl" method="_on_item_selected"]
 [connection signal="toggled" from="ColorRect/VBoxContainer/FullScreenControl" to="ColorRect/VBoxContainer/FullScreenControl" method="_on_toggled"]
-[connection signal="pressed" from="ColorRect/BoxContainer/Atras" to="ColorRect/BoxContainer/Atras" method="_on_pressed"]
+[connection signal="pressed" from="ColorRect/Atras" to="." method="_on_atras_pressed"]

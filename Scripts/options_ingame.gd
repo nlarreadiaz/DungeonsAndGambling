@@ -3,6 +3,7 @@ extends CanvasLayer
 const MENU_SCENE = "res://Scenes/menu.tscn"
 const VOLUME_SLIDER_PATH = NodePath("Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VolumeSlider")
 const FULL_SCREEN_TOGGLE_PATH = NodePath("Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/FullScreenToggle")
+const DisplaySettings = preload("res://Scripts/display_settings.gd")
 
 @onready var volume_slider: HSlider = get_node_or_null(VOLUME_SLIDER_PATH) as HSlider
 @onready var full_screen_toggle: CheckButton = get_node_or_null(FULL_SCREEN_TOGGLE_PATH) as CheckButton
@@ -11,6 +12,7 @@ const FULL_SCREEN_TOGGLE_PATH = NodePath("Root/CenterContainer/PanelContainer/Ma
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	layer = 12
+	DisplaySettings.configure_window(get_window())
 
 	if volume_slider == null or full_screen_toggle == null:
 		push_warning("No se encontraron los controles del menu de pausa.")
@@ -20,9 +22,7 @@ func _ready() -> void:
 	var master_db = AudioServer.get_bus_volume_db(master_bus)
 	volume_slider.value = snapped(_db_to_percent(master_db), 1.0)
 
-	full_screen_toggle.button_pressed = (
-		DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
-	)
+	full_screen_toggle.set_pressed_no_signal(DisplaySettings.is_fullscreen_enabled())
 
 
 func _input(event: InputEvent) -> void:
@@ -43,10 +43,7 @@ func _on_volume_slider_value_changed(value: float) -> void:
 
 
 func _on_full_screen_toggle_toggled(toggled_on: bool) -> void:
-	if toggled_on:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	DisplaySettings.set_fullscreen_enabled(get_window(), toggled_on)
 
 
 func _on_back_pressed() -> void:

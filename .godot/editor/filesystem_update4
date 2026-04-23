@@ -8,3 +8,6 @@ res://Scripts/inventory/inventory_slot.gd
 res://Scripts/inventory/inventory_ui.gd
 res://Scripts/world/pickup_item.gd
 res://Scenes/options_ingame.tscn
+res://assets/items/item_estrella.tres
+res://assets/items/item_moneda.tres
+res://Scripts/full_screen_control.gd

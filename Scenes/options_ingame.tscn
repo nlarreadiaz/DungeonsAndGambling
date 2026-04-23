@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://bw3j056e4h6h4"]
 
-[ext_resource type="Script" path="res://Scripts/options_ingame.gd" id="1_bacw7"]
+[ext_resource type="Script" uid="uid://jhlppfc16qic" path="res://Scripts/options_ingame.gd" id="1_bacw7"]
 [ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="2_6unh8"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_3m7hd"]
+[ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4_ay57u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_66wq2"]
 bg_color = Color(0.1254902, 0.19607843, 0.21960784, 0.95)
@@ -14,50 +16,66 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 14
 
 [sub_resource type="LabelSettings" id="LabelSettings_2vsl7"]
 font = ExtResource("2_6unh8")
-font_size = 24
 font_color = Color(0.92941177, 0.99215686, 0.8980392, 1)
-outline_size = 5
+outline_size = 4
 outline_color = Color(0.07450981, 0.11372549, 0.13333334, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_gfd1y"]
 font = ExtResource("2_6unh8")
-font_size = 12
+font_size = 8
 font_color = Color(0.85882354, 0.9529412, 0.9254902, 1)
 outline_size = 2
 outline_color = Color(0.06666667, 0.101960786, 0.12156863, 0.9)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_djlwm"]
-bg_color = Color(0.20392157, 0.39607844, 0.41960785, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.7176471, 0.85490197, 0.76862746, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="AtlasTexture" id="AtlasTexture_v7d6x"]
+atlas = ExtResource("3_3m7hd")
+region = Rect2(0, 64, 32, 16)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6x7oe"]
-bg_color = Color(0.25490198, 0.49019608, 0.52156866, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.7921569, 0.9137255, 0.8509804, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4p2k"]
+atlas = ExtResource("3_3m7hd")
+region = Rect2(64, 64, 32, 16)
 
-[node name="OptionsInGame" type="CanvasLayer"]
-script = ExtResource("1_bacw7")
+[sub_resource type="AtlasTexture" id="AtlasTexture_c0l9f"]
+atlas = ExtResource("3_3m7hd")
+region = Rect2(32, 64, 32, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_j2s3a"]
+font = ExtResource("2_6unh8")
+font_size = 18
+font_color = Color(0.9647059, 0.9882353, 1, 1)
+outline_size = 2
+outline_color = Color(0.12941177, 0.18039216, 0.27450982, 0.95)
+stacked_outline_count = 1
+stacked_shadow_count = 1
+stacked_shadow_0/offset = Vector2(1, 1)
+
+[node name="OptionsInGame" type="CanvasLayer" unique_id=694780793]
 layer = 12
+script = ExtResource("1_bacw7")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1776193388]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="Root" unique_id=1493833595]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.46)
+
+[node name="CenterContainer" type="CenterContainer" parent="Root" unique_id=204740913]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -65,87 +83,105 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Background" type="ColorRect" parent="Root"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.66)
-
-[node name="CenterContainer" type="CenterContainer" parent="Root"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="Root/CenterContainer"]
-custom_minimum_size = Vector2(300, 232)
+[node name="PanelContainer" type="PanelContainer" parent="Root/CenterContainer" unique_id=1108567328]
+custom_minimum_size = Vector2(360, 248)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_66wq2")
 
-[node name="MarginContainer" type="MarginContainer" parent="Root/CenterContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="Root/CenterContainer/PanelContainer" unique_id=895855371]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 18
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 9
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Root/CenterContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/CenterContainer/PanelContainer/MarginContainer" unique_id=613138329]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 5
 
-[node name="Title" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1349361827]
 layout_mode = 2
 text = "OPCIONES DE PARTIDA"
 label_settings = SubResource("LabelSettings_2vsl7")
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=627673188]
 layout_mode = 2
 text = "Menu rapido dentro del juego"
 label_settings = SubResource("LabelSettings_gfd1y")
 horizontal_alignment = 1
 
-[node name="VolumeLabel" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="VolumeLabel" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1485243940]
 layout_mode = 2
 text = "Volumen general"
 label_settings = SubResource("LabelSettings_gfd1y")
 
-[node name="VolumeSlider" type="HSlider" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="VolumeSlider" type="HSlider" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=579842307]
 layout_mode = 2
-min_value = 0.0
-max_value = 100.0
-step = 1.0
 value = 80.0
 
-[node name="FullScreenToggle" type="CheckButton" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="FullScreenToggle" type="CheckButton" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1606239752]
 layout_mode = 2
+theme_override_font_sizes/font_size = 10
 text = "Pantalla completa"
-theme_override_font_sizes/font_size = 16
 
-[node name="BackButton" type="Button" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 32)
+[node name="ButtonsArea" type="Control" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1268012966]
+custom_minimum_size = Vector2(0, 144)
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_djlwm")
-theme_override_styles/hover = SubResource("StyleBoxFlat_6x7oe")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_6x7oe")
-theme_override_font_sizes/font_size = 18
+size_flags_horizontal = 3
+
+[node name="BackButton" type="TextureButton" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsArea" unique_id=738602904]
+layout_mode = 0
+offset_left = 82.0
+offset_right = 114.0
+offset_bottom = 16.0
+scale = Vector2(6, 4.3)
+texture_normal = SubResource("AtlasTexture_v7d6x")
+texture_pressed = SubResource("AtlasTexture_h4p2k")
+texture_hover = SubResource("AtlasTexture_c0l9f")
+ignore_texture_size = true
+
+[node name="BackLabel" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsArea/BackButton" unique_id=134138144]
+texture_filter = 1
+layout_mode = 0
+offset_left = 2.0
+offset_top = 3.3720937
+offset_right = 118.0
+offset_bottom = 39.372093
+scale = Vector2(0.24, 0.22)
 text = "VOLVER AL JUEGO"
+label_settings = SubResource("LabelSettings_j2s3a")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("4_ay57u")
 
-[node name="MenuButton" type="Button" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 32)
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_djlwm")
-theme_override_styles/hover = SubResource("StyleBoxFlat_6x7oe")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_6x7oe")
-theme_override_font_sizes/font_size = 18
+[node name="MenuButton" type="TextureButton" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsArea" unique_id=1633637851]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 76.0
+offset_right = 114.0
+offset_bottom = 92.0
+scale = Vector2(6, 4.3)
+texture_normal = SubResource("AtlasTexture_v7d6x")
+texture_pressed = SubResource("AtlasTexture_h4p2k")
+texture_hover = SubResource("AtlasTexture_c0l9f")
+ignore_texture_size = true
+
+[node name="MenuLabel" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsArea/MenuButton" unique_id=311741650]
+texture_filter = 1
+layout_mode = 0
+offset_left = 2.6666667
+offset_top = 3.1395357
+offset_right = 114.666664
+offset_bottom = 39.139534
+scale = Vector2(0.24, 0.22)
 text = "MENU PRINCIPAL"
+label_settings = SubResource("LabelSettings_j2s3a")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("4_ay57u")
 
 [connection signal="value_changed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
 [connection signal="toggled" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/FullScreenToggle" to="." method="_on_full_screen_toggle_toggled"]
-[connection signal="pressed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/MenuButton" to="." method="_on_menu_pressed"]
+[connection signal="pressed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsArea/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/ButtonsArea/MenuButton" to="." method="_on_menu_pressed"]
