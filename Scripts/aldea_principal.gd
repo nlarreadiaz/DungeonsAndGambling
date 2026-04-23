@@ -9,35 +9,35 @@ const HOUSE_EXTERIOR_TEXTURE: Texture2D = preload("res://assets/Herrería/PNG/Ho
 const OBJECTS_TEXTURE: Texture2D = preload("res://assets/Tiled_files/Objects.png")
 const STREET_TEXTURE: Texture2D = preload("res://assets/Herrería/PNG/Walls_street.png")
 
-const PLAYER_NODE_PATH := NodePath("player")
-const TILEMAP_LAYERS_PATH := NodePath("TilemapLayers")
-const BACKGROUND_LAYER_PATH := NodePath("TilemapLayers/Background")
-const FOREGROUND_LAYER_PATH := NodePath("TilemapLayers/Foreground")
-const DETAILS_LAYER_PATH := NodePath("TilemapLayers/details")
+const PLAYER_NODE_PATH = NodePath("player")
+const TILEMAP_LAYERS_PATH = NodePath("TilemapLayers")
+const BACKGROUND_LAYER_PATH = NodePath("TilemapLayers/Background")
+const FOREGROUND_LAYER_PATH = NodePath("TilemapLayers/Foreground")
+const DETAILS_LAYER_PATH = NodePath("TilemapLayers/details")
 
-const TILE_SIZE := 16
-const MAP_COLUMNS := 96
-const MAP_ROWS := 64
-const WATER_MARGIN_CELLS := 6
+const TILE_SIZE = 16
+const MAP_COLUMNS = 96
+const MAP_ROWS = 64
+const WATER_MARGIN_CELLS = 6
 
-const PATH_TILE_REGION := Rect2i(0, 192, 16, 16)
-const BLACKSMITH_HOUSE_REGION := Rect2i(12, 12, 156, 148)
-const PLAIN_HOUSE_REGION := Rect2i(216, 14, 118, 128)
-const WALL_FULL_REGION := Rect2i(346, 50, 108, 94)
-const ROOF_LEFT_REGION := Rect2i(146, 149, 96, 95)
-const ROOF_RIGHT_REGION := Rect2i(288, 149, 92, 95)
-const PORCH_SMALL_REGION := Rect2i(246, 152, 48, 24)
-const PORCH_LARGE_REGION := Rect2i(390, 151, 48, 25)
-const CART_REGION := Rect2i(128, 88, 80, 72)
-const COAL_CART_REGION := Rect2i(344, 88, 80, 72)
-const WOOD_SIGN_REGION := Rect2i(100, 220, 72, 88)
-const RED_AWNING_REGION := Rect2i(304, 0, 80, 36)
-const BLUE_AWNING_REGION := Rect2i(384, 0, 80, 36)
-const CRATE_STACK_REGION := Rect2i(104, 16, 96, 48)
-const BARREL_STACK_REGION := Rect2i(224, 16, 88, 48)
-const SACKS_REGION := Rect2i(264, 44, 64, 24)
+const PATH_TILE_REGION = Rect2i(0, 192, 16, 16)
+const BLACKSMITH_HOUSE_REGION = Rect2i(12, 12, 156, 148)
+const PLAIN_HOUSE_REGION = Rect2i(216, 14, 118, 128)
+const WALL_FULL_REGION = Rect2i(346, 50, 108, 94)
+const ROOF_LEFT_REGION = Rect2i(146, 149, 96, 95)
+const ROOF_RIGHT_REGION = Rect2i(288, 149, 92, 95)
+const PORCH_SMALL_REGION = Rect2i(246, 152, 48, 24)
+const PORCH_LARGE_REGION = Rect2i(390, 151, 48, 25)
+const CART_REGION = Rect2i(128, 88, 80, 72)
+const COAL_CART_REGION = Rect2i(344, 88, 80, 72)
+const WOOD_SIGN_REGION = Rect2i(100, 220, 72, 88)
+const RED_AWNING_REGION = Rect2i(304, 0, 80, 36)
+const BLUE_AWNING_REGION = Rect2i(384, 0, 80, 36)
+const CRATE_STACK_REGION = Rect2i(104, 16, 96, 48)
+const BARREL_STACK_REGION = Rect2i(224, 16, 88, 48)
+const SACKS_REGION = Rect2i(264, 44, 64, 24)
 
-var options_ingame: Control = null
+var options_ingame: CanvasLayer = null
 
 var path_tile_texture: AtlasTexture = null
 var blacksmith_house_texture: Texture2D = null
@@ -78,34 +78,43 @@ func _input(event: InputEvent) -> void:
 
 
 func _open_options_ingame() -> void:
-	options_ingame = OPTIONS_INGAME_SCENE.instantiate() as Control
+	options_ingame = OPTIONS_INGAME_SCENE.instantiate() as CanvasLayer
 	if options_ingame == null:
 		push_warning("No se pudo cargar el menu de opciones in-game.")
 		return
 
+	options_ingame.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	add_child(options_ingame)
 	options_ingame.tree_exited.connect(_on_options_ingame_closed)
-	get_tree().paused = true
+	_set_tree_paused(true)
 
 
 func _on_options_ingame_closed() -> void:
 	options_ingame = null
-	get_tree().paused = false
+	_set_tree_paused(false)
+
+
+func _set_tree_paused(is_paused: bool) -> void:
+	var tree = get_tree()
+	if tree == null:
+		return
+
+	tree.paused = is_paused
 
 
 func _build_island_village() -> void:
-	var player := get_node_or_null(PLAYER_NODE_PATH) as Node2D
-	var tilemap_layers := get_node_or_null(TILEMAP_LAYERS_PATH) as Node2D
-	var background_layer := get_node_or_null(BACKGROUND_LAYER_PATH) as TileMapLayer
-	var foreground_layer := get_node_or_null(FOREGROUND_LAYER_PATH) as TileMapLayer
-	var details_layer := get_node_or_null(DETAILS_LAYER_PATH) as TileMapLayer
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var tilemap_layers = get_node_or_null(TILEMAP_LAYERS_PATH) as Node2D
+	var background_layer = get_node_or_null(BACKGROUND_LAYER_PATH) as TileMapLayer
+	var foreground_layer = get_node_or_null(FOREGROUND_LAYER_PATH) as TileMapLayer
+	var details_layer = get_node_or_null(DETAILS_LAYER_PATH) as TileMapLayer
 
 	if player == null or tilemap_layers == null or background_layer == null or foreground_layer == null or details_layer == null:
 		push_warning("No se pudo construir la nueva isla porque faltan nodos del mapa.")
 		return
 
-	var water_tile := _most_common_tile(background_layer)
-	var grass_tiles := _collect_common_tiles(foreground_layer, 6)
+	var water_tile = _most_common_tile(background_layer)
+	var grass_tiles = _collect_common_tiles(foreground_layer, 6)
 	if water_tile.is_empty() or grass_tiles.is_empty():
 		push_warning("No se pudieron detectar tiles base para regenerar la isla.")
 		return
@@ -120,28 +129,28 @@ func _build_island_village() -> void:
 	foreground_layer.clear()
 	details_layer.clear()
 
-	var island_cells := _get_island_cells_rect()
-	var island_world := _cells_to_world_rect(island_cells)
-	var ground_rng := RandomNumberGenerator.new()
+	var island_cells = _get_island_cells_rect()
+	var island_world = _cells_to_world_rect(island_cells)
+	var ground_rng = RandomNumberGenerator.new()
 	ground_rng.seed = 842761
 
 	_fill_layer_rect(background_layer, Rect2i(0, 0, MAP_COLUMNS, MAP_ROWS), water_tile)
 	_fill_ground_with_variations(foreground_layer, island_cells, grass_tiles, ground_rng)
 
-	var generated_root := _rebuild_generated_root(player)
-	var paths_root := Node2D.new()
+	var generated_root = _rebuild_generated_root(player)
+	var paths_root = Node2D.new()
 	paths_root.name = "Paths"
 	generated_root.add_child(paths_root)
 
-	var buildings_root := Node2D.new()
+	var buildings_root = Node2D.new()
 	buildings_root.name = "Buildings"
 	generated_root.add_child(buildings_root)
 
-	var props_root := Node2D.new()
+	var props_root = Node2D.new()
 	props_root.name = "Props"
 	generated_root.add_child(props_root)
 
-	var collisions_root := Node2D.new()
+	var collisions_root = Node2D.new()
 	collisions_root.name = "Collisions"
 	generated_root.add_child(collisions_root)
 
@@ -195,15 +204,15 @@ func _cache_map_textures() -> void:
 
 
 func _make_atlas_texture(atlas: Texture2D, region: Rect2i) -> AtlasTexture:
-	var texture := AtlasTexture.new()
+	var texture = AtlasTexture.new()
 	texture.atlas = atlas
 	texture.region = Rect2(region.position, region.size)
 	return texture
 
 
 func _make_clean_texture(atlas: Texture2D, region: Rect2i, clear_rects: Array = []) -> Texture2D:
-	var atlas_image := atlas.get_image()
-	var image := atlas_image.get_region(region)
+	var atlas_image = atlas.get_image()
+	var image = atlas_image.get_region(region)
 
 	for clear_rect_variant in clear_rects:
 		var clear_rect: Rect2i = clear_rect_variant
@@ -213,10 +222,10 @@ func _make_clean_texture(atlas: Texture2D, region: Rect2i, clear_rects: Array = 
 
 
 func _clear_image_rect(image: Image, rect: Rect2i) -> void:
-	var start_x := clampi(rect.position.x, 0, image.get_width())
-	var start_y := clampi(rect.position.y, 0, image.get_height())
-	var end_x := clampi(rect.position.x + rect.size.x, 0, image.get_width())
-	var end_y := clampi(rect.position.y + rect.size.y, 0, image.get_height())
+	var start_x = clampi(rect.position.x, 0, image.get_width())
+	var start_y = clampi(rect.position.y, 0, image.get_height())
+	var end_x = clampi(rect.position.x + rect.size.x, 0, image.get_width())
+	var end_y = clampi(rect.position.y + rect.size.y, 0, image.get_height())
 
 	for y in range(start_y, end_y):
 		for x in range(start_x, end_x):
@@ -224,11 +233,11 @@ func _clear_image_rect(image: Image, rect: Rect2i) -> void:
 
 
 func _rebuild_generated_root(player: Node2D) -> Node2D:
-	var existing := get_node_or_null("GeneratedWorld") as Node2D
+	var existing = get_node_or_null("GeneratedWorld") as Node2D
 	if existing != null:
 		existing.free()
 
-	var generated_root := Node2D.new()
+	var generated_root = Node2D.new()
 	generated_root.name = "GeneratedWorld"
 	add_child(generated_root)
 	move_child(generated_root, player.get_index())
@@ -236,7 +245,7 @@ func _rebuild_generated_root(player: Node2D) -> Node2D:
 
 
 func _build_village_paths(paths_root: Node2D) -> void:
-	var path_rects := [
+	var path_rects = [
 		Rect2i(36, 28, 18, 8),
 		Rect2i(44, 15, 4, 13),
 		Rect2i(20, 18, 24, 4),
@@ -257,11 +266,11 @@ func _paint_path_rect(paths_root: Node2D, rect: Rect2i) -> void:
 
 
 func _build_border_colliders(collisions_root: Node2D, island_world: Rect2) -> void:
-	var bounds := StaticBody2D.new()
+	var bounds = StaticBody2D.new()
 	bounds.name = "WaterBounds"
 	collisions_root.add_child(bounds)
 
-	var thickness := float(TILE_SIZE * 2)
+	var thickness = float(TILE_SIZE * 2)
 	_add_rectangle_collision(
 		bounds,
 		Rect2(island_world.position.x, island_world.position.y - thickness, island_world.size.x, thickness)
@@ -281,10 +290,10 @@ func _build_border_colliders(collisions_root: Node2D, island_world: Rect2) -> vo
 
 
 func _add_rectangle_collision(body: StaticBody2D, rect: Rect2) -> void:
-	var shape := RectangleShape2D.new()
+	var shape = RectangleShape2D.new()
 	shape.size = rect.size
 
-	var collision := CollisionShape2D.new()
+	var collision = CollisionShape2D.new()
 	collision.position = rect.position + rect.size * 0.5
 	collision.shape = shape
 	body.add_child(collision)
@@ -386,7 +395,7 @@ func _add_building(
 	building_parts: Array,
 	front_props: Array = []
 ) -> void:
-	var house_root := Node2D.new()
+	var house_root = Node2D.new()
 	house_root.name = house_name
 	house_root.position = top_left
 	buildings_root.add_child(house_root)
@@ -395,16 +404,16 @@ func _add_building(
 		if not part_data.has("texture"):
 			continue
 
-		var part_texture := part_data["texture"] as Texture2D
+		var part_texture = part_data["texture"] as Texture2D
 		if part_texture == null:
 			continue
 
 		var part_position: Vector2 = part_data.get("position", Vector2.ZERO)
-		var part_flip_h := bool(part_data.get("flip_h", false))
+		var part_flip_h = bool(part_data.get("flip_h", false))
 		var part_scale: Vector2 = part_data.get("scale", Vector2.ONE)
 		_add_sprite(house_root, part_texture, part_position, part_flip_h, part_scale)
 
-	var body := StaticBody2D.new()
+	var body = StaticBody2D.new()
 	body.name = "Collision"
 	house_root.add_child(body)
 	_add_rectangle_collision(body, collision_rect)
@@ -413,12 +422,12 @@ func _add_building(
 		if not prop_data.has("texture") or not prop_data.has("position"):
 			continue
 
-		var prop_texture := prop_data["texture"] as Texture2D
+		var prop_texture = prop_data["texture"] as Texture2D
 		if prop_texture == null:
 			continue
 
 		var prop_position: Vector2 = prop_data["position"]
-		var prop_flip_h := bool(prop_data.get("flip_h", false))
+		var prop_flip_h = bool(prop_data.get("flip_h", false))
 		var prop_scale: Vector2 = prop_data.get("scale", Vector2.ONE)
 		_add_sprite(props_root, prop_texture, top_left + prop_position, prop_flip_h, prop_scale)
 
@@ -440,7 +449,7 @@ func _add_sprite(
 	flip_h: bool = false,
 	scale: Vector2 = Vector2.ONE
 ) -> Sprite2D:
-	var sprite := Sprite2D.new()
+	var sprite = Sprite2D.new()
 	sprite.texture = texture
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.centered = false
@@ -452,7 +461,7 @@ func _add_sprite(
 
 
 func _configure_player_camera(player: Node2D, island_world: Rect2) -> void:
-	var camera := player.get_node_or_null("Camera2D") as Camera2D
+	var camera = player.get_node_or_null("Camera2D") as Camera2D
 	if camera == null:
 		return
 
@@ -478,9 +487,9 @@ func _set_layer_cell(layer: TileMapLayer, cell: Vector2i, tile: Dictionary) -> v
 	if tile.is_empty():
 		return
 
-	var source_id := int(tile["source_id"])
+	var source_id = int(tile["source_id"])
 	var atlas_coords: Vector2i = tile["atlas_coords"]
-	var alternative_tile := int(tile["alternative_tile"])
+	var alternative_tile = int(tile["alternative_tile"])
 	layer.set_cell(cell, source_id, atlas_coords, alternative_tile)
 
 
@@ -490,12 +499,12 @@ func _pick_weighted_tile(tiles: Array[Dictionary], rng: RandomNumberGenerator) -
 	if tiles.size() == 1:
 		return tiles[0]
 
-	var total_weight := 0
+	var total_weight = 0
 	for tile in tiles:
 		total_weight += int(tile["count"])
 
-	var roll := rng.randi_range(1, max(total_weight, 1))
-	var running_weight := 0
+	var roll = rng.randi_range(1, max(total_weight, 1))
+	var running_weight = 0
 	for tile in tiles:
 		running_weight += int(tile["count"])
 		if roll <= running_weight:
@@ -505,22 +514,22 @@ func _pick_weighted_tile(tiles: Array[Dictionary], rng: RandomNumberGenerator) -
 
 
 func _most_common_tile(layer: TileMapLayer) -> Dictionary:
-	var tiles := _collect_common_tiles(layer, 1)
+	var tiles = _collect_common_tiles(layer, 1)
 	if tiles.is_empty():
 		return {}
 	return tiles[0]
 
 
 func _collect_common_tiles(layer: TileMapLayer, limit: int) -> Array[Dictionary]:
-	var counts := {}
+	var counts = {}
 	for cell in layer.get_used_cells():
-		var source_id := layer.get_cell_source_id(cell)
+		var source_id = layer.get_cell_source_id(cell)
 		if source_id < 0:
 			continue
 
-		var atlas_coords := layer.get_cell_atlas_coords(cell)
-		var alternative_tile := layer.get_cell_alternative_tile(cell)
-		var key := "%d:%d:%d:%d" % [source_id, atlas_coords.x, atlas_coords.y, alternative_tile]
+		var atlas_coords = layer.get_cell_atlas_coords(cell)
+		var alternative_tile = layer.get_cell_alternative_tile(cell)
+		var key = "%d:%d:%d:%d" % [source_id, atlas_coords.x, atlas_coords.y, alternative_tile]
 
 		if not counts.has(key):
 			counts[key] = {
@@ -564,7 +573,7 @@ func _cells_to_world_rect(rect: Rect2i) -> Rect2:
 
 
 func _spawn_demo_pickups() -> void:
-	var player := get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	if player == null:
 		return
 
@@ -576,7 +585,7 @@ func _spawn_single_pickup(pickup_name: String, item_data: ItemData, amount: int,
 	if has_node(NodePath(pickup_name)):
 		return
 
-	var pickup := PICKUP_ITEM_SCENE.instantiate()
+	var pickup = PICKUP_ITEM_SCENE.instantiate()
 	if pickup == null:
 		return
 
@@ -594,7 +603,7 @@ func _spawn_single_pickup(pickup_name: String, item_data: ItemData, amount: int,
 
 
 func _close_player_inventory_if_open() -> bool:
-	var player := get_node_or_null(PLAYER_NODE_PATH)
+	var player = get_node_or_null(PLAYER_NODE_PATH)
 	if player == null:
 		return false
 
@@ -611,7 +620,7 @@ func _is_pause_event(event: InputEvent) -> bool:
 		return true
 
 	if event is InputEventKey:
-		var key_event := event as InputEventKey
+		var key_event = event as InputEventKey
 		return key_event.pressed and not key_event.echo and (
 			key_event.keycode == KEY_ESCAPE or key_event.physical_keycode == KEY_ESCAPE
 		)

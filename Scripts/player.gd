@@ -5,21 +5,21 @@ extends CharacterBody2D
 @export var FAKE_GRAVITY: float = 1500.0
 
 const INVENTORY_UI_SCENE: PackedScene = preload("res://Scenes/ui/inventory_ui.tscn")
-const INVENTORY_TOGGLE_ACTION := "inventory_toggle"
-const INVENTORY_SLOT_COUNT := 34
+const INVENTORY_TOGGLE_ACTION = "inventory_toggle"
+const INVENTORY_SLOT_COUNT = 34
 
-const ANIM_IDLE := "idle"
-const ANIM_RUN := "run"
-const ANIM_ATTACK := "golpe"
-const ANIM_HURT := "da\u00f1o"
-const ANIM_DEATH := "muerte"
+const ANIM_IDLE = "idle"
+const ANIM_RUN = "run"
+const ANIM_ATTACK = "golpe"
+const ANIM_HURT = "da\u00f1o"
+const ANIM_DEATH = "muerte"
 
-var z_height := 0.0
-var z_velocity := 0.0
-var is_jumping := false
-var is_attacking := false
-var is_dead := false
-var is_hurt := false
+var z_height = 0.0
+var z_velocity = 0.0
+var is_jumping = false
+var is_attacking = false
+var is_dead = false
+var is_hurt = false
 
 var inventory_data: InventoryData = null
 var inventory_ui: InventoryUI = null
@@ -63,7 +63,7 @@ func handle_movement(_delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	var direction := _get_movement_direction()
+	var direction = _get_movement_direction()
 	if direction:
 		velocity = direction * SPEED
 		if direction.x != 0:
@@ -75,8 +75,8 @@ func handle_movement(_delta: float) -> void:
 
 
 func _get_movement_direction() -> Vector2:
-	var arrow_direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var wasd_direction := Vector2(
+	var arrow_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var wasd_direction = Vector2(
 		int(Input.is_physical_key_pressed(KEY_D)) - int(Input.is_physical_key_pressed(KEY_A)),
 		int(Input.is_physical_key_pressed(KEY_S)) - int(Input.is_physical_key_pressed(KEY_W))
 	)
@@ -176,7 +176,7 @@ func _is_inventory_toggle_event(event: InputEvent) -> bool:
 		return true
 
 	if event is InputEventKey:
-		var key_event := event as InputEventKey
+		var key_event = event as InputEventKey
 		return key_event.pressed and not key_event.echo and (
 			key_event.keycode == KEY_I or key_event.physical_keycode == KEY_I
 		)

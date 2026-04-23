@@ -24,7 +24,7 @@ func _on_body_entered(body: Node) -> void:
 	if not body.has_method("pickup_item"):
 		return
 
-	var remaining := int(body.call("pickup_item", item_data, amount))
+	var remaining = int(body.call("pickup_item", item_data, amount))
 	if remaining <= 0:
 		queue_free()
 		return

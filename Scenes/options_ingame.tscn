@@ -17,16 +17,16 @@ corner_radius_bottom_left = 12
 
 [sub_resource type="LabelSettings" id="LabelSettings_2vsl7"]
 font = ExtResource("2_6unh8")
-font_size = 30
+font_size = 24
 font_color = Color(0.92941177, 0.99215686, 0.8980392, 1)
-outline_size = 6
+outline_size = 5
 outline_color = Color(0.07450981, 0.11372549, 0.13333334, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_gfd1y"]
 font = ExtResource("2_6unh8")
-font_size = 14
+font_size = 12
 font_color = Color(0.85882354, 0.9529412, 0.9254902, 1)
-outline_size = 3
+outline_size = 2
 outline_color = Color(0.06666667, 0.101960786, 0.12156863, 0.9)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_djlwm"]
@@ -53,16 +53,19 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="OptionsInGame" type="Control"]
-layout_mode = 3
+[node name="OptionsInGame" type="CanvasLayer"]
+script = ExtResource("1_bacw7")
+layer = 12
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_bacw7")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="Root"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -71,7 +74,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.66)
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="Root"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -79,68 +82,70 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(500, 380)
+[node name="PanelContainer" type="PanelContainer" parent="Root/CenterContainer"]
+custom_minimum_size = Vector2(300, 232)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_66wq2")
 
-[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="Root/CenterContainer/PanelContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/CenterContainer/PanelContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "OPCIONES DE PARTIDA"
 label_settings = SubResource("LabelSettings_2vsl7")
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Menu rapido dentro del juego"
 label_settings = SubResource("LabelSettings_gfd1y")
 horizontal_alignment = 1
 
-[node name="VolumeLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="VolumeLabel" type="Label" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Volumen general"
 label_settings = SubResource("LabelSettings_gfd1y")
 
-[node name="VolumeSlider" type="HSlider" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="VolumeSlider" type="HSlider" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 min_value = 0.0
 max_value = 100.0
 step = 1.0
 value = 80.0
 
-[node name="FullScreenToggle" type="CheckButton" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="FullScreenToggle" type="CheckButton" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Pantalla completa"
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 
-[node name="BackButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="BackButton" type="Button" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_djlwm")
 theme_override_styles/hover = SubResource("StyleBoxFlat_6x7oe")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_6x7oe")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "VOLVER AL JUEGO"
 
-[node name="MenuButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="MenuButton" type="Button" parent="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_djlwm")
 theme_override_styles/hover = SubResource("StyleBoxFlat_6x7oe")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_6x7oe")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "MENU PRINCIPAL"
 
-[connection signal="value_changed" from="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
-[connection signal="toggled" from="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/FullScreenToggle" to="." method="_on_full_screen_toggle_toggled"]
-[connection signal="pressed" from="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/MenuButton" to="." method="_on_menu_pressed"]
+[connection signal="value_changed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="toggled" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/FullScreenToggle" to="." method="_on_full_screen_toggle_toggled"]
+[connection signal="pressed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/MenuButton" to="." method="_on_menu_pressed"]

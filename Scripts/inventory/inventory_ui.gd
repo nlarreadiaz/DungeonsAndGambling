@@ -2,7 +2,7 @@ class_name InventoryUI
 extends CanvasLayer
 
 const SLOT_SCENE: PackedScene = preload("res://Scenes/ui/inventory_slot.tscn")
-const SLOT_POSITIONS := [
+const SLOT_POSITIONS = [
 	Vector2(77, 5),
 	Vector2(100, 5),
 	Vector2(123, 5),

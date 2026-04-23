@@ -1,16 +1,23 @@
-extends Control
+extends CanvasLayer
 
-const MENU_SCENE := "res://Scenes/menu.tscn"
+const MENU_SCENE = "res://Scenes/menu.tscn"
+const VOLUME_SLIDER_PATH = NodePath("Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VolumeSlider")
+const FULL_SCREEN_TOGGLE_PATH = NodePath("Root/CenterContainer/PanelContainer/MarginContainer/VBoxContainer/FullScreenToggle")
 
-@onready var volume_slider: HSlider = $CenterContainer/PanelContainer/MarginContainer/VBoxContainer/VolumeSlider
-@onready var full_screen_toggle: CheckButton = $CenterContainer/PanelContainer/MarginContainer/VBoxContainer/FullScreenToggle
+@onready var volume_slider: HSlider = get_node_or_null(VOLUME_SLIDER_PATH) as HSlider
+@onready var full_screen_toggle: CheckButton = get_node_or_null(FULL_SCREEN_TOGGLE_PATH) as CheckButton
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	layer = 12
 
-	var master_bus := AudioServer.get_bus_index("Master")
-	var master_db := AudioServer.get_bus_volume_db(master_bus)
+	if volume_slider == null or full_screen_toggle == null:
+		push_warning("No se encontraron los controles del menu de pausa.")
+		return
+
+	var master_bus = AudioServer.get_bus_index("Master")
+	var master_db = AudioServer.get_bus_volume_db(master_bus)
 	volume_slider.value = snapped(_db_to_percent(master_db), 1.0)
 
 	full_screen_toggle.button_pressed = (
@@ -27,7 +34,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_volume_slider_value_changed(value: float) -> void:
-	var master_bus := AudioServer.get_bus_index("Master")
+	var master_bus = AudioServer.get_bus_index("Master")
 	if value <= 0.0:
 		AudioServer.set_bus_volume_db(master_bus, -80.0)
 		return
@@ -47,8 +54,12 @@ func _on_back_pressed() -> void:
 
 
 func _on_menu_pressed() -> void:
-	get_tree().paused = false
-	get_tree().change_scene_to_file(MENU_SCENE)
+	var tree = get_tree()
+	if tree == null:
+		return
+
+	tree.paused = false
+	tree.change_scene_to_file(MENU_SCENE)
 
 
 func _db_to_percent(db: float) -> float:
@@ -58,8 +69,16 @@ func _db_to_percent(db: float) -> float:
 
 
 func _close_options_overlay() -> void:
-	get_tree().paused = false
+	_set_tree_paused(false)
 	queue_free()
+
+
+func _set_tree_paused(is_paused: bool) -> void:
+	var tree = get_tree()
+	if tree == null:
+		return
+
+	tree.paused = is_paused
 
 
 func _is_pause_event(event: InputEvent) -> bool:
@@ -67,7 +86,7 @@ func _is_pause_event(event: InputEvent) -> bool:
 		return true
 
 	if event is InputEventKey:
-		var key_event := event as InputEventKey
+		var key_event = event as InputEventKey
 		return key_event.pressed and not key_event.echo and (
 			key_event.keycode == KEY_ESCAPE or key_event.physical_keycode == KEY_ESCAPE
 		)

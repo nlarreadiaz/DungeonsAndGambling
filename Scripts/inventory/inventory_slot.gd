@@ -32,7 +32,7 @@ func refresh() -> void:
 		_set_empty()
 		return
 
-	var slot_data := inventory_ui.get_slot_data(slot_index)
+	var slot_data = inventory_ui.get_slot_data(slot_index)
 	if slot_data == null or slot_data.is_empty():
 		_set_empty()
 		return
@@ -48,7 +48,7 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	if inventory_ui == null:
 		return null
 
-	var slot_data := inventory_ui.get_slot_data(slot_index)
+	var slot_data = inventory_ui.get_slot_data(slot_index)
 	if slot_data == null or slot_data.is_empty():
 		return null
 
@@ -60,7 +60,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if inventory_ui == null or not inventory_ui.is_valid_drag_data(data):
 		return false
 
-	var from_index := int(data["from_index"])
+	var from_index = int(data["from_index"])
 	return inventory_ui.can_move_between_slots(from_index, slot_index)
 
 
@@ -68,7 +68,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	if inventory_ui == null or not inventory_ui.is_valid_drag_data(data):
 		return
 
-	var from_index := int(data["from_index"])
+	var from_index = int(data["from_index"])
 	inventory_ui.request_move(from_index, slot_index)
 
 

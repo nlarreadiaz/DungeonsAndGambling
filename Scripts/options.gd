@@ -5,8 +5,8 @@ extends Control
 
 
 func _ready() -> void:
-	var master_bus := AudioServer.get_bus_index("Master")
-	var master_db := AudioServer.get_bus_volume_db(master_bus)
+	var master_bus = AudioServer.get_bus_index("Master")
+	var master_db = AudioServer.get_bus_volume_db(master_bus)
 	volume_slider.value = snapped(_db_to_percent(master_db), 1.0)
 
 	full_screen_toggle.button_pressed = (
@@ -23,7 +23,7 @@ func _on_atras_pressed() -> void:
 
 
 func _on_volume_slider_value_changed(value: float) -> void:
-	var master_bus := AudioServer.get_bus_index("Master")
+	var master_bus = AudioServer.get_bus_index("Master")
 	if value <= 0.0:
 		AudioServer.set_bus_volume_db(master_bus, -80.0)
 		return

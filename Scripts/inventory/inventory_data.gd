@@ -32,8 +32,8 @@ func add_item(item_data: ItemData, amount: int = 1) -> int:
 	if item_data == null or amount <= 0:
 		return amount
 
-	var remaining := amount
-	var has_changes := false
+	var remaining = amount
+	var has_changes = false
 	var max_stack = max(item_data.max_stack, 1)
 
 	for slot in _slots:
@@ -72,8 +72,8 @@ func move_slot(from_index: int, to_index: int) -> void:
 	if not can_move(from_index, to_index) or from_index == to_index:
 		return
 
-	var from_slot := _slots[from_index]
-	var to_slot := _slots[to_index]
+	var from_slot = _slots[from_index]
+	var to_slot = _slots[to_index]
 
 	if from_slot.is_empty():
 		return
@@ -85,7 +85,7 @@ func move_slot(from_index: int, to_index: int) -> void:
 		return
 
 	if to_slot.matches_item(from_slot.item_data):
-		var room := to_slot.get_max_stack() - to_slot.quantity
+		var room = to_slot.get_max_stack() - to_slot.quantity
 		if room > 0:
 			var transfer = min(room, from_slot.quantity)
 			to_slot.quantity += transfer
@@ -95,8 +95,8 @@ func move_slot(from_index: int, to_index: int) -> void:
 			inventory_changed.emit()
 			return
 
-	var temp_item := to_slot.item_data
-	var temp_quantity := to_slot.quantity
+	var temp_item = to_slot.item_data
+	var temp_quantity = to_slot.quantity
 
 	to_slot.item_data = from_slot.item_data
 	to_slot.quantity = from_slot.quantity
