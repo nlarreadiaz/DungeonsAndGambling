@@ -4,6 +4,7 @@ const OPTIONS_INGAME_SCENE: PackedScene = preload("res://Scenes/options_ingame.t
 const PICKUP_ITEM_SCENE: PackedScene = preload("res://Scenes/world/pickup_item.tscn")
 const STAR_ITEM_DATA: ItemData = preload("res://assets/items/item_estrella.tres")
 const COIN_ITEM_DATA: ItemData = preload("res://assets/items/item_moneda.tres")
+const DARK_QUEEN_IDLE_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")
 
 const HOUSE_EXTERIOR_TEXTURE: Texture2D = preload("res://assets/Herrería/PNG/House_exterior.png")
 const OBJECTS_TEXTURE: Texture2D = preload("res://assets/Tiled_files/Objects.png")
@@ -19,6 +20,14 @@ const TILE_SIZE = 16
 const MAP_COLUMNS = 96
 const MAP_ROWS = 64
 const WATER_MARGIN_CELLS = 6
+const PLAYER_SPAWN_POSITION = Vector2(46 * TILE_SIZE, 33 * TILE_SIZE)
+const DARK_QUEEN_FRAME_SIZE = Vector2i(128, 128)
+const DARK_QUEEN_IDLE_FRAME_COUNT = 7
+const DARK_QUEEN_IDLE_SPEED = 7.0
+const DARK_QUEEN_WORLD_POSITION = Vector2(51 * TILE_SIZE, 31 * TILE_SIZE)
+const DARK_QUEEN_SPRITE_OFFSET = Vector2(-64, -112)
+const DARK_QUEEN_TRIGGER_OFFSET = Vector2(0, -10)
+const DARK_QUEEN_TRIGGER_RADIUS = 22.0
 
 const PATH_TILE_REGION = Rect2i(0, 192, 16, 16)
 const BLACKSMITH_HOUSE_REGION = Rect2i(12, 12, 156, 148)
@@ -158,8 +167,11 @@ func _build_island_village() -> void:
 	_build_border_colliders(collisions_root, island_world)
 	_build_houses(buildings_root, props_root)
 	_build_plaza_props(props_root)
+	_build_dark_queen_threat(generated_root, player)
 
-	player.position = Vector2(46 * TILE_SIZE, 33 * TILE_SIZE)
+	player.position = PLAYER_SPAWN_POSITION
+	if player.has_method("set_spawn_position"):
+		player.call("set_spawn_position", PLAYER_SPAWN_POSITION)
 	_configure_player_camera(player, island_world)
 
 
@@ -440,6 +452,70 @@ func _build_plaza_props(props_root: Node2D) -> void:
 	_add_sprite(props_root, sacks_texture, Vector2(45 * TILE_SIZE, 36 * TILE_SIZE))
 	_add_sprite(props_root, coal_cart_texture, Vector2(70 * TILE_SIZE, 44 * TILE_SIZE))
 	_add_sprite(props_root, cart_texture, Vector2(28 * TILE_SIZE, 44 * TILE_SIZE))
+
+
+func _build_dark_queen_threat(parent: Node2D, player: Node2D) -> void:
+	var threat_root = Node2D.new()
+	threat_root.name = "DarkQueenThreat"
+	threat_root.position = DARK_QUEEN_WORLD_POSITION
+	threat_root.z_index = 2
+	parent.add_child(threat_root)
+
+	var animated_sprite = AnimatedSprite2D.new()
+	animated_sprite.name = "DarkQueen"
+	animated_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	animated_sprite.centered = false
+	animated_sprite.position = DARK_QUEEN_SPRITE_OFFSET
+	animated_sprite.sprite_frames = _make_strip_animation_frames(
+		DARK_QUEEN_IDLE_TEXTURE,
+		DARK_QUEEN_FRAME_SIZE,
+		DARK_QUEEN_IDLE_FRAME_COUNT,
+		"idle",
+		DARK_QUEEN_IDLE_SPEED
+	)
+	animated_sprite.play("idle")
+	threat_root.add_child(animated_sprite)
+
+	var kill_zone = Area2D.new()
+	kill_zone.name = "KillZone"
+	kill_zone.position = DARK_QUEEN_TRIGGER_OFFSET
+	kill_zone.body_entered.connect(_on_dark_queen_body_entered.bind(player))
+	threat_root.add_child(kill_zone)
+
+	var collision_shape = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = DARK_QUEEN_TRIGGER_RADIUS
+	collision_shape.shape = shape
+	kill_zone.add_child(collision_shape)
+
+
+func _make_strip_animation_frames(
+	texture: Texture2D,
+	frame_size: Vector2i,
+	frame_count: int,
+	animation_name: StringName,
+	speed: float
+) -> SpriteFrames:
+	var frames = SpriteFrames.new()
+	frames.add_animation(animation_name)
+	frames.set_animation_loop(animation_name, true)
+	frames.set_animation_speed(animation_name, speed)
+
+	for frame_index in frame_count:
+		var frame_texture = AtlasTexture.new()
+		frame_texture.atlas = texture
+		frame_texture.region = Rect2(frame_index * frame_size.x, 0, frame_size.x, frame_size.y)
+		frames.add_frame(animation_name, frame_texture)
+
+	return frames
+
+
+func _on_dark_queen_body_entered(body: Node2D, player: Node2D) -> void:
+	if body != player:
+		return
+
+	if player.has_method("morir"):
+		player.call("morir")
 
 
 func _add_sprite(

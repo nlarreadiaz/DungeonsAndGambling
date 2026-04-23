@@ -1,109 +1,273 @@
 [gd_scene format=3 uid="uid://brw0h61rf8ccb"]
 
-[ext_resource type="Script" uid="uid://1t08opd64dyq" path="res://Scripts/options.gd" id="1_4tmxy"]
-[ext_resource type="Texture2D" uid="uid://ccxn2dxxwtg6" path="res://images/99adfdb2-57d5-4629-bb54-0a39722429ef.png" id="2_qyyw6"]
-[ext_resource type="Script" uid="uid://rly3iu6syjqd" path="res://Scripts/full_screen_control.gd" id="3_qyyw6"]
-[ext_resource type="Script" uid="uid://bpjwe1wt60itf" path="res://Scripts/scale_control.gd" id="3_ww8vx"]
-[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="4_x2w1q"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="5_8sl7w"]
-[ext_resource type="Script" path="res://Scripts/menu_button_label.gd" id="6_1a2tm"]
+[ext_resource type="Script" uid="uid://1t08opd64dyq" path="res://Scripts/options.gd" id="1_options"]
+[ext_resource type="Texture2D" uid="uid://ccxn2dxxwtg6" path="res://images/99adfdb2-57d5-4629-bb54-0a39722429ef.png" id="2_bg"]
+[ext_resource type="Script" uid="uid://rly3iu6syjqd" path="res://Scripts/full_screen_control.gd" id="3_fullscreen"]
+[ext_resource type="Script" uid="uid://bpjwe1wt60itf" path="res://Scripts/scale_control.gd" id="4_scale"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="5_buttons"]
+[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="6_font"]
+[ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="7_label"]
+[ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="8_ribbons"]
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_ww8vx"]
-color = Color(1, 1, 1, 1)
-thickness = 10
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_options_panel"]
+bg_color = Color(0.07058824, 0.09019608, 0.12156863, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.90588236, 0.78431374, 0.57254905, 0.96)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 10
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_kftxf"]
-color = Color(0.67359084, 0.22907421, 0, 1)
-thickness = 10
+[sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_large"]
+atlas = ExtResource("8_ribbons")
+region = Rect2(202, 32, 92, 26)
 
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_hvj8k"]
-color = Color(0.44070798, 0.16592428, 0.0062557943, 1)
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font = ExtResource("6_font")
+font_size = 20
+font_color = Color(0.99607843, 0.9490196, 0.8392157, 1)
+outline_size = 5
+outline_color = Color(0.23137255, 0.12156863, 0.050980393, 0.96)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_offset = Vector2(0, 2)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8mm65"]
-atlas = ExtResource("4_x2w1q")
+[sub_resource type="LabelSettings" id="LabelSettings_subtitle"]
+font = ExtResource("6_font")
+font_size = 9
+font_color = Color(0.9607843, 0.9098039, 0.8352941, 1)
+outline_size = 2
+outline_color = Color(0.14509805, 0.08235294, 0.043137256, 0.95)
+
+[sub_resource type="LabelSettings" id="LabelSettings_label"]
+font = ExtResource("6_font")
+font_size = 9
+font_color = Color(0.95686275, 0.95686275, 0.9254902, 1)
+outline_size = 2
+outline_color = Color(0.09019608, 0.08235294, 0.10980392, 0.95)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_slider"]
+color = Color(0.99607843, 0.8235294, 0.54901963, 1)
+thickness = 7
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_slider_fill"]
+color = Color(0.7411765, 0.39607844, 0.21568628, 1)
+thickness = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_control_normal"]
+bg_color = Color(0.1882353, 0.15294118, 0.16862746, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.83137256, 0.68235296, 0.4627451, 0.94)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_control_hover"]
+bg_color = Color(0.23137255, 0.18039216, 0.19607843, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9764706, 0.8392157, 0.6039216, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_back_normal"]
+atlas = ExtResource("5_buttons")
 region = Rect2(0, 192, 32, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_j5d2r"]
-atlas = ExtResource("4_x2w1q")
+[sub_resource type="AtlasTexture" id="AtlasTexture_back_pressed"]
+atlas = ExtResource("5_buttons")
 region = Rect2(64, 192, 32, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wh5w8"]
-atlas = ExtResource("4_x2w1q")
+[sub_resource type="AtlasTexture" id="AtlasTexture_back_hover"]
+atlas = ExtResource("5_buttons")
 region = Rect2(32, 192, 32, 16)
 
-[sub_resource type="LabelSettings" id="LabelSettings_bf71v"]
-font = ExtResource("5_8sl7w")
+[sub_resource type="LabelSettings" id="LabelSettings_button"]
+font = ExtResource("6_font")
 stacked_outline_count = 1
 stacked_shadow_count = 1
 stacked_shadow_0/offset = Vector2(1, 1)
 
-[node name="Options" type="Control" unique_id=1444843476]
+[sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_small"]
+atlas = ExtResource("8_ribbons")
+region = Rect2(8, 1, 93, 20)
+
+[sub_resource type="LabelSettings" id="LabelSettings_badge"]
+font = ExtResource("6_font")
+font_size = 9
+font_color = Color(0.4117647, 0.19607843, 0.06666667, 1)
+outline_size = 1
+outline_color = Color(0.9647059, 0.8627451, 0.67058825, 0.55)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_info_frame"]
+bg_color = Color(0.14509805, 0.10980392, 0.15294118, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9098039, 0.7529412, 0.52156866, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="Options" type="Control" unique_id=961834624]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_4tmxy")
+script = ExtResource("1_options")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1065514243]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -1.0
-offset_top = 1.0
-offset_right = -1.0
-offset_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.87144, 0.9619346, 0.9441926, 1)
-
-[node name="TextureRect" type="TextureRect" parent="ColorRect" unique_id=1873866386]
+[node name="Background" type="TextureRect" parent="." unique_id=1820966285]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_qyyw6")
+texture = ExtResource("2_bg")
 expand_mode = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=797562183]
+[node name="Shade" type="ColorRect" parent="." unique_id=1937441890]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.050980393, 0.023529412, 0.039215688, 0.48)
+
+[node name="ContentCenter" type="CenterContainer" parent="." unique_id=202737919]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="HBoxContainer" parent="ContentCenter" unique_id=864655671]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SettingsPanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=23706368]
+custom_minimum_size = Vector2(244, 228)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_options_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/SettingsPanel" unique_id=199687175]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentCenter/Layout/SettingsPanel/MarginContainer" unique_id=56096669]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="Control" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer" unique_id=1671613133]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="Ribbon" type="TextureRect" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header" unique_id=186805411]
+texture_filter = 1
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -239.0
-offset_top = -103.0
-offset_right = 594.0
-offset_bottom = 48.0
+offset_left = -69.0
+offset_right = 69.0
+offset_bottom = 26.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.57479304, 0.48414832)
-theme_override_constants/separation = 20
+texture = SubResource("AtlasTexture_ribbon_large")
+expand_mode = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ColorRect/VBoxContainer" unique_id=1309053863]
+[node name="Title" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header" unique_id=846291267]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 220.0
+offset_bottom = 38.0
+text = "OPCIONES"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header" unique_id=1194762427]
+layout_mode = 0
+offset_top = 38.0
+offset_right = 220.0
+offset_bottom = 48.0
+text = "Ajusta audio, escala y pantalla"
+label_settings = SubResource("LabelSettings_subtitle")
+horizontal_alignment = 1
+
+[node name="SettingsRows" type="VBoxContainer" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer" unique_id=1241024162]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 8
 
-[node name="Label" type="Label" parent="ColorRect/VBoxContainer/HBoxContainer" unique_id=454053762]
+[node name="VolumeRow" type="HBoxContainer" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows" unique_id=233445817]
 layout_mode = 2
-text = "Volumen Musica
- "
+theme_override_constants/separation = 10
 
-[node name="HSlider" type="HSlider" parent="ColorRect/VBoxContainer/HBoxContainer" unique_id=1791333058]
+[node name="VolumeLabel" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/VolumeRow" unique_id=428700688]
+custom_minimum_size = Vector2(86, 0)
+layout_mode = 2
+text = "Volumen"
+label_settings = SubResource("LabelSettings_label")
+vertical_alignment = 1
+
+[node name="VolumeSlider" type="HSlider" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/VolumeRow" unique_id=2036444553]
+custom_minimum_size = Vector2(124, 22)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/slider = SubResource("StyleBoxLine_ww8vx")
-theme_override_styles/grabber_area = SubResource("StyleBoxLine_kftxf")
-theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_kftxf")
-value = 50.0
+theme_override_styles/slider = SubResource("StyleBoxLine_slider")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_slider_fill")
+value = 80.0
 
-[node name="ScaleControl" type="OptionButton" parent="ColorRect/VBoxContainer" unique_id=1306021706]
+[node name="ScaleRow" type="HBoxContainer" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows" unique_id=1525187932]
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ScaleLabel" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/ScaleRow" unique_id=828954276]
+custom_minimum_size = Vector2(86, 0)
+layout_mode = 2
+text = "Escala"
+label_settings = SubResource("LabelSettings_label")
+vertical_alignment = 1
+
+[node name="ScaleControl" type="OptionButton" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/ScaleRow" unique_id=1578787141]
+custom_minimum_size = Vector2(124, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9843137, 0.95686275, 0.9019608, 1)
+theme_override_colors/font_focus_color = Color(1, 0.96862745, 0.89411765, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.96862745, 0.89411765, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96862745, 0.89411765, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_control_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_control_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_control_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_control_normal")
+theme_override_styles/focus = SubResource("StyleBoxFlat_control_hover")
 selected = 0
 item_count = 4
 popup/item_0/text = "100%"
@@ -114,42 +278,160 @@ popup/item_2/text = "50%"
 popup/item_2/id = 2
 popup/item_3/text = "25%"
 popup/item_3/id = 3
-script = ExtResource("3_ww8vx")
+script = ExtResource("4_scale")
 
-[node name="FullScreenControl" type="CheckButton" parent="ColorRect/VBoxContainer" unique_id=630250937]
+[node name="FullScreenRow" type="HBoxContainer" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows" unique_id=1120195673]
 layout_mode = 2
-theme_override_styles/disabled = SubResource("StyleBoxLine_hvj8k")
-button_pressed = true
-text = "FullScreen"
-script = ExtResource("3_qyyw6")
+theme_override_constants/separation = 10
 
-[node name="Atras" type="TextureButton" parent="ColorRect" unique_id=726535759]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 204.0
-offset_right = 56.0
-offset_bottom = 220.0
+[node name="FullScreenLabel" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/FullScreenRow" unique_id=2007403513]
+custom_minimum_size = Vector2(86, 0)
+layout_mode = 2
+text = "Pantalla"
+label_settings = SubResource("LabelSettings_label")
+vertical_alignment = 1
+
+[node name="FullScreenControl" type="CheckButton" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/FullScreenRow" unique_id=1142899912]
+custom_minimum_size = Vector2(124, 24)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9843137, 0.95686275, 0.9019608, 1)
+theme_override_colors/font_focus_color = Color(1, 0.96862745, 0.89411765, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.96862745, 0.89411765, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96862745, 0.89411765, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_control_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_control_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_control_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_control_hover")
+text = "Completa"
+script = ExtResource("3_fullscreen")
+
+[node name="BackArea" type="Control" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer" unique_id=155505317]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="Atras" type="TextureButton" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/BackArea" unique_id=1099229822]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -83.0
+offset_top = -15.000002
+offset_right = -52.433964
+offset_bottom = 1.097559
+grow_horizontal = 2
+grow_vertical = 2
 scale = Vector2(5.3, 4.1)
-texture_normal = SubResource("AtlasTexture_8mm65")
-texture_pressed = SubResource("AtlasTexture_j5d2r")
-texture_hover = SubResource("AtlasTexture_wh5w8")
+texture_normal = SubResource("AtlasTexture_back_normal")
+texture_pressed = SubResource("AtlasTexture_back_pressed")
+texture_hover = SubResource("AtlasTexture_back_hover")
 ignore_texture_size = true
 
-[node name="Label" type="Label" parent="ColorRect/Atras"]
+[node name="Label" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/BackArea/Atras" unique_id=445872260]
 texture_filter = 1
 layout_mode = 0
-offset_left = 0.16666651
-offset_top = 2.325581
-offset_right = 112.166664
-offset_bottom = 42.32558
+offset_left = 0.3773587
+offset_top = 2.4390247
+offset_right = 112.37736
+offset_bottom = 42.439026
 scale = Vector2(0.28, 0.24)
 text = "ATRAS"
-label_settings = SubResource("LabelSettings_bf71v")
+label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
-script = ExtResource("6_1a2tm")
+script = ExtResource("7_label")
 
-[connection signal="value_changed" from="ColorRect/VBoxContainer/HBoxContainer/HSlider" to="." method="_on_volume_slider_value_changed"]
-[connection signal="item_selected" from="ColorRect/VBoxContainer/ScaleControl" to="ColorRect/VBoxContainer/ScaleControl" method="_on_item_selected"]
-[connection signal="toggled" from="ColorRect/VBoxContainer/FullScreenControl" to="ColorRect/VBoxContainer/FullScreenControl" method="_on_toggled"]
-[connection signal="pressed" from="ColorRect/Atras" to="." method="_on_atras_pressed"]
+[node name="InfoPanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=89950619]
+custom_minimum_size = Vector2(140, 228)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_options_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/InfoPanel" unique_id=1541349570]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentCenter/Layout/InfoPanel/MarginContainer" unique_id=1013857856]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Badge" type="Control" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer" unique_id=1607090322]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+
+[node name="Ribbon" type="TextureRect" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/Badge" unique_id=16641898]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -1.0
+offset_right = 74.0
+offset_bottom = 23.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_ribbon_small")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/Badge" unique_id=2124205939]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 17.0
+offset_right = 123.0
+offset_bottom = 31.0
+text = "PANTALLA"
+label_settings = SubResource("LabelSettings_badge")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PreviewFrame" type="PanelContainer" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer" unique_id=1146940596]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_info_frame")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/PreviewFrame" unique_id=570437200]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Preview" type="TextureRect" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/PreviewFrame/MarginContainer" unique_id=14752926]
+custom_minimum_size = Vector2(114, 86)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("2_bg")
+expand_mode = 1
+
+[node name="InfoLine1" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer" unique_id=618917280]
+layout_mode = 2
+text = "Los cambios se aplican"
+label_settings = SubResource("LabelSettings_label")
+horizontal_alignment = 1
+
+[node name="InfoLine2" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer" unique_id=2079050795]
+layout_mode = 2
+text = "de inmediato"
+label_settings = SubResource("LabelSettings_label")
+horizontal_alignment = 1
+
+[node name="InfoLine3" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer" unique_id=367547862]
+layout_mode = 2
+text = "La escala afecta al modo ventana"
+label_settings = SubResource("LabelSettings_subtitle")
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[connection signal="value_changed" from="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/VolumeRow/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="item_selected" from="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/ScaleRow/ScaleControl" to="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/ScaleRow/ScaleControl" method="_on_item_selected"]
+[connection signal="toggled" from="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/FullScreenRow/FullScreenControl" to="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/FullScreenRow/FullScreenControl" method="_on_toggled"]
+[connection signal="pressed" from="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/BackArea/Atras" to="." method="_on_atras_pressed"]

@@ -1,173 +1,249 @@
 [gd_scene format=3 uid="uid://bnqc2nkcyh04x"]
 
-[ext_resource type="Script" uid="uid://b4gifkcfc5s73" path="res://Scripts/menu.gd" id="1_xhh6f"]
-[ext_resource type="Texture2D" uid="uid://by436d5kuhica" path="res://images/1.png" id="2_xhh6f"]
-[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_cayip"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="4_158mb"]
+[ext_resource type="Script" uid="uid://b4gifkcfc5s73" path="res://Scripts/menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" uid="uid://by436d5kuhica" path="res://images/1.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_buttons"]
+[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="4_font"]
+[ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="5_label"]
+[ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="6_ribbons"]
+[ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herrería/PNG/House_exterior.png" id="7_house"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2qsap"]
-bg_color = Color(0.043137256, 0.08235294, 0.08235294, 0.72)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_panel"]
+bg_color = Color(0.047058824, 0.09019608, 0.105882354, 0.88)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.7176471, 0.8392157, 0.7137255, 0.95)
+border_color = Color(0.7058824, 0.85490197, 0.7882353, 0.96)
 corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
-shadow_color = Color(0, 0, 0, 0.3)
-shadow_size = 8
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 10
 
-[sub_resource type="LabelSettings" id="LabelSettings_e1m8r"]
-font = ExtResource("4_158mb")
-font_size = 29
-font_color = Color(0.9647059, 0.95686275, 0.8235294, 1)
-outline_size = 6
-outline_color = Color(0.16470589, 0.1254902, 0.08627451, 0.95)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.45)
+[sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_large"]
+atlas = ExtResource("6_ribbons")
+region = Rect2(202, 32, 92, 26)
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font = ExtResource("4_font")
+font_size = 21
+font_color = Color(0.972549, 0.9607843, 0.8392157, 1)
+outline_size = 5
+outline_color = Color(0.18039216, 0.1254902, 0.08235294, 0.96)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 0.42)
 shadow_offset = Vector2(0, 2)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_158mb"]
-atlas = ExtResource("3_cayip")
+[sub_resource type="LabelSettings" id="LabelSettings_subtitle"]
+font = ExtResource("4_font")
+font_size = 9
+font_color = Color(0.84705883, 0.9490196, 0.91764706, 1)
+outline_size = 2
+outline_color = Color(0.06666667, 0.10980392, 0.1254902, 0.92)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_button_normal"]
+atlas = ExtResource("3_buttons")
 region = Rect2(0, 160, 32, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wwsa2"]
-atlas = ExtResource("3_cayip")
+[sub_resource type="AtlasTexture" id="AtlasTexture_button_pressed"]
+atlas = ExtResource("3_buttons")
 region = Rect2(64, 160, 32, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_jsrd8"]
-atlas = ExtResource("3_cayip")
+[sub_resource type="AtlasTexture" id="AtlasTexture_button_hover"]
+atlas = ExtResource("3_buttons")
 region = Rect2(32, 160, 32, 16)
 
-[sub_resource type="LabelSettings" id="LabelSettings_wwsa2"]
-font = ExtResource("4_158mb")
+[sub_resource type="LabelSettings" id="LabelSettings_button"]
+font = ExtResource("4_font")
 stacked_outline_count = 1
 stacked_shadow_count = 1
 stacked_shadow_0/offset = Vector2(1, 1)
 
-[sub_resource type="GDScript" id="GDScript_158mb"]
-script/source = "extends Label
+[sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_small"]
+atlas = ExtResource("6_ribbons")
+region = Rect2(8, 1, 93, 20)
 
-# Guardamos la posición original
-@onready var y_inicial = position.y
+[sub_resource type="LabelSettings" id="LabelSettings_badge"]
+font = ExtResource("4_font")
+font_size = 9
+font_color = Color(0.4117647, 0.19607843, 0.06666667, 1)
+outline_size = 1
+outline_color = Color(0.9647059, 0.8627451, 0.67058825, 0.55)
 
-func _ready():
-	var boton = get_parent()
-	
-	if boton is TextureButton:
-		# Conectamos todas las señales necesarias
-		boton.mouse_entered.connect(_al_entrar)
-		boton.mouse_exited.connect(_al_salir)
-		boton.button_down.connect(_al_presionar)
-		boton.button_up.connect(_al_entrar) # Al soltar, vuelve al estado 'hover'
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preview"]
+bg_color = Color(0.10980392, 0.16862746, 0.1882353, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62352943, 0.7764706, 0.7176471, 0.94)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
-func _al_entrar():
-	# Estado HOVER: baja 1 píxel
-	position.y = y_inicial + 1
+[sub_resource type="AtlasTexture" id="AtlasTexture_house_preview"]
+atlas = ExtResource("7_house")
+region = Rect2(0, 0, 176, 120)
 
-func _al_salir():
-	# Estado NORMAL: vuelve a la posición original
-	position.y = y_inicial
+[sub_resource type="LabelSettings" id="LabelSettings_feature"]
+font = ExtResource("4_font")
+font_size = 9
+font_color = Color(0.92941177, 0.9843137, 0.92941177, 1)
+outline_size = 2
+outline_color = Color(0.07450981, 0.10980392, 0.13333334, 0.95)
 
-func _al_presionar():
-	# Estado CLICK: baja 2 píxeles
-	position.y = y_inicial + 2
-"
+[sub_resource type="LabelSettings" id="LabelSettings_footer"]
+font = ExtResource("4_font")
+font_size = 8
+font_color = Color(0.89411765, 0.9490196, 0.92156863, 0.92)
+outline_size = 2
+outline_color = Color(0.05882353, 0.08627451, 0.09411765, 0.9)
 
-[node name="Menu" type="Control" unique_id=1444843476]
+[node name="Menu" type="Control" unique_id=1459374609]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_xhh6f")
+script = ExtResource("1_menu")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1065514243]
+[node name="Background" type="TextureRect" parent="." unique_id=1702618812]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -1.0
-offset_top = 1.0
-offset_right = -1.0
-offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.87144, 0.9619346, 0.9441926, 1)
-
-[node name="TextureRect" type="TextureRect" parent="ColorRect" unique_id=1873866386]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 1.0
-offset_right = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("2_xhh6f")
+texture = ExtResource("2_bg")
 expand_mode = 1
 
-[node name="MenuCard" type="Panel" parent="." unique_id=1842140826]
-layout_mode = 0
-offset_left = 90.0
-offset_top = 15.0
-offset_right = 391.0
-offset_bottom = 247.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_2qsap")
+[node name="Shade" type="ColorRect" parent="." unique_id=1729810991]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.019607844, 0.050980393, 0.05882353, 0.44)
 
-[node name="Title" type="Label" parent="MenuCard" unique_id=100995352]
+[node name="ContentCenter" type="CenterContainer" parent="." unique_id=1383951536]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="HBoxContainer" parent="ContentCenter" unique_id=1036068553]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MenuPanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=1492320183]
+custom_minimum_size = Vector2(228, 240)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_menu_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/MenuPanel" unique_id=973507545]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentCenter/Layout/MenuPanel/MarginContainer" unique_id=179124893]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Control" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer" unique_id=2001616741]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+
+[node name="TitleRibbon" type="TextureRect" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=183208811]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -69.0
+offset_right = 69.0
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_ribbon_large")
+expand_mode = 1
+
+[node name="Title" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=1609652966]
 layout_mode = 0
-offset_left = 26.0
-offset_top = 18.0
-offset_right = 276.0
-offset_bottom = 57.0
+offset_top = 16.0
+offset_right = 204.0
+offset_bottom = 38.0
 text = "DUNGEON AND GAMBLING"
-label_settings = SubResource("LabelSettings_e1m8r")
+label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="start" type="TextureButton" parent="." unique_id=699134698]
+[node name="Subtitle" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=837869924]
 layout_mode = 0
-offset_left = 145.0
-offset_top = 72.0
-offset_right = 177.0
-offset_bottom = 88.0
+offset_top = 39.0
+offset_right = 204.0
+offset_bottom = 54.0
+text = "Aventura, fortuna y decisiones arriesgadas"
+label_settings = SubResource("LabelSettings_subtitle")
+horizontal_alignment = 1
+
+[node name="ButtonsArea" type="Control" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer" unique_id=1385549035]
+custom_minimum_size = Vector2(0, 158)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=62512782]
+layout_mode = 0
+offset_left = 6.0
+offset_top = -5.0
+offset_right = 38.0
+offset_bottom = 11.0
 scale = Vector2(6, 4.3)
-texture_normal = SubResource("AtlasTexture_158mb")
-texture_pressed = SubResource("AtlasTexture_wwsa2")
-texture_hover = SubResource("AtlasTexture_jsrd8")
+focus_neighbor_bottom = NodePath("../OptionsButton")
+texture_normal = SubResource("AtlasTexture_button_normal")
+texture_pressed = SubResource("AtlasTexture_button_pressed")
+texture_hover = SubResource("AtlasTexture_button_hover")
 ignore_texture_size = true
 
-[node name="Label" type="Label" parent="start" unique_id=949573918]
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" unique_id=1845249321]
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651
-offset_top = 2.0930228
+offset_top = 2.325581
 offset_right = 112.166664
-offset_bottom = 42.09302
+offset_bottom = 42.32558
 scale = Vector2(0.28, 0.24)
 text = "JUGAR"
-label_settings = SubResource("LabelSettings_wwsa2")
+label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
-script = SubResource("GDScript_158mb")
+script = ExtResource("5_label")
 
-[node name="options" type="TextureButton" parent="." unique_id=1191298766]
+[node name="OptionsButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=956974074]
 layout_mode = 0
-offset_left = 145.0
-offset_top = 124.0
-offset_right = 177.0
-offset_bottom = 140.0
+offset_left = 6.0
+offset_top = 44.0
+offset_right = 38.0
+offset_bottom = 60.0
 scale = Vector2(6, 4.3)
-texture_normal = SubResource("AtlasTexture_158mb")
-texture_pressed = SubResource("AtlasTexture_wwsa2")
-texture_hover = SubResource("AtlasTexture_jsrd8")
+focus_neighbor_top = NodePath("../PlayButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
+texture_normal = SubResource("AtlasTexture_button_normal")
+texture_pressed = SubResource("AtlasTexture_button_pressed")
+texture_hover = SubResource("AtlasTexture_button_hover")
 ignore_texture_size = true
 
-[node name="Label2" type="Label" parent="options" unique_id=694270608]
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/OptionsButton" unique_id=153742705]
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651
@@ -176,24 +252,25 @@ offset_right = 112.166664
 offset_bottom = 42.32558
 scale = Vector2(0.28, 0.24)
 text = "OPCIONES"
-label_settings = SubResource("LabelSettings_wwsa2")
+label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
-script = SubResource("GDScript_158mb")
+script = ExtResource("5_label")
 
-[node name="exit" type="TextureButton" parent="." unique_id=668310116]
+[node name="ExitButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=2075711668]
 layout_mode = 0
-offset_left = 145.0
-offset_top = 176.0
-offset_right = 177.0
-offset_bottom = 192.0
+offset_left = 4.0
+offset_top = 98.0
+offset_right = 36.0
+offset_bottom = 114.0
 scale = Vector2(6, 4.3)
-texture_normal = SubResource("AtlasTexture_158mb")
-texture_pressed = SubResource("AtlasTexture_wwsa2")
-texture_hover = SubResource("AtlasTexture_jsrd8")
+focus_neighbor_top = NodePath("../OptionsButton")
+texture_normal = SubResource("AtlasTexture_button_normal")
+texture_pressed = SubResource("AtlasTexture_button_pressed")
+texture_hover = SubResource("AtlasTexture_button_hover")
 ignore_texture_size = true
 
-[node name="Label3" type="Label" parent="exit" unique_id=1285674212]
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/ExitButton" unique_id=1571701515]
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651
@@ -202,11 +279,113 @@ offset_right = 112.166664
 offset_bottom = 42.32558
 scale = Vector2(0.28, 0.24)
 text = "SALIR"
-label_settings = SubResource("LabelSettings_wwsa2")
+label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
-script = SubResource("GDScript_158mb")
+script = ExtResource("5_label")
 
-[connection signal="pressed" from="start" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="options" to="." method="_on_options_pressed"]
-[connection signal="pressed" from="exit" to="." method="_on_quit_pressed"]
+[node name="FeaturePanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=294045681]
+custom_minimum_size = Vector2(150, 240)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_menu_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/FeaturePanel" unique_id=470325066]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentCenter/Layout/FeaturePanel/MarginContainer" unique_id=1946672377]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Badge" type="Control" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1707829207]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+
+[node name="Ribbon" type="TextureRect" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/Badge" unique_id=1671682285]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.0
+offset_right = 77.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_ribbon_small")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/Badge" unique_id=750531013]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 130.0
+offset_bottom = 30.0
+text = "LA ALDEA"
+label_settings = SubResource("LabelSettings_badge")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PreviewFrame" type="PanelContainer" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=252283244]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_preview")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/PreviewFrame" unique_id=277145403]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Preview" type="TextureRect" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/PreviewFrame/MarginContainer" unique_id=693887374]
+texture_filter = 1
+custom_minimum_size = Vector2(120, 86)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = SubResource("AtlasTexture_house_preview")
+expand_mode = 1
+
+[node name="FeatureLine1" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1673424083]
+layout_mode = 2
+text = "Explora la aldea"
+label_settings = SubResource("LabelSettings_feature")
+horizontal_alignment = 1
+
+[node name="FeatureLine2" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1605348055]
+layout_mode = 2
+text = "Organiza tu equipo"
+label_settings = SubResource("LabelSettings_feature")
+horizontal_alignment = 1
+
+[node name="FeatureLine3" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1274525907]
+layout_mode = 2
+text = "Pon a prueba tu suerte"
+label_settings = SubResource("LabelSettings_feature")
+horizontal_alignment = 1
+
+[node name="FooterHint" type="Label" parent="." unique_id=966303687]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -114.0
+offset_top = -18.0
+offset_right = 114.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Selecciona una opcion para comenzar la aventura"
+label_settings = SubResource("LabelSettings_footer")
+horizontal_alignment = 1
+
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/OptionsButton" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/ExitButton" to="." method="_on_quit_pressed"]
