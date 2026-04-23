@@ -1,7 +1,7 @@
 extends Control
 
 func _on_play_pressed() -> void:
-	get_tree().change_scene_to_file("res://assets/escenas/aldea_principal.tscn")
+	get_tree().change_scene_to_file("res://Scenes/aldea_principal.tscn")
 
 	
 func _on_options_pressed() -> void:
