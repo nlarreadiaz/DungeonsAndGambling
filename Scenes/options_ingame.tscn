@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bw3j056e4h6h4"]
 
 [ext_resource type="Script" path="res://Scripts/options_ingame.gd" id="1_bacw7"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="2_6unh8"]
+[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="2_6unh8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_66wq2"]
 bg_color = Color(0.1254902, 0.19607843, 0.21960784, 0.95)

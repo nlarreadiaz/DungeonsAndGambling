@@ -1,113 +1,7 @@
 [gd_scene format=3 uid="uid://dtn11umacevhn"]
 
 [ext_resource type="Texture2D" uid="uid://osfc8bm8nvbn" path="res://assets/NightBorne.png" id="1_4flbx"]
-
-[sub_resource type="GDScript" id="GDScript_7166q"]
-resource_name = "scriptplayer"
-script/source = "extends CharacterBody2D
-
-@export var SPEED = 150.0
-@export var JUMP_FORCE = 400.0
-@export var FAKE_GRAVITY = 1500.0
-
-var z_height = 0.0
-var z_velocity = 0.0
-var is_jumping = false
-var is_attacking = false
-var is_dead = false
-var is_hurt = false # Nueva variable para controlar el daño mejor
-
-@onready var anim = $animaciones 
-
-func _ready():
-	# 1. Forzamos que el personaje empiece bien
-	is_attacking = false
-	is_hurt = false
-	anim.play(\"idle\")
-	
-	# 2. Quitamos el loop por código
-	if anim.sprite_frames:
-		anim.sprite_frames.set_animation_loop(\"golpe\", false)
-		anim.sprite_frames.set_animation_loop(\"daño\", false)
-		anim.sprite_frames.set_animation_loop(\"muerte\", false)
-
-func _physics_process(delta):
-	if is_dead:
-		return 
-
-	handle_movement(delta)
-	handle_jump(delta)
-	handle_attack()
-	update_animations()
-
-func handle_movement(delta):
-	# Solo bloqueamos si REALMENTE está atacando o herido
-	if is_attacking or is_hurt: 
-		velocity = Vector2.ZERO 
-		return
-
-	var direction = Input.get_vector(\"ui_left\", \"ui_right\", \"ui_up\", \"ui_down\")
-	
-	if direction:
-		velocity = direction * SPEED
-		if direction.x != 0:
-			anim.flip_h = direction.x < 0
-	else:
-		velocity = velocity.move_toward(Vector2.ZERO, SPEED)
-
-	move_and_slide()
-
-func handle_jump(delta):
-	if Input.is_action_just_pressed(\"ui_accept\") and not is_jumping and not is_attacking:
-		z_velocity = JUMP_FORCE
-		is_jumping = true
-
-	if is_jumping:
-		z_height += z_velocity * delta
-		z_velocity -= FAKE_GRAVITY * delta
-		
-		if z_height <= 0:
-			z_height = 0
-			is_jumping = false
-	
-	anim.position.y = -z_height
-
-func handle_attack():
-	if Input.is_action_just_pressed(\"click_izquierdo\") and not is_attacking and not is_jumping and not is_hurt:
-		is_attacking = true
-		anim.play(\"golpe\")
-		
-		await anim.animation_finished
-		is_attacking = false
-		
-func update_animations():
-	# Si está haciendo algo especial, no tocamos nada
-	if is_dead or is_attacking or is_hurt:
-		return
-		
-	if is_jumping:
-		anim.play(\"run\" if velocity != Vector2.ZERO else \"idle\")
-	elif velocity != Vector2.ZERO:
-		anim.play(\"run\")
-	else:
-		anim.play(\"idle\")
-
-# --- FUNCIONES DE ESTADO ---
-
-func recibir_daño():
-	if is_dead or is_hurt: return
-	
-	is_hurt = true
-	is_attacking = false 
-	anim.play(\"daño\")
-	
-	await anim.animation_finished
-	is_hurt = false 
-
-func morir():
-	is_dead = true
-	anim.play(\"muerte\")
-"
+[ext_resource type="Script" uid="uid://bnv477m6kva51" path="res://Scripts/player.gd" id="2_ky8r3"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
 
@@ -350,7 +244,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_1jxqw")
 }],
 "loop": true,
-"name": &"daño",
+"name": &"daÃ±o",
 "speed": 12.0
 }, {
 "frames": [{
@@ -525,7 +419,7 @@ animations = [{
 }]
 
 [node name="player" type="CharacterBody2D" unique_id=479730859]
-script = SubResource("GDScript_7166q")
+script = ExtResource("2_ky8r3")
 
 [node name="hitbox" type="CollisionShape2D" parent="." unique_id=565099846]
 position = Vector2(7, 6)
@@ -535,8 +429,8 @@ shape = SubResource("CapsuleShape2D_onrkg")
 texture_filter = 1
 position = Vector2(5, -1)
 sprite_frames = SubResource("SpriteFrames_ygbnx")
-animation = &"daño"
+animation = &"daÃ±o"
 frame_progress = 0.12073322
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=709968110]
-zoom = Vector2(1.35, 1.35)
+zoom = Vector2(1.1, 1.1)

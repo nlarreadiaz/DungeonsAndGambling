@@ -132,6 +132,7 @@ text = "Atras
 "
 script = ExtResource("5_kftxf")
 
+[connection signal="value_changed" from="ColorRect/VBoxContainer/HBoxContainer/HSlider" to="." method="_on_volume_slider_value_changed"]
 [connection signal="item_selected" from="ColorRect/VBoxContainer/ScaleControl" to="ColorRect/VBoxContainer/ScaleControl" method="_on_item_selected"]
 [connection signal="toggled" from="ColorRect/VBoxContainer/FullScreenControl" to="ColorRect/VBoxContainer/FullScreenControl" method="_on_toggled"]
 [connection signal="pressed" from="ColorRect/BoxContainer/Atras" to="ColorRect/BoxContainer/Atras" method="_on_pressed"]

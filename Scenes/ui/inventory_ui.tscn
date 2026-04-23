@@ -1,0 +1,61 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/inventory/inventory_ui.gd" id="1_rco8k"]
+[ext_resource type="Texture2D" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Premade.png" id="2_6v12f"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_smbgq"]
+atlas = ExtResource("2_6v12f")
+region = Rect2(36, 28, 192, 158)
+
+[node name="InventoryUI" type="CanvasLayer"]
+script = ExtResource("1_rco8k")
+
+[node name="Root" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.2)
+
+[node name="CenterContainer" type="CenterContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InventoryPanel" type="Control" parent="Root/CenterContainer"]
+custom_minimum_size = Vector2(192, 158)
+layout_mode = 2
+
+[node name="Background" type="TextureRect" parent="Root/CenterContainer/InventoryPanel"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_smbgq")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="SlotsLayer" type="Control" parent="Root/CenterContainer/InventoryPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://b4gifkcfc5s73" path="res://Scripts/menu.gd" id="1_xhh6f"]
 [ext_resource type="Texture2D" uid="uid://by436d5kuhica" path="res://images/1.png" id="2_xhh6f"]
-[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_cayip"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="4_158mb"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_cayip"]
+[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="4_158mb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2qsap"]
 bg_color = Color(0.043137256, 0.08235294, 0.08235294, 0.72)

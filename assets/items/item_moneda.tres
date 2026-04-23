@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dsbg2fmkmkkp6"]
+
+[ext_resource type="Script" uid="uid://4cxbmk83wl3v" path="res://Scripts/inventory/item_data.gd" id="1_s0eub"]
+[ext_resource type="Texture2D" uid="uid://de66oddbd6osl" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Icons.png" id="2_jtlq4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q6mbf"]
+atlas = ExtResource("2_jtlq4")
+region = Rect2(112, 0, 16, 16)
+
+[resource]
+script = ExtResource("1_s0eub")
+item_id = &"moneda"
+display_name = "Moneda"
+icon_texture = SubResource("AtlasTexture_q6mbf")
