@@ -1,0 +1,326 @@
+class_name DatabaseQueries
+extends RefCounted
+
+# Encapsula las consultas SQL y mantiene toda la logica de acceso a datos
+# separada del resto del juego.
+
+var _database: Object = null
+
+
+func bind_database(database: Object) -> void:
+	_database = database
+
+
+func clear_database() -> void:
+	_database = null
+
+
+func is_ready() -> bool:
+	return _database != null
+
+
+func execute(sql: String, bindings: Array = []) -> bool:
+	if _database == null:
+		push_error("DatabaseQueries no tiene una conexion SQLite activa.")
+		return false
+
+	if bindings.is_empty():
+		return bool(_database.call("query", sql))
+
+	return bool(_database.call("query_with_bindings", sql, bindings))
+
+
+func select_rows(sql: String, bindings: Array = []) -> Array:
+	if not execute(sql, bindings):
+		return []
+
+	var result = _database.get("query_result")
+	if result is Array:
+		return result.duplicate(true)
+
+	return []
+
+
+func get_last_insert_rowid() -> int:
+	if _database == null:
+		return 0
+
+	return int(_database.get("last_insert_rowid"))
+
+
+func insert_row(table_name: String, values: Dictionary) -> int:
+	if values.is_empty():
+		return -1
+
+	var column_names: Array = []
+	var placeholders: Array = []
+	var bindings: Array = []
+
+	for key in values.keys():
+		column_names.append(_quote_identifier(str(key)))
+		placeholders.append("?")
+		bindings.append(values[key])
+
+	var sql := "INSERT INTO %s (%s) VALUES (%s);" % [
+		_quote_identifier(table_name),
+		", ".join(column_names),
+		", ".join(placeholders)
+	]
+
+	if not execute(sql, bindings):
+		return -1
+
+	return get_last_insert_rowid()
+
+
+func create_character(character_data: Dictionary) -> int:
+	var values := {
+		"save_slot_id": int(character_data.get("save_slot_id", 1)),
+		"class_id": character_data.get("class_id", null),
+		"enemy_template_id": character_data.get("enemy_template_id", null),
+		"name": str(character_data.get("name", "Nuevo personaje")),
+		"character_type": str(character_data.get("character_type", "player")),
+		"level": int(character_data.get("level", 1)),
+		"experience": int(character_data.get("experience", 0)),
+		"max_hp": int(character_data.get("max_hp", 100)),
+		"current_hp": int(character_data.get("current_hp", character_data.get("max_hp", 100))),
+		"max_mana": int(character_data.get("max_mana", 0)),
+		"current_mana": int(character_data.get("current_mana", character_data.get("max_mana", 0))),
+		"attack": int(character_data.get("attack", 10)),
+		"defense": int(character_data.get("defense", 5)),
+		"speed": int(character_data.get("speed", 5)),
+		"current_state": str(character_data.get("current_state", "normal")),
+		"is_active": int(character_data.get("is_active", 1))
+	}
+
+	return insert_row("characters", values)
+
+
+func get_all_characters(save_slot_id: int = 1) -> Array:
+	var sql := """
+		SELECT
+			c.id,
+			c.name,
+			c.character_type,
+			c.level,
+			c.experience,
+			c.max_hp,
+			c.current_hp,
+			c.max_mana,
+			c.current_mana,
+			c.attack,
+			c.defense,
+			c.speed,
+			c.current_state,
+			c.is_active,
+			cl.name AS class_name,
+			e.name AS enemy_template_name
+		FROM characters c
+		LEFT JOIN classes cl ON cl.id = c.class_id
+		LEFT JOIN enemies e ON e.id = c.enemy_template_id
+		WHERE c.save_slot_id = ?
+		ORDER BY c.id;
+	"""
+
+	return select_rows(sql, [save_slot_id])
+
+
+func get_inventory(character_id: int, save_slot_id: int = 1) -> Array:
+	var sql := """
+		SELECT
+			i.id,
+			i.slot_index,
+			i.quantity,
+			it.id AS item_id,
+			it.name AS item_name,
+			it.description,
+			it.item_type,
+			it.rarity,
+			it.price,
+			it.icon,
+			it.max_stack
+		FROM inventory i
+		INNER JOIN items it ON it.id = i.item_id
+		WHERE i.save_slot_id = ? AND i.character_id = ?
+		ORDER BY i.slot_index;
+	"""
+
+	return select_rows(sql, [save_slot_id, character_id])
+
+
+func add_item_to_inventory(character_id: int, item_id: int, quantity: int = 1, save_slot_id: int = 1) -> bool:
+	if quantity <= 0:
+		return false
+
+	var item_rows := select_rows("SELECT max_stack FROM items WHERE id = ? LIMIT 1;", [item_id])
+	if item_rows.is_empty():
+		push_warning("No existe el item %d en la base de datos." % item_id)
+		return false
+
+	var max_stack := int(item_rows[0].get("max_stack", 1))
+	var remaining := quantity
+	var partial_stacks := select_rows(
+		"""
+			SELECT id, quantity
+			FROM inventory
+			WHERE save_slot_id = ? AND character_id = ? AND item_id = ? AND quantity < ?
+			ORDER BY slot_index;
+		""",
+		[save_slot_id, character_id, item_id, max_stack]
+	)
+
+	for stack in partial_stacks:
+		var stack_id := int(stack.get("id", 0))
+		var current_quantity := int(stack.get("quantity", 0))
+		var free_space := max_stack - current_quantity
+		if free_space <= 0:
+			continue
+
+		var amount_to_add := mini(free_space, remaining)
+		if not execute("UPDATE inventory SET quantity = quantity + ? WHERE id = ?;", [amount_to_add, stack_id]):
+			return false
+
+		remaining -= amount_to_add
+		if remaining <= 0:
+			return true
+
+	while remaining > 0:
+		var slot_index := _find_next_inventory_slot(character_id, save_slot_id)
+		var amount_to_insert := mini(remaining, max_stack)
+		var row_id := insert_row("inventory", {
+			"save_slot_id": save_slot_id,
+			"character_id": character_id,
+			"item_id": item_id,
+			"quantity": amount_to_insert,
+			"slot_index": slot_index
+		})
+
+		if row_id == -1:
+			return false
+
+		remaining -= amount_to_insert
+
+	return true
+
+
+func set_character_health(character_id: int, new_hp: int, save_slot_id: int = 1) -> bool:
+	var sql := """
+		UPDATE characters
+		SET current_hp = MIN(MAX(?, 0), max_hp),
+			current_state = CASE
+				WHEN MIN(MAX(?, 0), max_hp) <= 0 THEN 'defeated'
+				ELSE 'normal'
+			END,
+			updated_at = CURRENT_TIMESTAMP
+		WHERE id = ? AND save_slot_id = ?;
+	"""
+
+	return execute(sql, [new_hp, new_hp, character_id, save_slot_id])
+
+
+func reduce_character_health(character_id: int, damage: int, save_slot_id: int = 1) -> bool:
+	if damage < 0:
+		damage = 0
+
+	var sql := """
+		UPDATE characters
+		SET current_hp = MAX(current_hp - ?, 0),
+			current_state = CASE
+				WHEN current_hp - ? <= 0 THEN 'defeated'
+				ELSE current_state
+			END,
+			updated_at = CURRENT_TIMESTAMP
+		WHERE id = ? AND save_slot_id = ?;
+	"""
+
+	return execute(sql, [damage, damage, character_id, save_slot_id])
+
+
+func equip_item(character_id: int, item_id: int, equip_slot: String, save_slot_id: int = 1) -> bool:
+	var inventory_rows := select_rows(
+		"""
+			SELECT id
+			FROM inventory
+			WHERE save_slot_id = ? AND character_id = ? AND item_id = ?
+			LIMIT 1;
+		""",
+		[save_slot_id, character_id, item_id]
+	)
+
+	if inventory_rows.is_empty():
+		push_warning("No se puede equipar el item %d porque no esta en el inventario del personaje %d." % [item_id, character_id])
+		return false
+
+	var sql := """
+		INSERT INTO equipment (save_slot_id, character_id, item_id, equip_slot, equipped_at)
+		VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+		ON CONFLICT(save_slot_id, character_id, equip_slot)
+		DO UPDATE SET
+			item_id = excluded.item_id,
+			equipped_at = CURRENT_TIMESTAMP;
+	"""
+
+	return execute(sql, [save_slot_id, character_id, item_id, equip_slot.to_lower()])
+
+
+func save_basic_game_state(save_slot_id: int, state_data: Dictionary) -> bool:
+	var save_name := str(state_data.get("save_name", "Partida %d" % save_slot_id))
+	var current_location := str(state_data.get("current_location", "aldea_principal"))
+	var playtime_seconds := int(state_data.get("playtime_seconds", 0))
+	var gold := int(state_data.get("gold", 0))
+	var main_progress := int(state_data.get("main_progress", 0))
+	var important_flags := JSON.stringify(state_data.get("important_flags", {}))
+	var saved_at := str(state_data.get("saved_at", Time.get_datetime_string_from_system()))
+
+	var slot_sql := """
+		INSERT INTO save_slots (id, slot_index, save_name, saved_at, current_location, playtime_seconds)
+		VALUES (?, ?, ?, ?, ?, ?)
+		ON CONFLICT(id)
+		DO UPDATE SET
+			save_name = excluded.save_name,
+			saved_at = excluded.saved_at,
+			current_location = excluded.current_location,
+			playtime_seconds = excluded.playtime_seconds;
+	"""
+
+	if not execute(slot_sql, [save_slot_id, save_slot_id, save_name, saved_at, current_location, playtime_seconds]):
+		return false
+
+	var state_sql := """
+		INSERT INTO game_state (save_slot_id, gold, current_location, main_progress, important_flags, updated_at)
+		VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+		ON CONFLICT(save_slot_id)
+		DO UPDATE SET
+			gold = excluded.gold,
+			current_location = excluded.current_location,
+			main_progress = excluded.main_progress,
+			important_flags = excluded.important_flags,
+			updated_at = CURRENT_TIMESTAMP;
+	"""
+
+	return execute(state_sql, [save_slot_id, gold, current_location, main_progress, important_flags])
+
+
+func _find_next_inventory_slot(character_id: int, save_slot_id: int) -> int:
+	var rows := select_rows(
+		"""
+			SELECT slot_index
+			FROM inventory
+			WHERE save_slot_id = ? AND character_id = ?
+			ORDER BY slot_index ASC;
+		""",
+		[save_slot_id, character_id]
+	)
+
+	var next_slot := 0
+	for row in rows:
+		var used_slot := int(row.get("slot_index", next_slot))
+		if used_slot != next_slot:
+			return next_slot
+		next_slot += 1
+
+	return next_slot
+
+
+func _quote_identifier(identifier: String) -> String:
+	return "\"%s\"" % identifier.replace("\"", "\"\"")
