@@ -9,3 +9,17 @@ res://Scripts/player.gd
 res://Scenes/aldea_principal.tscn
 res://assets/items/item_estrella.tres
 res://assets/items/item_moneda.tres
+res://Scripts/battle/battle_ui.gd
+res://Scripts/battle/battle_context.gd
+res://Scripts/battle/battle_scene.gd
+res://Database/database_manager.gd
+res://Database/queries.gd
+res://Scripts/battle/battle_action_resolver.gd
+res://Scripts/battle/battle_actor.gd
+res://Scripts/battle/battle_data_provider.gd
+res://Scripts/battle/battle_manager.gd
+res://Scripts/battle/battle_result.gd
+res://Scripts/battle/turn_queue.gd
+res://Scenes/battle/battle_scene.tscn
+res://Scenes/battle/battle_actor.tscn
+res://Scenes/battle/battle_selection_entry.tscn

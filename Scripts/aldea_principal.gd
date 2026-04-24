@@ -3,6 +3,7 @@ extends Node2D
 const OPTIONS_INGAME_SCENE: PackedScene = preload("res://Scenes/options_ingame.tscn")
 
 const PLAYER_NODE_PATH = NodePath("player")
+const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const CAMERA_LIMIT_LEFT = 96
 const CAMERA_LIMIT_TOP = 96
 const CAMERA_LIMIT_RIGHT = 1440
@@ -12,6 +13,7 @@ var options_ingame: CanvasLayer = null
 
 
 func _ready() -> void:
+	_apply_battle_return_position()
 	_configure_player_camera()
 
 
@@ -75,7 +77,75 @@ func _on_dark_queen_body_entered(body: Node2D) -> void:
 	if body == null or player == null or body != player:
 		return
 
-	if player.has_method("morir"):
+	var battle_manager = get_node_or_null(BATTLE_MANAGER_ROOT_PATH)
+	if battle_manager == null:
+		if player.has_method("morir"):
+			player.call("morir")
+		return
+
+	if bool(battle_manager.call("has_active_encounter")):
+		return
+
+	var world_scene_path = ""
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null:
+		world_scene_path = tree.current_scene.scene_file_path
+
+	var encounter_started = bool(battle_manager.call("start_battle", {
+		"encounter_id": "dark_queen_gate",
+		"save_slot_id": 1,
+		"battle_title": "Emboscada de la Reina Oscura",
+		"battle_subtitle": "El mapa da paso a un combate clasico por turnos.",
+		"status_message": "La Reina Oscura te desafia. Selecciona comandos, objetivos y resiste su magia.",
+		"world_scene_path": world_scene_path,
+		"return_player_position": player.global_position + Vector2(-160.0, 64.0),
+		"enemies": [
+			{
+				"name": "Reina Oscura",
+				"role": "Boss",
+				"level": 8,
+				"current_hp": 320,
+				"max_hp": 320,
+				"current_mana": 160,
+				"max_mana": 160,
+				"attack": 24,
+				"defense": 13,
+				"speed": 11,
+				"state": "normal",
+				"experience_reward": 220,
+				"gold_reward": 150,
+				"skills": [
+					{
+						"name": "Tajo Sombrio",
+						"description": "Un golpe oscuro directo y feroz.",
+						"mana_cost": 10,
+						"damage": 34,
+						"damage_type": "shadow",
+						"target_type": "single_enemy",
+						"cooldown_turns": 1
+					}
+				],
+				"loot_table": [
+					{
+						"item_id": 1,
+						"item_name": "Pocion",
+						"drop_chance": 0.85,
+						"min_quantity": 1,
+						"max_quantity": 2
+					},
+					{
+						"item_id": 6,
+						"item_name": "Hierba Antidoto",
+						"drop_chance": 0.55,
+						"min_quantity": 1,
+						"max_quantity": 2
+					}
+				]
+			}
+		]
+	}))
+
+	if not encounter_started and player.has_method("morir"):
 		player.call("morir")
 
 
@@ -90,6 +160,33 @@ func _close_player_inventory_if_open() -> bool:
 		return true
 
 	return false
+
+
+func _apply_battle_return_position() -> void:
+	var battle_manager = get_node_or_null(BATTLE_MANAGER_ROOT_PATH)
+	if battle_manager == null:
+		return
+
+	var tree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+
+	var return_data = battle_manager.call("consume_return_data", tree.current_scene.scene_file_path)
+	if return_data is not Dictionary:
+		return
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if player == null:
+		return
+
+	var battle_result = return_data.get("battle_result", {})
+	if battle_result is Dictionary and bool(battle_result.get("player_should_respawn", false)):
+		if player.has_method("morir"):
+			player.call_deferred("morir")
+		return
+
+	if return_data.has("player_position") and return_data["player_position"] is Vector2:
+		player.global_position = return_data["player_position"]
 
 
 func _is_pause_event(event: InputEvent) -> bool:

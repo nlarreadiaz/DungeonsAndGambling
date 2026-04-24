@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+BattleManager="*res://Scripts/battle/battle_manager.gd"
 GameDatabase="*res://Database/database_manager.gd"
 
 [audio]

@@ -1,0 +1,133 @@
+class_name BattleResult
+extends RefCounted
+
+var _rng = RandomNumberGenerator.new()
+
+
+func _init() -> void:
+	_rng.randomize()
+
+
+func build_result(context: BattleContext, outcome: String) -> Dictionary:
+	var rewards = {
+		"experience": 0,
+		"gold": 0,
+		"loot": []
+	}
+	if outcome == "victory":
+		rewards = _build_victory_rewards(context)
+
+	var summary = _build_summary(outcome, rewards)
+	return {
+		"outcome": outcome,
+		"rewards": rewards,
+		"summary": summary,
+		"player_should_respawn": outcome == "defeat"
+	}
+
+
+func _build_victory_rewards(context: BattleContext) -> Dictionary:
+	var rewards = {
+		"experience": 0,
+		"gold": 0,
+		"loot": []
+	}
+
+	for enemy in context.enemies:
+		rewards["experience"] += int(enemy.get("experience_reward", 0))
+		rewards["gold"] += int(enemy.get("gold_reward", 0))
+		rewards["loot"] += _roll_enemy_loot(enemy)
+
+	return rewards
+
+
+func _roll_enemy_loot(enemy: Dictionary) -> Array:
+	var loot_results: Array = []
+	var raw_loot_table = enemy.get("loot_table", [])
+	if raw_loot_table is Array and not raw_loot_table.is_empty():
+		for raw_loot in raw_loot_table:
+			if raw_loot is not Dictionary:
+				continue
+			if _rng.randf() > float(raw_loot.get("drop_chance", 0.0)):
+				continue
+			var quantity = _rng.randi_range(
+				int(raw_loot.get("min_quantity", 1)),
+				int(raw_loot.get("max_quantity", raw_loot.get("min_quantity", 1)))
+			)
+			loot_results.append({
+				"item_id": raw_loot.get("item_id", null),
+				"item_name": str(raw_loot.get("item_name", "Objeto")),
+				"quantity": quantity
+			})
+		return loot_results
+
+	var enemy_template_id = int(enemy.get("enemy_template_id", 0))
+	if enemy_template_id <= 0:
+		return loot_results
+
+	var database_manager = _get_database_manager()
+	if database_manager == null or not database_manager.has_method("get_enemy_loot"):
+		return loot_results
+
+	var loot_rows = database_manager.call("get_enemy_loot", enemy_template_id)
+	if loot_rows is not Array:
+		return loot_results
+
+	for row in loot_rows:
+		if row is not Dictionary:
+			continue
+		if _rng.randf() > float(row.get("drop_chance", 0.0)):
+			continue
+		var quantity = _rng.randi_range(
+			int(row.get("min_quantity", 1)),
+			int(row.get("max_quantity", row.get("min_quantity", 1)))
+		)
+		loot_results.append({
+			"item_id": row.get("item_id", null),
+			"item_name": str(row.get("item_name", "Objeto")),
+			"quantity": quantity
+		})
+
+	return loot_results
+
+
+func _build_summary(outcome: String, rewards: Dictionary) -> String:
+	match outcome:
+		"victory":
+			var loot_summary = _format_loot(rewards.get("loot", []))
+			return "Victoria. EXP +%d, Oro +%d%s" % [
+				int(rewards.get("experience", 0)),
+				int(rewards.get("gold", 0)),
+				loot_summary
+			]
+		"defeat":
+			return "Derrota. El grupo cae en combate."
+		"escaped":
+			return "Has escapado del combate."
+		_:
+			return "El combate ha terminado."
+
+
+func _format_loot(loot_entries: Variant) -> String:
+	if loot_entries is not Array or loot_entries.is_empty():
+		return ""
+
+	var chunks: Array = []
+	for entry in loot_entries:
+		if entry is not Dictionary:
+			continue
+		chunks.append("%s x%d" % [
+			str(entry.get("item_name", "Objeto")),
+			int(entry.get("quantity", 1))
+		])
+
+	if chunks.is_empty():
+		return ""
+	return ", Loot: %s" % ", ".join(chunks)
+
+
+func _get_database_manager() -> Node:
+	var tree = Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return null
+	return tree.root.get_node_or_null("GameDatabase")

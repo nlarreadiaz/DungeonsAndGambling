@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://c7m4epcgr2e25"]
+
+[ext_resource type="Script" uid="uid://dmlyh7eyp7foc" path="res://Scripts/battle/battle_scene.gd" id="1"]
+[ext_resource type="PackedScene" path="res://Scenes/battle/battle_ui.tscn" id="2"]
+
+[node name="BattleScene" type="Control" unique_id=509885886]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="." unique_id=139197831]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05490196, 0.10980392, 0.1254902, 1)
+
+[node name="BattlefieldGlow" type="ColorRect" parent="." unique_id=345213924]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 22.0
+offset_right = -28.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1254902, 0.2509804, 0.21960784, 0.6)
+
+[node name="BattleUI" parent="." unique_id=1273822701 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

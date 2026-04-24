@@ -1,0 +1,287 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Scripts/battle/battle_ui.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="2"]
+
+[sub_resource type="LabelSettings" id="1"]
+font = ExtResource("2")
+font_size = 14
+
+[sub_resource type="LabelSettings" id="2"]
+font = ExtResource("2")
+font_size = 8
+
+[sub_resource type="LabelSettings" id="3"]
+font = ExtResource("2")
+font_size = 10
+
+[node name="BattleUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="ContentCenter" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BattlePanel" type="PanelContainer" parent="ContentCenter"]
+custom_minimum_size = Vector2(456, 258)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Layout" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TopPanel" type="PanelContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="TopContent" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent"]
+label_settings = SubResource("1")
+text = "Combate"
+
+[node name="InfoRow" type="HBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SubtitleLabel" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent/InfoRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+label_settings = SubResource("2")
+clip_text = true
+text = "Subtitulo"
+
+[node name="CurrentTurnLabel" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent/InfoRow"]
+layout_mode = 2
+label_settings = SubResource("3")
+clip_text = true
+text = "Turno"
+
+[node name="QueueLabel" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent"]
+label_settings = SubResource("2")
+clip_text = true
+text = "Cola"
+
+[node name="Battlefield" type="HBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="PartyPanel" type="PanelContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="PartyContent" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel/MarginContainer/PartyContent"]
+label_settings = SubResource("3")
+text = "Aliados"
+
+[node name="PartyScroll" type="ScrollContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel/MarginContainer/PartyContent"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Actors" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel/MarginContainer/PartyContent/PartyScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EnemyPanel" type="PanelContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="EnemyContent" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel/MarginContainer/EnemyContent"]
+label_settings = SubResource("3")
+text = "Enemigos"
+
+[node name="EnemyScroll" type="ScrollContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel/MarginContainer/EnemyContent"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Actors" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel/MarginContainer/EnemyContent/EnemyScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="BottomArea" type="HBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CommandPanel" type="PanelContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea"]
+custom_minimum_size = Vector2(136, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="CommandContent" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Buttons" type="GridContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="AttackButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+text = "Atacar"
+
+[node name="SkillButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+text = "Habilidad"
+
+[node name="ItemButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+text = "Objeto"
+
+[node name="DefendButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+text = "Defender"
+
+[node name="FleeButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons"]
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+text = "Huir"
+
+[node name="SidePanel" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SelectionPanel" type="PanelContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="SelectionContent" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SelectionTitle" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent"]
+label_settings = SubResource("3")
+text = "Seleccion"
+
+[node name="SelectionScroll" type="ScrollContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SelectionEntries" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/SelectionScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="ButtonsRow" type="HBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ConfirmButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/ButtonsRow"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Aceptar"
+
+[node name="BackButton" type="Button" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/ButtonsRow"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Atras"
+
+[node name="LogPanel" type="PanelContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="LogContent" type="VBoxContainer" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StatusLabel" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer/LogContent"]
+label_settings = SubResource("3")
+clip_text = true
+text = "Estado"
+
+[node name="HintLabel" type="Label" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer/LogContent"]
+label_settings = SubResource("2")
+clip_text = true
+text = "Pista"
+
+[node name="LogText" type="RichTextLabel" parent="ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer/LogContent"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
