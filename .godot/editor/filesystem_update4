@@ -6,3 +6,6 @@ res://Scripts/options.gd
 res://Scripts/options_ingame.gd
 res://Scripts/scale_control.gd
 res://Scripts/player.gd
+res://Scenes/aldea_principal.tscn
+res://assets/items/item_estrella.tres
+res://assets/items/item_moneda.tres
