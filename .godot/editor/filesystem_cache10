@@ -25,9 +25,10 @@ tile_map_dual.svg::CompressedTexture2D::3552606117148040366::1777030731::1777030
 tile_map_dual_legacy.gd::GDScript::7981873286706786279::1777030731::0::1::::TileMapDualLegacy<>TileMapLayer<><>0<>1<><>::
 tile_set_watcher.gd::GDScript::3043798980896621392::1777030731::0::1::::TileSetWatcher<>Resource<><>0<>0<><>::
 util.gd::GDScript::2740069805418451681::1777030731::0::1::::Util<>RefCounted<><>0<>0<><>::
-::res://assets/::1777030802
+::res://assets/::1777055414
 CuteFantasy-5x9.ttf::FontFile::2505404899424560256::1775925733::1775925733::1::::<><><>0<>0<>342692367f516136f4717a4632064670<>res://.godot/imported/CuteFantasy-5x9.ttf-76e59a91002c2aa2c14ff91cbf3051b2.fontdata::
 ground_grasss.png::CompressedTexture2D::8205176209014726128::1775925733::1776209297::1::::<><><>0<>0<>09464da10de3e172fe03425e46384428<>res://.godot/imported/ground_grasss.png-73df1bf91f20b333474a57fe61a8aca8.ctex::
+Houses.png::CompressedTexture2D::8260383962237934126::1747675070::1777052935::1::::<><><>0<>0<>b4d99774cdb552dd5bd83237448751bf<>res://.godot/imported/Houses.png-1e9e39c93e42d860dbe7be69941654d7.ctex::
 NightBorne.png::CompressedTexture2D::1020111502462390075::1775925733::1776209297::1::::<><><>0<>0<>84cc1e4b9c33befcafa18022c8c10597<>res://.godot/imported/NightBorne.png-267a655b4a6146a9adc2d25c1f17ed15.ctex::
 Water_coasts.png::CompressedTexture2D::2875160447284917900::1775925733::1776209297::1::::<><><>0<>0<>48fdb7554602cbaaca4ec34fc76d35d5<>res://.godot/imported/Water_coasts.png-6ba7c37e8a53561d2252a94c2850b83a.ctex::
 ::res://assets/Boss-DarkQueen/::1775997592
@@ -55,7 +56,6 @@ Idle.png::CompressedTexture2D::2552731430263691105::1757148328::1775998241::1:::
 Summonally.png::CompressedTexture2D::8802742223019580283::1757148184::1775998241::1::::<><><>0<>0<>8d682e5bd745742747ce1d6518adc104<>res://.godot/imported/Summonally.png-312eedb949890c798a19e377c8daf007.ctex::
 Walk.png::CompressedTexture2D::8187575019938442500::1757148366::1775998241::1::::<><><>0<>0<>de82fa2c38ce91bf2909a31782568211<>res://.godot/imported/Walk.png-69c3dbd96f4a9bab22a00287940d3d0e.ctex::
 ::res://assets/Boss-DarkQueen/PSD/::1775997592
-::res://assets/escenas/::1776263371
 ::res://assets/GUI/::1776207604
 UI_Buttons.png::CompressedTexture2D::3480899242336065046::1775925733::1775998241::1::::<><><>0<>0<>bf7d6bace30b8069f2439f3ea1ce89c1<>res://.godot/imported/UI_Buttons.png-97a7b8422bf181f2be20887f06b99988.ctex::
 ::res://assets/GUI/Cute_Fantasy_UI/::1775925733
@@ -183,7 +183,8 @@ Idle.png::CompressedTexture2D::4557418615427058489::1722817814::1775998241::1:::
 Sell.png::CompressedTexture2D::5815820876124239485::1722817750::1775998241::1::::<><><>0<>0<>2532eae2f4ed6378de9fd90fda64466e<>res://.godot/imported/Sell.png-a5ea05f259450b15587629e3e45b0d16.ctex::
 Walk.png::CompressedTexture2D::3059514250724205549::1722817772::1775998241::1::::<><><>0<>0<>c0d9b45d2b502e259065fbf36c85231c<>res://.godot/imported/Walk.png-9756f7d6572664e8e1ddb521e4edb84e.ctex::
 ::res://assets/npcs/PSD/::1775997635
-::res://assets/ravenisland/::1777051727
+::res://assets/ravenisland/::1777056860
+5fountain.png::CompressedTexture2D::5383589899487301731::1777056860::1777056862::1::::<><><>0<>0<>6d24ae8b7ea9f6b941b11e189f340130<>res://.godot/imported/5fountain.png-5754ad8be98946e49a0c90450a7daff7.ctex::
 16x16.png::CompressedTexture2D::4057256217484288654::1777030796::1777030802::1::::<><><>0<>0<>56222a61c599d1cef20283fcb14b64b4<>res://.godot/imported/16x16.png-2bcb74e611fba7f99b4896031f3f85b9.ctex::
 32x32.png::CompressedTexture2D::3041296599877887544::1777030796::1777030802::1::::<><><>0<>0<>4a71c29553dc690ef3476b60da2fa9dc<>res://.godot/imported/32x32.png-cfa831412a32321823040b4b7dd8e8a8.ctex::
 48x48.png::CompressedTexture2D::5143333620724861508::1777030796::1777030802::1::::<><><>0<>0<>99e8604bca7d988025d40d76a8e9d87e<>res://.godot/imported/48x48.png-e54d65fc341998d9bd6a0fbb7713e9e6.ctex::
@@ -191,6 +192,7 @@ casa1.png::CompressedTexture2D::2050788976052623172::1777047591::1777047594::1::
 casa2.png::CompressedTexture2D::1144448292433916984::1777047681::1777047682::1::::<><><>0<>0<>4c47c5bf1df1e0b94a697f70187c22f4<>res://.godot/imported/casa2.png-bde9d611e6043ca381e76c0f99ecac5e.ctex::
 casa3.png::CompressedTexture2D::8596524032479164306::1777047728::1777047729::1::::<><><>0<>0<>661aae0f71e37445c530a81d6646e935<>res://.godot/imported/casa3.png-1fe7b8ebc438a810c89294664bec8af6.ctex::
 cathedral.png::CompressedTexture2D::8110695922151824813::1777051727::1777051729::1::::<><><>0<>0<>3c16252942c0f8d467e28be4a4788749<>res://.godot/imported/cathedral.png-fbe59db1093e3a858ffe375718d9df57.ctex::
+smith.png::CompressedTexture2D::6140969373571318752::1777054978::1777054979::1::::<><><>0<>0<>f2581cb46cd056a66564910d1f9384e8<>res://.godot/imported/smith.png-d30bb65db5b46cfd8a1f1903939eaebd.ctex::
 ::res://assets/Tiled_files/::1775925733
 decorative_cracks_coasts_animation.png::CompressedTexture2D::6083061363520687593::1775925733::1775925733::1::::<><><>0<>0<>36333d93f95426ad20c99d375e698426<>res://.godot/imported/decorative_cracks_coasts_animation.png-cb245b20d8c5380249da1b703f4519f6.ctex::
 decorative_cracks_floor.png::CompressedTexture2D::5468908073107236172::1775925733::1775925733::1::::<><><>0<>0<>7f73ea66a22abfd3fa7669e345a8c1ca<>res://.godot/imported/decorative_cracks_floor.png-5f3977a94a785fa7e66c6299c346511c.ctex::
@@ -210,13 +212,13 @@ water_details_animation.png::CompressedTexture2D::4869370884571142797::177592573
 ::res://images/::1775925733
 1.png::CompressedTexture2D::4132575525677672860::1775925733::1775925733::1::::<><><>0<>0<>2023d855669b29c34e009fea4d9825e0<>res://.godot/imported/1.png-592ad2dcfc3ba8a7eeab28f7b079788e.ctex::
 99adfdb2-57d5-4629-bb54-0a39722429ef.png::CompressedTexture2D::145927572780081143::1775925733::1775925733::1::::<><><>0<>0<>190b7ca20da2cf5fab8b608c9719e5a7<>res://.godot/imported/99adfdb2-57d5-4629-bb54-0a39722429ef.png-208e4042f2b6f2a23fad3179f4487fe1.ctex::
-::res://Scenes/::1777041034
-aldea_principal.tscn::PackedScene::4821599908853344023::1777041034::0::1::::<><><>0<>0<><>::uid://diw6kipyipmwj::::res://water.png<>uid://do5wb2xx5i43e::::res://assets/ground_grasss.png<>uid://bg70qchfsm56w::::res://assets/Water_coasts.png<>uid://dtn11umacevhn::::res://Scenes/player.tscn<>uid://0gmv04ess6qh::::res://Scripts/aldea_principal.gd
+::res://Scenes/::1777055700
+aldea_principal.tscn::PackedScene::4821599908853344023::1777055700::0::1::::<><><>0<>0<><>::uid://diw6kipyipmwj::::res://water.png<>uid://do5wb2xx5i43e::::res://assets/ground_grasss.png<>uid://bg70qchfsm56w::::res://assets/Water_coasts.png<>uid://dtn11umacevhn::::res://Scenes/player.tscn<>uid://4hogvg4yf1ie::::res://assets/ravenisland/casa1.png<>uid://0gmv04ess6qh::::res://Scripts/aldea_principal.gd<>uid://dpxnk1pnwnoj3::::res://assets/Houses.png<>uid://dvnoux8lyll1y::::res://assets/Tiled_files/Objects.png<>uid://qkm5p8c1bdlo::::res://assets/ravenisland/casa2.png<>uid://duqhq3bp6vs5w::::res://assets/ravenisland/casa3.png<>uid://dns48hiejhe0d::::res://assets/ravenisland/cathedral.png<>uid://ctqy4r3v6v6fc::::res://assets/ravenisland/smith.png
 Inicio.tscn::PackedScene::5560166490976886654::1777041034::0::1::::<><><>0<>0<><>::uid://cmbcfxlkxxnwq::::res://addons/TileMapDual/ghost_material.tres<>uid://cjk8nronimk5r::::res://addons/TileMapDual/tile_map_dual.gd<>uid://bx2mogg4b2jc5::::res://assets/ravenisland/16x16.png
 menu.tscn::PackedScene::3332076043848287565::1775926479::0::1::::<><><>0<>0<><>::uid://b4gifkcfc5s73::::res://Scripts/menu.gd<>uid://by436d5kuhica::::res://images/1.png<>uid://c538g7ggf2acu::::res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/UI/UI_Buttons.png<>uid://bnivhrlx4pco4::::res://assets/Cute_Fantasy_UI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf
 options.tscn::PackedScene::3626579430674615109::1775925733::0::1::::<><><>0<>0<><>::uid://1t08opd64dyq::::res://Scripts/options.gd<>uid://ccxn2dxxwtg6::::res://images/99adfdb2-57d5-4629-bb54-0a39722429ef.png<>uid://rly3iu6syjqd::::res://Scripts/full_screen_control.gd<>uid://bpjwe1wt60itf::::res://Scripts/scale_control.gd<>uid://dumxcdgvl4b5n::::res://Scripts/atras.gd
 options_ingame.tscn::PackedScene::-1::1775994859::0::1::::<><><>0<>0<><>::
-player.tscn::PackedScene::8521313132465661199::1776263001::0::1::::<><><>0<>0<><>::uid://osfc8bm8nvbn::::res://assets/NightBorne.png
+player.tscn::PackedScene::8521313132465661199::1777052640::0::1::::<><><>0<>0<><>::uid://osfc8bm8nvbn::::res://assets/NightBorne.png
 ::res://Scripts/::1776263784
 aldea_principal.gd::GDScript::1767874821149989907::1776263948::0::1::::<>Node2D<><>0<>0<><>::
 atras.gd::GDScript::8589211687118969157::1775925733::0::1::::<>Button<><>0<>0<><>::
