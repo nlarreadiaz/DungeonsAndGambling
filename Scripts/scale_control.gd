@@ -20,7 +20,7 @@ func _find_closest_scale_index(scale_factor: float) -> int:
 	var closest_index = 0
 	var closest_distance = INF
 
-	for index in SCALE_OPTIONS.size():
+	for index in range(SCALE_OPTIONS.size()):
 		var distance = absf(SCALE_OPTIONS[index] - scale_factor)
 		if distance < closest_distance:
 			closest_distance = distance

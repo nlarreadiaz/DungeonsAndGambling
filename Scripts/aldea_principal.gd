@@ -501,7 +501,7 @@ func _make_strip_animation_frames(
 	frames.set_animation_loop(animation_name, true)
 	frames.set_animation_speed(animation_name, speed)
 
-	for frame_index in frame_count:
+	for frame_index in range(frame_count):
 		var frame_texture = AtlasTexture.new()
 		frame_texture.atlas = texture
 		frame_texture.region = Rect2(frame_index * frame_size.x, 0, frame_size.x, frame_size.y)

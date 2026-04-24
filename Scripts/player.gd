@@ -12,7 +12,7 @@ const INVENTORY_SLOT_COUNT = 34
 const ANIM_IDLE = "idle"
 const ANIM_RUN = "run"
 const ANIM_ATTACK = "golpe"
-const ANIM_HURT = "da\u00f1o"
+const ANIM_HURT = "hurt"
 const ANIM_DEATH = "muerte"
 const WALK_ANIMATION_SPEED = 0.82
 const RUN_ANIMATION_SPEED = 1.2
@@ -204,7 +204,7 @@ func _toggle_inventory() -> void:
 
 
 func _is_inventory_toggle_event(event: InputEvent) -> bool:
-	if event.is_action_pressed(INVENTORY_TOGGLE_ACTION):
+	if InputMap.has_action(INVENTORY_TOGGLE_ACTION) and event.is_action_pressed(INVENTORY_TOGGLE_ACTION):
 		return true
 
 	if event is InputEventKey:
