@@ -1,1 +1,4 @@
 res://Scenes/aldea_principal.tscn
+res://addons/TileMapDual/terrain_preset.gd
+res://addons/TileMapDual/tile_map_dual.gd
+res://Scenes/Inicio.tscn
