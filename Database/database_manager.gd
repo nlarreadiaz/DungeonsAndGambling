@@ -12,6 +12,9 @@ const QUERIES_SCRIPT = preload("res://Database/queries.gd")
 var _database: Object = null
 var _queries: DatabaseQueries = QUERIES_SCRIPT.new()
 var _initialized = false
+var _sqlite_unavailable = false
+var _sqlite_notice_shown = false
+var _selected_player_role_data: Dictionary = {}
 
 
 func _ready() -> void:
@@ -22,8 +25,12 @@ func initialize_database(force_reseed: bool = false) -> bool:
 	if _initialized and _database != null and not force_reseed:
 		return true
 
+	if _sqlite_unavailable and not force_reseed:
+		return false
+
 	if not has_sqlite_support():
-		push_warning(get_sqlite_dependency_message())
+		_sqlite_unavailable = true
+		_show_sqlite_dependency_notice()
 		return false
 
 	_ensure_runtime_directory()
@@ -52,6 +59,13 @@ func has_sqlite_support() -> bool:
 
 func get_sqlite_dependency_message() -> String:
 	return "Falta el plugin godot-sqlite. Instalala desde AssetLib o desde https://github.com/2shady4u/godot-sqlite y activa el plugin antes de usar la base de datos."
+
+
+func _show_sqlite_dependency_notice() -> void:
+	if _sqlite_notice_shown:
+		return
+	_sqlite_notice_shown = true
+	print_verbose("%s Se usaran datos por defecto cuando sea posible." % get_sqlite_dependency_message())
 
 
 func open_connection() -> bool:
@@ -114,6 +128,20 @@ func get_characters(save_slot_id: int = 1) -> Array:
 	if not _ensure_ready():
 		return []
 	return _queries.get_all_characters(save_slot_id)
+
+
+func cache_selected_player_role(role_data: Dictionary) -> void:
+	_selected_player_role_data = role_data.duplicate(true)
+
+
+func get_selected_player_role_data() -> Dictionary:
+	return _selected_player_role_data.duplicate(true)
+
+
+func get_classes() -> Array:
+	if not _ensure_ready():
+		return []
+	return _queries.get_classes()
 
 
 func get_inventory(character_id: int, save_slot_id: int = 1) -> Array:
@@ -182,6 +210,12 @@ func add_character_experience(character_id: int, amount: int, save_slot_id: int 
 	return _queries.add_character_experience(character_id, amount, save_slot_id)
 
 
+func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skill_ids: Array) -> bool:
+	if not _ensure_ready():
+		return false
+	return _queries.apply_player_role(save_slot_id, character_id, class_id, skill_ids)
+
+
 func add_gold(save_slot_id: int, amount: int) -> bool:
 	if not _ensure_ready():
 		return false
@@ -215,6 +249,8 @@ func get_template_database_path() -> String:
 
 
 func _ensure_ready() -> bool:
+	if _sqlite_unavailable:
+		return false
 	if _database != null:
 		return true
 	return initialize_database()

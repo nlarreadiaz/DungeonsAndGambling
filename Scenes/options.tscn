@@ -5,7 +5,6 @@
 [ext_resource type="Script" uid="uid://rly3iu6syjqd" path="res://Scripts/full_screen_control.gd" id="3_fullscreen"]
 [ext_resource type="Script" uid="uid://bpjwe1wt60itf" path="res://Scripts/scale_control.gd" id="4_scale"]
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="5_buttons"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="6_font"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="7_label"]
 [ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="8_ribbons"]
 
@@ -28,7 +27,6 @@ atlas = ExtResource("8_ribbons")
 region = Rect2(202, 32, 92, 26)
 
 [sub_resource type="LabelSettings" id="LabelSettings_title"]
-font = ExtResource("6_font")
 font_size = 20
 font_color = Color(0.99607843, 0.9490196, 0.8392157, 1)
 outline_size = 5
@@ -38,14 +36,12 @@ shadow_color = Color(0, 0, 0, 0.45)
 shadow_offset = Vector2(0, 2)
 
 [sub_resource type="LabelSettings" id="LabelSettings_subtitle"]
-font = ExtResource("6_font")
 font_size = 9
 font_color = Color(0.9607843, 0.9098039, 0.8352941, 1)
 outline_size = 2
 outline_color = Color(0.14509805, 0.08235294, 0.043137256, 0.95)
 
 [sub_resource type="LabelSettings" id="LabelSettings_label"]
-font = ExtResource("6_font")
 font_size = 9
 font_color = Color(0.95686275, 0.95686275, 0.9254902, 1)
 outline_size = 2
@@ -96,7 +92,6 @@ atlas = ExtResource("5_buttons")
 region = Rect2(32, 192, 32, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_button"]
-font = ExtResource("6_font")
 stacked_outline_count = 1
 stacked_shadow_count = 1
 stacked_shadow_0/offset = Vector2(1, 1)
@@ -106,8 +101,7 @@ atlas = ExtResource("8_ribbons")
 region = Rect2(8, 1, 93, 20)
 
 [sub_resource type="LabelSettings" id="LabelSettings_badge"]
-font = ExtResource("6_font")
-font_size = 9
+font_size = 8
 font_color = Color(0.4117647, 0.19607843, 0.06666667, 1)
 outline_size = 1
 outline_color = Color(0.9647059, 0.8627451, 0.67058825, 0.55)
@@ -383,10 +377,10 @@ expand_mode = 1
 
 [node name="Label" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/Badge" unique_id=2124205939]
 layout_mode = 0
-offset_left = 3.0
-offset_top = 17.0
-offset_right = 123.0
-offset_bottom = 31.0
+offset_left = 5.0
+offset_top = 16.0
+offset_right = 125.0
+offset_bottom = 30.0
 text = "PANTALLA"
 label_settings = SubResource("LabelSettings_badge")
 horizontal_alignment = 1

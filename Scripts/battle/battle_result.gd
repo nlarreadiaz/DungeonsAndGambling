@@ -17,7 +17,7 @@ func build_result(context: BattleContext, outcome: String) -> Dictionary:
 	if outcome == "victory":
 		rewards = _build_victory_rewards(context)
 
-	var summary = _build_summary(outcome, rewards)
+	var summary = _build_summary(context, outcome, rewards)
 	return {
 		"outcome": outcome,
 		"rewards": rewards,
@@ -91,7 +91,7 @@ func _roll_enemy_loot(enemy: Dictionary) -> Array:
 	return loot_results
 
 
-func _build_summary(outcome: String, rewards: Dictionary) -> String:
+func _build_summary(context: BattleContext, outcome: String, rewards: Dictionary) -> String:
 	match outcome:
 		"victory":
 			var loot_summary = _format_loot(rewards.get("loot", []))
@@ -103,7 +103,10 @@ func _build_summary(outcome: String, rewards: Dictionary) -> String:
 		"defeat":
 			return "Derrota. El grupo cae en combate."
 		"escaped":
-			return "Has escapado del combate."
+			var actor_name = str(context.escaped_actor_name)
+			if actor_name.is_empty():
+				actor_name = "El jugador"
+			return "%s ha huido del combate." % actor_name
 		_:
 			return "El combate ha terminado."
 

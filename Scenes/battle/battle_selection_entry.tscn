@@ -1,25 +1,56 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://csj5watutt6fb"]
 
-[ext_resource type="Script" path="res://Scripts/battle/battle_selection_entry.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="2"]
+[ext_resource type="Script" uid="uid://bvysu0aojyvw8" path="res://Scripts/battle/battle_selection_entry.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
+bg_color = Color(0.72156864, 0.78431374, 0.8509804, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.03137255, 0.047058824, 0.08235294, 0.95)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
+bg_color = Color(0.87058824, 0.90588236, 0.94509804, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.1254902, 0.18039216, 0.3019608, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
 
 [sub_resource type="LabelSettings" id="1"]
-font = ExtResource("2")
-font_size = 10
+font_size = 9
+font_color = Color(0.043137256, 0.06666667, 0.101960786, 1)
+outline_size = 2
+outline_color = Color(0.92941177, 0.95686275, 1, 0.82)
 
 [sub_resource type="LabelSettings" id="2"]
-font = ExtResource("2")
 font_size = 8
+font_color = Color(0.07450981, 0.105882354, 0.14509805, 1)
+outline_size = 1
+outline_color = Color(0.92941177, 0.95686275, 1, 0.75)
 
-[node name="BattleSelectionEntry" type="Button"]
-custom_minimum_size = Vector2(0, 34)
+[node name="BattleSelectionEntry" type="Button" unique_id=1198110518]
+custom_minimum_size = Vector2(0, 32)
+offset_right = 84.0
+offset_bottom = 70.0
 size_flags_horizontal = 3
-focus_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_focus")
+theme_override_styles/focus = SubResource("StyleBoxFlat_focus")
 toggle_mode = true
-text = ""
 script = ExtResource("1")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1631453853]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,26 +58,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 5
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 4
 
-[node name="Layout" type="VBoxContainer" parent="MarginContainer"]
+[node name="Layout" type="VBoxContainer" parent="MarginContainer" unique_id=107826147]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 1
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/Layout"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/Layout" unique_id=762860879]
 layout_mode = 2
-mouse_filter = 2
+text = "Seleccion"
 label_settings = SubResource("1")
 clip_text = true
-text = "Seleccion"
 
-[node name="DetailLabel" type="Label" parent="MarginContainer/Layout"]
+[node name="DetailLabel" type="Label" parent="MarginContainer/Layout" unique_id=239140239]
 layout_mode = 2
-mouse_filter = 2
+text = "Detalle"
 label_settings = SubResource("2")
 clip_text = true
-text = "Detalle"

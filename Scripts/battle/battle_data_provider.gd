@@ -25,6 +25,46 @@ const DEFAULT_PARTY = [
 				"damage_type": "physical",
 				"target_type": "single_enemy",
 				"cooldown_turns": 0
+			},
+			{
+				"skill_id": 1002,
+				"name": "Estocada Veloz",
+				"description": "Ataque rapido con coste bajo de mana.",
+				"mana_cost": 4,
+				"damage": 18,
+				"damage_type": "physical",
+				"target_type": "single_enemy",
+				"cooldown_turns": 0
+			},
+			{
+				"skill_id": 1003,
+				"name": "Tajo Barrido",
+				"description": "Golpea a todos los enemigos con un barrido amplio.",
+				"mana_cost": 10,
+				"damage": 16,
+				"damage_type": "physical",
+				"target_type": "all_enemies",
+				"cooldown_turns": 2
+			},
+			{
+				"skill_id": 1004,
+				"name": "Segundo Aliento",
+				"description": "Ariadna recupera parte de su vida para seguir luchando.",
+				"mana_cost": 8,
+				"damage": -26,
+				"damage_type": "holy",
+				"target_type": "self",
+				"cooldown_turns": 2
+			},
+			{
+				"skill_id": 1005,
+				"name": "Embate Heroico",
+				"description": "Un golpe muy potente contra un solo enemigo.",
+				"mana_cost": 12,
+				"damage": 34,
+				"damage_type": "physical",
+				"target_type": "single_enemy",
+				"cooldown_turns": 1
 			}
 		],
 		"inventory": [
@@ -40,57 +80,10 @@ const DEFAULT_PARTY = [
 				"effect_data": {"heal_hp": 50}
 			}
 		]
-	},
-	{
-		"database_id": 2,
-		"name": "Selene",
-		"role": "Maga",
-		"level": 4,
-		"current_hp": 90,
-		"max_hp": 108,
-		"current_mana": 104,
-		"max_mana": 135,
-		"attack": 11,
-		"defense": 8,
-		"speed": 12,
-		"state": "normal",
-		"skills": [
-			{
-				"skill_id": 2,
-				"name": "Bola de Fuego",
-				"description": "Hechizo ofensivo de fuego.",
-				"mana_cost": 12,
-				"damage": 36,
-				"damage_type": "fire",
-				"target_type": "single_enemy",
-				"cooldown_turns": 1
-			},
-			{
-				"skill_id": 4,
-				"name": "Curacion Menor",
-				"description": "Restaura vida a un aliado.",
-				"mana_cost": 10,
-				"damage": -32,
-				"damage_type": "holy",
-				"target_type": "single_ally",
-				"cooldown_turns": 1
-			}
-		],
-		"inventory": [
-			{
-				"inventory_id": 2,
-				"item_id": 2,
-				"item_name": "Eter",
-				"description": "Recupera 30 puntos de mana.",
-				"item_type": "consumable",
-				"quantity": 2,
-				"max_stack": 20,
-				"usable_in_battle": true,
-				"effect_data": {"heal_mp": 30}
-			}
-		]
 	}
 ]
+
+const EXCLUDED_PARTY_NAMES = ["selene"]
 
 const DEFAULT_ENEMIES = [
 	{
@@ -136,7 +129,10 @@ func _build_party(encounter_data: Dictionary) -> Array:
 	var save_slot_id = int(encounter_data.get("save_slot_id", 1))
 	var database_party = _load_party_from_database(save_slot_id)
 	if not database_party.is_empty():
-		return database_party
+		return _apply_selected_role_to_party(database_party)
+	var selected_role_party = _build_party_from_selected_role()
+	if not selected_role_party.is_empty():
+		return selected_role_party
 	return _normalize_actor_list(DEFAULT_PARTY, "party")
 
 
@@ -162,6 +158,8 @@ func _load_party_from_database(save_slot_id: int) -> Array:
 			continue
 		if int(row.get("is_active", 1)) != 1:
 			continue
+		if _is_party_member_excluded(str(row.get("name", ""))):
+			continue
 
 		var character_id = int(row.get("id", 0))
 		var inventory = []
@@ -172,12 +170,15 @@ func _load_party_from_database(save_slot_id: int) -> Array:
 			skills = _normalize_skills(database_manager.call("get_character_skills", character_id, save_slot_id))
 
 		if skills.is_empty():
-			skills = _default_skills_for_role(str(row.get("class_name", "")))
+			skills = _default_skills_for_actor(str(row.get("name", "")), str(row.get("class_name", "")))
+		else:
+			skills = _merge_signature_skills(str(row.get("name", "")), str(row.get("class_name", "")), skills)
 		if inventory.is_empty():
 			inventory = _default_inventory_for_role(str(row.get("class_name", "")))
 
 		party.append({
 			"database_id": character_id,
+			"class_id": int(row.get("class_id", 0)),
 			"name": str(row.get("name", "Heroe")),
 			"role": str(row.get("class_name", "Aventurero")),
 			"level": int(row.get("level", 1)),
@@ -194,6 +195,111 @@ func _load_party_from_database(save_slot_id: int) -> Array:
 		})
 
 	return party
+
+
+func _apply_selected_role_to_party(party: Array) -> Array:
+	var role_data = _get_selected_role_data()
+	if role_data.is_empty():
+		return party
+
+	var updated_party: Array = []
+	var role_applied = false
+	for actor in party:
+		if actor is not Dictionary:
+			continue
+
+		var actor_copy: Dictionary = actor.duplicate(true)
+		if not role_applied and _is_selected_role_actor(actor_copy):
+			actor_copy = _merge_role_data_into_actor(actor_copy, role_data)
+			role_applied = true
+		updated_party.append(actor_copy)
+
+	return updated_party
+
+
+func _build_party_from_selected_role() -> Array:
+	var role_data = _get_selected_role_data()
+	if role_data.is_empty():
+		return []
+
+	return [_merge_role_data_into_actor({
+		"database_id": 1,
+		"name": str(role_data.get("character_name", "Ariadna")),
+		"role": str(role_data.get("name", "Aventurero")),
+		"level": 1,
+		"current_hp": int(role_data.get("current_hp", role_data.get("max_hp", 1))),
+		"max_hp": int(role_data.get("max_hp", 1)),
+		"current_mana": int(role_data.get("current_mana", role_data.get("max_mana", 0))),
+		"max_mana": int(role_data.get("max_mana", 0)),
+		"attack": int(role_data.get("attack", 8)),
+		"defense": int(role_data.get("defense", 4)),
+		"speed": int(role_data.get("speed", 5)),
+		"state": "normal",
+		"skills": [],
+		"inventory": _default_inventory_for_role(str(role_data.get("name", "")))
+	}, role_data)]
+
+
+func _get_selected_role_data() -> Dictionary:
+	var database_manager = _get_database_manager()
+	if database_manager == null or not database_manager.has_method("get_selected_player_role_data"):
+		return {}
+
+	var role_data = database_manager.call("get_selected_player_role_data")
+	if role_data is Dictionary:
+		return role_data.duplicate(true)
+	return {}
+
+
+func _is_selected_role_actor(actor: Dictionary) -> bool:
+	var expected_name = str(_get_selected_role_data().get("character_name", "Ariadna")).strip_edges().to_lower()
+	var actor_name = str(actor.get("name", "")).strip_edges().to_lower()
+	if not expected_name.is_empty() and actor_name == expected_name:
+		return true
+	return int(actor.get("database_id", 0)) == 1
+
+
+func _merge_role_data_into_actor(actor: Dictionary, role_data: Dictionary) -> Dictionary:
+	var actor_copy = actor.duplicate(true)
+	var role_name = str(role_data.get("name", actor_copy.get("role", "Aventurero")))
+	var selected_class_id = int(role_data.get("class_id", actor_copy.get("class_id", 0)))
+	var selected_max_hp = int(role_data.get("max_hp", actor_copy.get("max_hp", 1)))
+	var selected_max_mana = int(role_data.get("max_mana", actor_copy.get("max_mana", 0)))
+	var actor_already_has_selected_role = (
+		int(actor_copy.get("class_id", 0)) == selected_class_id
+		or str(actor_copy.get("role", "")).strip_edges().to_lower() == role_name.strip_edges().to_lower()
+	)
+
+	actor_copy["name"] = str(role_data.get("character_name", actor_copy.get("name", "Ariadna")))
+	actor_copy["role"] = role_name
+	actor_copy["class_id"] = selected_class_id
+	actor_copy["max_hp"] = selected_max_hp
+	actor_copy["current_hp"] = int(role_data.get("current_hp", selected_max_hp))
+	if actor_already_has_selected_role:
+		actor_copy["current_hp"] = clampi(int(actor.get("current_hp", selected_max_hp)), 0, selected_max_hp)
+	actor_copy["max_mana"] = selected_max_mana
+	actor_copy["current_mana"] = int(role_data.get("current_mana", selected_max_mana))
+	if actor_already_has_selected_role:
+		actor_copy["current_mana"] = clampi(int(actor.get("current_mana", selected_max_mana)), 0, selected_max_mana)
+	actor_copy["attack"] = int(role_data.get("attack", actor_copy.get("attack", 8)))
+	actor_copy["defense"] = int(role_data.get("defense", actor_copy.get("defense", 4)))
+	actor_copy["speed"] = int(role_data.get("speed", actor_copy.get("speed", 5)))
+	actor_copy["state"] = "normal"
+	actor_copy["skills"] = _skills_for_selected_role(role_name)
+	if not actor_copy.has("inventory") or actor_copy["inventory"] is not Array or actor_copy["inventory"].is_empty():
+		actor_copy["inventory"] = _default_inventory_for_role(role_name)
+
+	return actor_copy
+
+
+func _skills_for_selected_role(role_name: String) -> Array:
+	if role_name.strip_edges().to_lower().contains("guerrero"):
+		return _ariadna_signature_skills()
+	return _default_skills_for_role(role_name)
+
+
+func _is_party_member_excluded(actor_name: String) -> bool:
+	return EXCLUDED_PARTY_NAMES.has(actor_name.strip_edges().to_lower())
 
 
 func _normalize_enemy_list(raw_enemies: Variant) -> Array:
@@ -262,7 +368,13 @@ func _normalize_actor_list(raw_list: Variant, side: String) -> Array:
 		if side == "enemy":
 			normalized.append_array(_normalize_enemy_list([actor]))
 			continue
-		actor["skills"] = _normalize_skills(actor.get("skills", _default_skills_for_role(str(actor.get("role", "")))))
+		var actor_name = str(actor.get("name", ""))
+		var actor_role = str(actor.get("role", ""))
+		actor["skills"] = _merge_signature_skills(
+			actor_name,
+			actor_role,
+			_normalize_skills(actor.get("skills", _default_skills_for_actor(actor_name, actor_role)))
+		)
 		actor["inventory"] = _normalize_inventory(actor.get("inventory", _default_inventory_for_role(str(actor.get("role", "")))))
 		normalized.append(actor)
 
@@ -347,6 +459,18 @@ func _default_skills_for_role(role: String) -> Array:
 				"cooldown_turns": 1
 			}
 		])
+	if role_name.contains("arquero"):
+		return _normalize_skills([
+			{
+				"name": "Disparo Certero",
+				"description": "Ataque a distancia muy preciso.",
+				"mana_cost": 6,
+				"damage": 22,
+				"damage_type": "physical",
+				"target_type": "single_enemy",
+				"cooldown_turns": 0
+			}
+		])
 
 	return _normalize_skills([
 		{
@@ -357,6 +481,97 @@ func _default_skills_for_role(role: String) -> Array:
 			"damage_type": "physical",
 			"target_type": "single_enemy",
 			"cooldown_turns": 0
+		}
+	])
+
+
+func _default_skills_for_actor(actor_name: String, role: String) -> Array:
+	var normalized_name = actor_name.strip_edges().to_lower()
+	if normalized_name.contains("ariadna"):
+		return _ariadna_signature_skills()
+	return _default_skills_for_role(role)
+
+
+func _merge_signature_skills(actor_name: String, role: String, skills: Array) -> Array:
+	var normalized_name = actor_name.strip_edges().to_lower()
+	if not normalized_name.contains("ariadna"):
+		return skills
+	if not role.strip_edges().to_lower().contains("guerrero"):
+		if skills.is_empty():
+			return _default_skills_for_role(role)
+		return skills
+
+	var merged_skills: Array = []
+	var known_names: Dictionary = {}
+	for skill in skills:
+		if skill is not Dictionary:
+			continue
+		var skill_copy: Dictionary = skill.duplicate(true)
+		merged_skills.append(skill_copy)
+		known_names[str(skill_copy.get("name", "")).strip_edges().to_lower()] = true
+
+	for signature_skill in _ariadna_signature_skills():
+		var signature_name = str(signature_skill.get("name", "")).strip_edges().to_lower()
+		if known_names.has(signature_name):
+			continue
+		merged_skills.append(signature_skill.duplicate(true))
+
+	if merged_skills.is_empty():
+		return _default_skills_for_role(role)
+	return merged_skills
+
+
+func _ariadna_signature_skills() -> Array:
+	return _normalize_skills([
+		{
+			"skill_id": 1,
+			"name": "Golpe Fuerte",
+			"description": "Ataque fisico potente.",
+			"mana_cost": 0,
+			"damage": 24,
+			"damage_type": "physical",
+			"target_type": "single_enemy",
+			"cooldown_turns": 0
+		},
+		{
+			"skill_id": 1002,
+			"name": "Estocada Veloz",
+			"description": "Ataque rapido con coste bajo de mana.",
+			"mana_cost": 4,
+			"damage": 18,
+			"damage_type": "physical",
+			"target_type": "single_enemy",
+			"cooldown_turns": 0
+		},
+		{
+			"skill_id": 1003,
+			"name": "Tajo Barrido",
+			"description": "Golpea a todos los enemigos con un barrido amplio.",
+			"mana_cost": 10,
+			"damage": 16,
+			"damage_type": "physical",
+			"target_type": "all_enemies",
+			"cooldown_turns": 2
+		},
+		{
+			"skill_id": 1004,
+			"name": "Segundo Aliento",
+			"description": "Ariadna recupera parte de su vida para seguir luchando.",
+			"mana_cost": 8,
+			"damage": -26,
+			"damage_type": "holy",
+			"target_type": "self",
+			"cooldown_turns": 2
+		},
+		{
+			"skill_id": 1005,
+			"name": "Embate Heroico",
+			"description": "Un golpe muy potente contra un solo enemigo.",
+			"mana_cost": 12,
+			"damage": 34,
+			"damage_type": "physical",
+			"target_type": "single_enemy",
+			"cooldown_turns": 1
 		}
 	])
 

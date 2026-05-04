@@ -1,11 +1,13 @@
 class_name BattleActionResolver
 extends RefCounted
 
-var _rng = RandomNumberGenerator.new()
-
-
-func _init() -> void:
-	_rng.randomize()
+const BASIC_ATTACK_DEFENSE_SCALE = 0.35
+const PHYSICAL_ATTACK_BONUS_SCALE = 0.25
+const PHYSICAL_DEFENSE_SCALE = 0.25
+const MAGIC_LEVEL_BONUS_SCALE = 1.0
+const MAGIC_DEFENSE_SCALE = 0.15
+const DEFENDING_DAMAGE_MULTIPLIER = 0.5
+const HEAL_LEVEL_BONUS_SCALE = 1.5
 
 
 func resolve_action(context: BattleContext, action: Dictionary) -> Dictionary:
@@ -39,21 +41,31 @@ func _resolve_attack(context: BattleContext, action: Dictionary) -> Dictionary:
 			"damage_done": 0
 		}
 
-	var base_power = max(int(attacker.get("attack", 0)), 1)
-	var damage = _calculate_damage(attacker, target, base_power, "physical")
-	var dealt = context.apply_damage(int(target.get("battle_id", -1)), damage)
-	var log_lines = ["%s ataca a %s y causa %d de dano." % [
+	var target_id = int(target.get("battle_id", -1))
+	var target_hp_before = int(target.get("current_hp", 0))
+	var calculation = _calculate_basic_attack_damage(attacker, target)
+	var dealt = context.apply_damage(target_id, int(calculation.get("final_damage", 1)))
+	var updated_target = context.get_actor(target_id)
+	var target_hp_after = int(updated_target.get("current_hp", 0))
+
+	var log_lines = ["%s ataca a %s: %d de dano. HP %d -> %d." % [
 		str(attacker.get("name", "Actor")),
 		str(target.get("name", "Objetivo")),
-		dealt
+		dealt,
+		target_hp_before,
+		target_hp_after
 	]]
-	if not context.is_actor_alive(int(target.get("battle_id", -1))):
+	log_lines.append(_format_damage_formula(calculation))
+	if not context.is_actor_alive(target_id):
 		log_lines.append("%s ha sido derrotado." % str(target.get("name", "Objetivo")))
 
 	return {
 		"success": true,
 		"log_lines": log_lines,
 		"damage_done": dealt,
+		"hp_before": target_hp_before,
+		"hp_after": target_hp_after,
+		"mana_spent": 0,
 		"skill_id": null,
 		"attacker_database_id": attacker.get("database_id", null),
 		"target_database_id": target.get("database_id", null)
@@ -70,8 +82,10 @@ func _resolve_skill(context: BattleContext, action: Dictionary) -> Dictionary:
 			"damage_done": 0
 		}
 
+	var attacker_id = int(attacker.get("battle_id", -1))
 	var mana_cost = int(skill.get("mana_cost", 0))
-	if int(attacker.get("current_mana", 0)) < mana_cost:
+	var mana_before = int(attacker.get("current_mana", 0))
+	if mana_before < mana_cost:
 		return {
 			"success": false,
 			"log_lines": ["%s no tiene mana suficiente para %s." % [
@@ -81,8 +95,10 @@ func _resolve_skill(context: BattleContext, action: Dictionary) -> Dictionary:
 			"damage_done": 0
 		}
 
-	context.use_mana(int(attacker.get("battle_id", -1)), mana_cost)
-	context.set_skill_cooldown(int(attacker.get("battle_id", -1)), skill.get("skill_id", null), int(skill.get("cooldown_turns", 0)))
+	var mana_spent = context.use_mana(attacker_id, mana_cost)
+	var updated_attacker = context.get_actor(attacker_id)
+	var mana_after = int(updated_attacker.get("current_mana", 0))
+	context.set_skill_cooldown(attacker_id, skill.get("skill_id", null), int(skill.get("cooldown_turns", 0)))
 
 	var target_ids = action.get("target_ids", [])
 	if target_ids is not Array:
@@ -91,32 +107,55 @@ func _resolve_skill(context: BattleContext, action: Dictionary) -> Dictionary:
 		target_ids = [action.get("target_id", -1)]
 
 	var log_lines: Array = []
+	if mana_cost > 0:
+		log_lines.append("%s gasta %d MP en %s. MP %d -> %d." % [
+			str(attacker.get("name", "Actor")),
+			mana_spent,
+			str(skill.get("name", "Habilidad")),
+			mana_before,
+			mana_after
+		])
+
 	var total_damage = 0
+	var total_heal = 0
 	for target_id in target_ids:
 		var target = context.get_actor(int(target_id))
 		if target.is_empty():
 			continue
 
 		if int(skill.get("damage", 0)) < 0:
-			var heal_amount = _calculate_heal(attacker, abs(int(skill.get("damage", 0))))
-			var restored = context.heal_actor(int(target.get("battle_id", -1)), heal_amount)
-			log_lines.append("%s usa %s sobre %s y recupera %d de vida." % [
+			var heal_before = int(target.get("current_hp", 0))
+			var heal_calculation = _calculate_heal(attacker, abs(int(skill.get("damage", 0))))
+			var restored = context.heal_actor(int(target.get("battle_id", -1)), int(heal_calculation.get("final_heal", 1)))
+			var healed_target = context.get_actor(int(target.get("battle_id", -1)))
+			var heal_after = int(healed_target.get("current_hp", 0))
+			total_heal += restored
+			log_lines.append("%s usa %s sobre %s: recupera %d HP. HP %d -> %d." % [
 				str(attacker.get("name", "Actor")),
 				str(skill.get("name", "Habilidad")),
 				str(target.get("name", "Objetivo")),
-				restored
+				restored,
+				heal_before,
+				heal_after
 			])
+			log_lines.append(_format_heal_formula(heal_calculation))
 			continue
 
-		var damage = _calculate_damage(attacker, target, int(skill.get("damage", 0)), str(skill.get("damage_type", "physical")))
-		var dealt = context.apply_damage(int(target.get("battle_id", -1)), damage)
+		var target_hp_before = int(target.get("current_hp", 0))
+		var damage_calculation = _calculate_skill_damage(attacker, target, skill)
+		var dealt = context.apply_damage(int(target.get("battle_id", -1)), int(damage_calculation.get("final_damage", 1)))
+		var damaged_target = context.get_actor(int(target.get("battle_id", -1)))
+		var target_hp_after = int(damaged_target.get("current_hp", 0))
 		total_damage += dealt
-		log_lines.append("%s usa %s sobre %s y causa %d de dano." % [
+		log_lines.append("%s usa %s sobre %s: %d de dano. HP %d -> %d." % [
 			str(attacker.get("name", "Actor")),
 			str(skill.get("name", "Habilidad")),
 			str(target.get("name", "Objetivo")),
-			dealt
+			dealt,
+			target_hp_before,
+			target_hp_after
 		])
+		log_lines.append(_format_damage_formula(damage_calculation))
 		if not context.is_actor_alive(int(target.get("battle_id", -1))):
 			log_lines.append("%s ha sido derrotado." % str(target.get("name", "Objetivo")))
 
@@ -124,6 +163,10 @@ func _resolve_skill(context: BattleContext, action: Dictionary) -> Dictionary:
 		"success": true,
 		"log_lines": log_lines,
 		"damage_done": total_damage,
+		"heal_done": total_heal,
+		"mana_before": mana_before,
+		"mana_after": mana_after,
+		"mana_spent": mana_spent,
 		"skill_id": skill.get("skill_id", null),
 		"attacker_database_id": attacker.get("database_id", null),
 		"target_database_id": _resolve_primary_target_database_id(context, target_ids)
@@ -150,22 +193,32 @@ func _resolve_item(context: BattleContext, action: Dictionary) -> Dictionary:
 	var log_lines: Array = []
 	var total_effect = 0
 	if effect_data.has("heal_hp"):
+		var hp_before = int(target.get("current_hp", 0))
 		var restored_hp = context.heal_actor(int(target.get("battle_id", -1)), int(effect_data.get("heal_hp", 0)))
+		var healed_target = context.get_actor(int(target.get("battle_id", -1)))
+		var hp_after = int(healed_target.get("current_hp", 0))
 		total_effect += restored_hp
-		log_lines.append("%s usa %s sobre %s y recupera %d de vida." % [
+		log_lines.append("%s usa %s sobre %s: recupera %d HP. HP %d -> %d." % [
 			str(user.get("name", "Actor")),
 			str(item.get("item_name", "Objeto")),
 			str(target.get("name", "Objetivo")),
-			restored_hp
+			restored_hp,
+			hp_before,
+			hp_after
 		])
 
 	if effect_data.has("heal_mp"):
+		var mp_before = int(target.get("current_mana", 0))
 		var restored_mp = context.restore_mana(int(target.get("battle_id", -1)), int(effect_data.get("heal_mp", 0)))
+		var restored_target = context.get_actor(int(target.get("battle_id", -1)))
+		var mp_after = int(restored_target.get("current_mana", 0))
 		total_effect += restored_mp
-		log_lines.append("%s recupera %d de mana con %s." % [
+		log_lines.append("%s recupera %d MP con %s. MP %d -> %d." % [
 			str(target.get("name", "Objetivo")),
 			restored_mp,
-			str(item.get("item_name", "Objeto"))
+			str(item.get("item_name", "Objeto")),
+			mp_before,
+			mp_after
 		])
 
 	if effect_data.has("cure_status"):
@@ -224,24 +277,13 @@ func _resolve_flee(context: BattleContext, action: Dictionary) -> Dictionary:
 			"damage_done": 0
 		}
 
-	var party_speed = _average_speed(context.get_living_actors("party"))
-	var enemy_speed = _average_speed(context.get_living_actors("enemy"))
-	var chance = clampf(55.0 + float(party_speed - enemy_speed) * 4.0, 20.0, 95.0)
-	var success = _rng.randf_range(0.0, 100.0) <= chance
-	if success:
-		context.escaped = true
-		return {
-			"success": true,
-			"log_lines": ["%s logra escapar del combate." % str(actor.get("name", "Actor"))],
-			"damage_done": 0,
-			"skill_id": null,
-			"attacker_database_id": actor.get("database_id", null),
-			"target_database_id": null
-		}
+	var actor_name = str(actor.get("name", "Actor"))
+	context.escaped = true
+	context.escaped_actor_name = actor_name
 
 	return {
-		"success": false,
-		"log_lines": ["%s intenta huir, pero falla." % str(actor.get("name", "Actor"))],
+		"success": true,
+		"log_lines": ["%s ha huido del combate." % actor_name],
 		"damage_done": 0,
 		"skill_id": null,
 		"attacker_database_id": actor.get("database_id", null),
@@ -249,31 +291,71 @@ func _resolve_flee(context: BattleContext, action: Dictionary) -> Dictionary:
 	}
 
 
-func _calculate_damage(attacker: Dictionary, target: Dictionary, base_power: int, damage_type: String) -> int:
-	var attack_stat = int(attacker.get("attack", 0))
-	var defense_stat = int(target.get("defense", 0))
-	var variance = _rng.randi_range(-2, 3)
-	var damage = base_power + int(round(float(attack_stat) * 0.65)) - int(round(float(defense_stat) * 0.45)) + variance
-	if damage_type != "physical":
-		damage += int(round(float(attacker.get("level", 1)) * 0.8))
-	if bool(target.get("defending", false)):
-		damage = int(round(float(damage) * 0.5))
-	return max(damage, 1)
+func _calculate_basic_attack_damage(attacker: Dictionary, target: Dictionary) -> Dictionary:
+	var base_damage = max(int(attacker.get("attack", 0)), 1)
+	var defense_reduction = int(round(float(target.get("defense", 0)) * BASIC_ATTACK_DEFENSE_SCALE))
+	return _finalize_damage_calculation(base_damage, 0, defense_reduction, target)
 
 
-func _calculate_heal(attacker: Dictionary, base_power: int) -> int:
-	var magic_bonus = int(round(float(attacker.get("level", 1)) * 1.5))
-	return max(base_power + magic_bonus, 1)
+func _calculate_skill_damage(attacker: Dictionary, target: Dictionary, skill: Dictionary) -> Dictionary:
+	var base_damage = max(int(skill.get("damage", 0)), 0)
+	var damage_type = str(skill.get("damage_type", "physical"))
+	var stat_bonus = 0
+	var defense_reduction = 0
+
+	if damage_type == "physical":
+		stat_bonus = int(round(float(attacker.get("attack", 0)) * PHYSICAL_ATTACK_BONUS_SCALE))
+		defense_reduction = int(round(float(target.get("defense", 0)) * PHYSICAL_DEFENSE_SCALE))
+	else:
+		stat_bonus = int(round(float(attacker.get("level", 1)) * MAGIC_LEVEL_BONUS_SCALE))
+		defense_reduction = int(round(float(target.get("defense", 0)) * MAGIC_DEFENSE_SCALE))
+
+	return _finalize_damage_calculation(base_damage, stat_bonus, defense_reduction, target)
 
 
-func _average_speed(actors: Array) -> float:
-	if actors.is_empty():
-		return 0.0
+func _finalize_damage_calculation(base_damage: int, stat_bonus: int, defense_reduction: int, target: Dictionary) -> Dictionary:
+	var raw_damage = max(base_damage + stat_bonus - defense_reduction, 1)
+	var final_damage = raw_damage
+	var defending = bool(target.get("defending", false))
+	if defending:
+		final_damage = max(int(round(float(raw_damage) * DEFENDING_DAMAGE_MULTIPLIER)), 1)
 
-	var total_speed = 0.0
-	for actor in actors:
-		total_speed += float(actor.get("speed", 0))
-	return total_speed / float(actors.size())
+	return {
+		"base_damage": base_damage,
+		"stat_bonus": stat_bonus,
+		"defense_reduction": defense_reduction,
+		"defending": defending,
+		"final_damage": final_damage
+	}
+
+
+func _calculate_heal(attacker: Dictionary, base_power: int) -> Dictionary:
+	var stat_bonus = int(round(float(attacker.get("level", 1)) * HEAL_LEVEL_BONUS_SCALE))
+	return {
+		"base_heal": base_power,
+		"stat_bonus": stat_bonus,
+		"final_heal": max(base_power + stat_bonus, 1)
+	}
+
+
+func _format_damage_formula(calculation: Dictionary) -> String:
+	var text = "Calculo: base %d + stats %d - defensa %d = %d." % [
+		int(calculation.get("base_damage", 0)),
+		int(calculation.get("stat_bonus", 0)),
+		int(calculation.get("defense_reduction", 0)),
+		int(calculation.get("final_damage", 0))
+	]
+	if bool(calculation.get("defending", false)):
+		text += " Defensa activa reduce el dano."
+	return text
+
+
+func _format_heal_formula(calculation: Dictionary) -> String:
+	return "Calculo: base %d + bonus %d = %d." % [
+		int(calculation.get("base_heal", 0)),
+		int(calculation.get("stat_bonus", 0)),
+		int(calculation.get("final_heal", 0))
+	]
 
 
 func _resolve_primary_target_database_id(context: BattleContext, target_ids: Array) -> Variant:

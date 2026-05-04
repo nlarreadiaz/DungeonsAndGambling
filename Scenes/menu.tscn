@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://b4gifkcfc5s73" path="res://Scripts/menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" uid="uid://by436d5kuhica" path="res://images/1.png" id="2_bg"]
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_buttons"]
-[ext_resource type="FontFile" uid="uid://bnivhrlx4pco4" path="res://assets/GUI/Cute_Fantasy_UI/Fonts/CuteFantasy-5x9.ttf" id="4_font"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="5_label"]
 [ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="6_ribbons"]
 [ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herrería/PNG/House_exterior.png" id="7_house"]
@@ -27,8 +26,6 @@ atlas = ExtResource("6_ribbons")
 region = Rect2(202, 32, 92, 26)
 
 [sub_resource type="LabelSettings" id="LabelSettings_title"]
-font = ExtResource("4_font")
-font_size = 21
 font_color = Color(0.972549, 0.9607843, 0.8392157, 1)
 outline_size = 5
 outline_color = Color(0.18039216, 0.1254902, 0.08235294, 0.96)
@@ -37,7 +34,6 @@ shadow_color = Color(0, 0, 0, 0.42)
 shadow_offset = Vector2(0, 2)
 
 [sub_resource type="LabelSettings" id="LabelSettings_subtitle"]
-font = ExtResource("4_font")
 font_size = 9
 font_color = Color(0.84705883, 0.9490196, 0.91764706, 1)
 outline_size = 2
@@ -56,7 +52,6 @@ atlas = ExtResource("3_buttons")
 region = Rect2(32, 160, 32, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_button"]
-font = ExtResource("4_font")
 stacked_outline_count = 1
 stacked_shadow_count = 1
 stacked_shadow_0/offset = Vector2(1, 1)
@@ -66,7 +61,6 @@ atlas = ExtResource("6_ribbons")
 region = Rect2(8, 1, 93, 20)
 
 [sub_resource type="LabelSettings" id="LabelSettings_badge"]
-font = ExtResource("4_font")
 font_size = 9
 font_color = Color(0.4117647, 0.19607843, 0.06666667, 1)
 outline_size = 1
@@ -89,14 +83,12 @@ atlas = ExtResource("7_house")
 region = Rect2(0, 0, 176, 120)
 
 [sub_resource type="LabelSettings" id="LabelSettings_feature"]
-font = ExtResource("4_font")
 font_size = 9
 font_color = Color(0.92941177, 0.9843137, 0.92941177, 1)
 outline_size = 2
 outline_color = Color(0.07450981, 0.10980392, 0.13333334, 0.95)
 
 [sub_resource type="LabelSettings" id="LabelSettings_footer"]
-font = ExtResource("4_font")
 font_size = 8
 font_color = Color(0.89411765, 0.9490196, 0.92156863, 0.92)
 outline_size = 2
@@ -143,7 +135,7 @@ layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="MenuPanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=1492320183]
-custom_minimum_size = Vector2(228, 240)
+custom_minimum_size = Vector2(228, 260)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_menu_panel")
 
@@ -170,9 +162,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -69.0
-offset_right = 69.0
-offset_bottom = 26.0
+offset_left = -67.0
+offset_top = -12.0
+offset_right = 73.0
+offset_bottom = 25.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("AtlasTexture_ribbon_large")
@@ -180,9 +173,11 @@ expand_mode = 1
 
 [node name="Title" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=1609652966]
 layout_mode = 0
-offset_top = 16.0
-offset_right = 204.0
-offset_bottom = 38.0
+offset_left = -34.0
+offset_top = 9.0
+offset_right = 242.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 8
 text = "DUNGEON AND GAMBLING"
 label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
@@ -190,32 +185,61 @@ vertical_alignment = 1
 
 [node name="Subtitle" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=837869924]
 layout_mode = 0
-offset_top = 39.0
-offset_right = 204.0
-offset_bottom = 54.0
+offset_left = 1.0
+offset_top = 50.0
+offset_right = 205.0
+offset_bottom = 65.0
 text = "Aventura, fortuna y decisiones arriesgadas"
 label_settings = SubResource("LabelSettings_subtitle")
 horizontal_alignment = 1
 
 [node name="ButtonsArea" type="Control" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer" unique_id=1385549035]
-custom_minimum_size = Vector2(0, 158)
+custom_minimum_size = Vector2(0, 178)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PlayButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=62512782]
+[node name="PlayButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea"]
 layout_mode = 0
 offset_left = 6.0
-offset_top = -5.0
+offset_top = -1.0
 offset_right = 38.0
-offset_bottom = 11.0
-scale = Vector2(6, 4.3)
+offset_bottom = 15.0
+scale = Vector2(6, 3.4)
+focus_neighbor_bottom = NodePath("../RoleButton")
+texture_normal = SubResource("AtlasTexture_button_normal")
+texture_pressed = SubResource("AtlasTexture_button_pressed")
+texture_hover = SubResource("AtlasTexture_button_hover")
+ignore_texture_size = true
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 0.49999985
+offset_top = 2.0588238
+offset_right = 112.5
+offset_bottom = 42.058823
+scale = Vector2(0.28, 0.24)
+text = "JUGAR"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_label")
+
+[node name="RoleButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=162885167]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 39.0
+offset_right = 38.0
+offset_bottom = 55.0
+scale = Vector2(6, 3.4)
+focus_neighbor_top = NodePath("../PlayButton")
 focus_neighbor_bottom = NodePath("../OptionsButton")
 texture_normal = SubResource("AtlasTexture_button_normal")
 texture_pressed = SubResource("AtlasTexture_button_pressed")
 texture_hover = SubResource("AtlasTexture_button_hover")
 ignore_texture_size = true
 
-[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" unique_id=1845249321]
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/RoleButton" unique_id=1009260397]
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651
@@ -223,7 +247,7 @@ offset_top = 2.325581
 offset_right = 112.166664
 offset_bottom = 42.32558
 scale = Vector2(0.28, 0.24)
-text = "JUGAR"
+text = "ELEGIR ROL"
 label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -232,11 +256,11 @@ script = ExtResource("5_label")
 [node name="OptionsButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=956974074]
 layout_mode = 0
 offset_left = 6.0
-offset_top = 44.0
+offset_top = 79.0
 offset_right = 38.0
-offset_bottom = 60.0
-scale = Vector2(6, 4.3)
-focus_neighbor_top = NodePath("../PlayButton")
+offset_bottom = 95.0
+scale = Vector2(6, 3.4)
+focus_neighbor_top = NodePath("../RoleButton")
 focus_neighbor_bottom = NodePath("../ExitButton")
 texture_normal = SubResource("AtlasTexture_button_normal")
 texture_pressed = SubResource("AtlasTexture_button_pressed")
@@ -260,10 +284,10 @@ script = ExtResource("5_label")
 [node name="ExitButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=2075711668]
 layout_mode = 0
 offset_left = 4.0
-offset_top = 98.0
+offset_top = 119.0
 offset_right = 36.0
-offset_bottom = 114.0
-scale = Vector2(6, 4.3)
+offset_bottom = 135.0
+scale = Vector2(6, 3.4)
 focus_neighbor_top = NodePath("../OptionsButton")
 texture_normal = SubResource("AtlasTexture_button_normal")
 texture_pressed = SubResource("AtlasTexture_button_pressed")
@@ -285,7 +309,7 @@ vertical_alignment = 1
 script = ExtResource("5_label")
 
 [node name="FeaturePanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=294045681]
-custom_minimum_size = Vector2(150, 240)
+custom_minimum_size = Vector2(150, 260)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_menu_panel")
 
@@ -387,5 +411,6 @@ label_settings = SubResource("LabelSettings_footer")
 horizontal_alignment = 1
 
 [connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/RoleButton" to="." method="_on_role_pressed"]
 [connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/OptionsButton" to="." method="_on_options_pressed"]
 [connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/ExitButton" to="." method="_on_quit_pressed"]

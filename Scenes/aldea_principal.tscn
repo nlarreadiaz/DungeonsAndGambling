@@ -4428,18 +4428,6 @@ position = Vector2(1055, 258)
 texture = SubResource("AtlasTexture_path_horizontal_manual")
 centered = false
 
-[node name="SouthRoadA" type="Sprite2D" parent="AldeaManual/Caminos" unique_id=308477371]
-texture_filter = 1
-position = Vector2(220, -75)
-texture = SubResource("AtlasTexture_path_vertical_manual")
-centered = false
-
-[node name="SouthRoadB" type="Sprite2D" parent="AldeaManual/Caminos" unique_id=34759977]
-texture_filter = 1
-position = Vector2(220, 21)
-texture = SubResource("AtlasTexture_path_vertical_manual")
-centered = false
-
 [node name="SouthWestRoadA" type="Sprite2D" parent="AldeaManual/Caminos" unique_id=681022753]
 texture_filter = 1
 position = Vector2(-100, 101)
@@ -5029,10 +5017,6 @@ shape = SubResource("RectangleShape2D_bounds_horizontal_manual")
 
 [node name="Left" type="CollisionShape2D" parent="AldeaManual/Colisiones/WaterBounds" unique_id=1509961971]
 position = Vector2(-326, -60)
-shape = SubResource("RectangleShape2D_bounds_vertical_manual")
-
-[node name="Right" type="CollisionShape2D" parent="AldeaManual/Colisiones/WaterBounds" unique_id=1589215870]
-position = Vector2(638, 248)
 shape = SubResource("RectangleShape2D_bounds_vertical_manual")
 
 [node name="player" parent="." unique_id=479730859 instance=ExtResource("4_bax37")]

@@ -6,7 +6,7 @@ const PLAYER_NODE_PATH = NodePath("player")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const CAMERA_LIMIT_LEFT = 96
 const CAMERA_LIMIT_TOP = 96
-const CAMERA_LIMIT_RIGHT = 1440
+const CAMERA_LIMIT_RIGHT = 2480
 const CAMERA_LIMIT_BOTTOM = 928
 
 var options_ingame: CanvasLayer = null
@@ -73,6 +73,41 @@ func _configure_player_camera() -> void:
 
 
 func _on_dark_queen_body_entered(body: Node2D) -> void:
+	_start_battle_encounter(
+		body,
+		"dark_queen_gate",
+		"Emboscada de la Reina Oscura",
+		"El mapa da paso a un combate clasico por turnos.",
+		"La Reina Oscura te desafia. Selecciona comandos, objetivos y resiste su magia.",
+		Vector2(-160.0, 64.0),
+		220,
+		150
+	)
+
+
+func _on_dungeon_boss_body_entered(body: Node2D) -> void:
+	_start_battle_encounter(
+		body,
+		"dungeon_queen_sanctum",
+		"Santuario de la Reina Oscura",
+		"Has llegado al corazon de la dungeon.",
+		"Una presencia oscura emerge del altar. Preparate para un combate decisivo.",
+		Vector2(-96.0, 48.0),
+		260,
+		190
+	)
+
+
+func _on_dungeon_trap_body_entered(body: Node2D) -> void:
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if body == null or player == null or body != player:
+		return
+
+	if player.has_method("recibir_daÃ±o"):
+		player.call("recibir_daÃ±o")
+
+
+func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: String, battle_subtitle: String, status_message: String, return_offset: Vector2, experience_reward: int, gold_reward: int) -> void:
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	if body == null or player == null or body != player:
 		return
@@ -92,13 +127,13 @@ func _on_dark_queen_body_entered(body: Node2D) -> void:
 		world_scene_path = tree.current_scene.scene_file_path
 
 	var encounter_started = bool(battle_manager.call("start_battle", {
-		"encounter_id": "dark_queen_gate",
+		"encounter_id": encounter_id,
 		"save_slot_id": 1,
-		"battle_title": "Emboscada de la Reina Oscura",
-		"battle_subtitle": "El mapa da paso a un combate clasico por turnos.",
-		"status_message": "La Reina Oscura te desafia. Selecciona comandos, objetivos y resiste su magia.",
+		"battle_title": battle_title,
+		"battle_subtitle": battle_subtitle,
+		"status_message": status_message,
 		"world_scene_path": world_scene_path,
-		"return_player_position": player.global_position + Vector2(-160.0, 64.0),
+		"return_player_position": player.global_position + return_offset,
 		"enemies": [
 			{
 				"name": "Reina Oscura",
@@ -112,8 +147,8 @@ func _on_dark_queen_body_entered(body: Node2D) -> void:
 				"defense": 13,
 				"speed": 11,
 				"state": "normal",
-				"experience_reward": 220,
-				"gold_reward": 150,
+				"experience_reward": experience_reward,
+				"gold_reward": gold_reward,
 				"skills": [
 					{
 						"name": "Tajo Sombrio",

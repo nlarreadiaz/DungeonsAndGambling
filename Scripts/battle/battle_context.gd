@@ -13,6 +13,7 @@ var current_actor_id = -1
 var turn_number = 1
 var round_number = 1
 var escaped = false
+var escaped_actor_name = ""
 var outcome = ""
 
 var _next_battle_id = 1
@@ -30,6 +31,7 @@ func setup(encounter: Dictionary, snapshot: Dictionary) -> void:
 	turn_number = 1
 	round_number = 1
 	escaped = false
+	escaped_actor_name = ""
 	outcome = ""
 	_next_battle_id = 1
 	party = _decorate_actors(snapshot.get("party", []), "party")

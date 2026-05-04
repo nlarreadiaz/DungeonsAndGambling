@@ -6,29 +6,30 @@ signal selection_back_requested
 
 const SELECTION_ENTRY_SCENE: PackedScene = preload("res://Scenes/battle/battle_selection_entry.tscn")
 
-@onready var title_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent/TitleLabel
-@onready var subtitle_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent/InfoRow/SubtitleLabel
-@onready var current_turn_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent/InfoRow/CurrentTurnLabel
-@onready var queue_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/TopPanel/MarginContainer/TopContent/QueueLabel
-@onready var party_header: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel/MarginContainer/PartyContent/Header
-@onready var party_container: VBoxContainer = $ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/PartyPanel/MarginContainer/PartyContent/PartyScroll/Actors
-@onready var enemy_header: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel/MarginContainer/EnemyContent/Header
-@onready var enemy_container: VBoxContainer = $ContentCenter/BattlePanel/MarginContainer/Layout/Battlefield/EnemyPanel/MarginContainer/EnemyContent/EnemyScroll/Actors
-@onready var attack_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/AttackButton
-@onready var skill_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/SkillButton
-@onready var item_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/ItemButton
-@onready var defend_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/DefendButton
-@onready var flee_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/FleeButton
-@onready var selection_panel: PanelContainer = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel
-@onready var selection_title_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/SelectionTitle
-@onready var selection_scroll: ScrollContainer = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/SelectionScroll
-@onready var selection_entries: VBoxContainer = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/SelectionScroll/SelectionEntries
-@onready var confirm_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/ButtonsRow/ConfirmButton
-@onready var back_button: Button = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/SelectionPanel/MarginContainer/SelectionContent/ButtonsRow/BackButton
-@onready var log_panel: PanelContainer = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel
-@onready var status_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer/LogContent/StatusLabel
-@onready var hint_label: Label = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer/LogContent/HintLabel
-@onready var log_text: RichTextLabel = $ContentCenter/BattlePanel/MarginContainer/Layout/BottomArea/SidePanel/LogPanel/MarginContainer/LogContent/LogText
+@onready var title_label: Label = $TopHud/TitleBox/TitleLabel
+@onready var subtitle_label: Label = $TopHud/TitleBox/SubtitleLabel
+@onready var current_turn_label: Label = $TopHud/TurnBox/CurrentTurnLabel
+@onready var queue_label: Label = $TopHud/TurnBox/QueueLabel
+@onready var party_container: Control = $StagePanel/Stage/PartyActors
+@onready var enemy_container: Control = $StagePanel/Stage/EnemyActors
+@onready var attack_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/AttackButton
+@onready var skill_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/SkillButton
+@onready var item_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/ItemButton
+@onready var defend_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/DefendButton
+@onready var flee_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/FleeButton
+@onready var selection_panel: PanelContainer = $BottomArea/MessageStack/SelectionPanel
+@onready var selection_title_label: Label = $BottomArea/MessageStack/SelectionPanel/MarginContainer/SelectionContent/SelectionTitle
+@onready var selection_scroll: ScrollContainer = $BottomArea/MessageStack/SelectionPanel/MarginContainer/SelectionContent/SelectionScroll
+@onready var selection_entries: VBoxContainer = $BottomArea/MessageStack/SelectionPanel/MarginContainer/SelectionContent/SelectionScroll/SelectionEntries
+@onready var confirm_button: Button = $BottomArea/MessageStack/SelectionPanel/MarginContainer/SelectionContent/ButtonsRow/ConfirmButton
+@onready var back_button: Button = $BottomArea/MessageStack/SelectionPanel/MarginContainer/SelectionContent/ButtonsRow/BackButton
+@onready var log_panel: PanelContainer = $BottomArea/MessageStack/LogPanel
+@onready var status_label: Label = $BottomArea/MessageStack/LogPanel/MarginContainer/LogContent/StatusLabel
+@onready var hint_label: Label = $BottomArea/MessageStack/LogPanel/MarginContainer/LogContent/HintLabel
+@onready var log_text: RichTextLabel = $BottomArea/MessageStack/LogPanel/MarginContainer/LogContent/LogText
+@onready var outcome_overlay: Control = $OutcomeOverlay
+@onready var outcome_title_label: Label = $OutcomeOverlay/CenterBox/Title
+@onready var outcome_subtitle_label: Label = $OutcomeOverlay/CenterBox/Subtitle
 
 var _selection_payloads: Array = []
 var _selection_buttons: Array = []
@@ -44,6 +45,8 @@ func _ready() -> void:
 	confirm_button.pressed.connect(_on_confirm_pressed)
 	back_button.pressed.connect(_on_back_pressed)
 	hide_selection()
+	hide_outcome_banner()
+	_refresh_command_button_state()
 
 
 func set_titles(title_text: String, subtitle_text: String) -> void:
@@ -64,12 +67,12 @@ func set_hint(hint_text: String) -> void:
 	hint_label.text = hint_text
 
 
-func set_party_header(text: String) -> void:
-	party_header.text = text
+func set_party_header(_text: String) -> void:
+	pass
 
 
-func set_enemy_header(text: String) -> void:
-	enemy_header.text = text
+func set_enemy_header(_text: String) -> void:
+	pass
 
 
 func clear_actor_lists() -> void:
@@ -79,26 +82,30 @@ func clear_actor_lists() -> void:
 			child.queue_free()
 
 
-func get_party_container() -> VBoxContainer:
+func get_party_container() -> Control:
 	return party_container
 
 
-func get_enemy_container() -> VBoxContainer:
+func get_enemy_container() -> Control:
 	return enemy_container
 
 
 func set_commands_for_actor(actor_data: Dictionary, has_skills: bool, has_items: bool, can_flee: bool = true) -> void:
 	var actor_name = str(actor_data.get("name", ""))
+	attack_button.disabled = false
 	skill_button.disabled = not has_skills
 	item_button.disabled = not has_items
+	defend_button.disabled = false
 	flee_button.disabled = not can_flee
-	set_status("Elige una accion para %s." % actor_name)
+	set_status("Que debe hacer %s?" % actor_name)
+	_refresh_command_button_state()
 	attack_button.grab_focus()
 
 
 func set_commands_enabled(enabled: bool) -> void:
-	for button in [attack_button, skill_button, item_button, defend_button, flee_button]:
+	for button in _get_command_buttons():
 		button.disabled = not enabled
+	_refresh_command_button_state()
 
 
 func show_selection(title_text: String, entries: Array) -> void:
@@ -156,10 +163,24 @@ func hide_selection() -> void:
 func set_log_lines(lines: Array) -> void:
 	log_text.clear()
 	var formatted_lines: Array = []
-	for line in lines:
-		formatted_lines.append("[p]%s[/p]" % str(line))
+	var first_visible_line = max(lines.size() - 3, 0)
+	for line_index in range(first_visible_line, lines.size()):
+		formatted_lines.append("[p]%s[/p]" % str(lines[line_index]))
 	log_text.append_text("\n".join(formatted_lines))
 	log_text.scroll_to_line(max(log_text.get_line_count() - 1, 0))
+
+
+func show_outcome_banner(title_text: String, subtitle_text: String = "") -> void:
+	outcome_title_label.text = title_text
+	outcome_subtitle_label.text = subtitle_text
+	outcome_subtitle_label.visible = not subtitle_text.is_empty()
+	outcome_overlay.visible = true
+
+
+func hide_outcome_banner() -> void:
+	outcome_overlay.visible = false
+	outcome_title_label.text = ""
+	outcome_subtitle_label.text = ""
 
 
 func _on_attack_pressed() -> void:
@@ -230,3 +251,17 @@ func _clear_selection_entries() -> void:
 	for child in selection_entries.get_children():
 		selection_entries.remove_child(child)
 		child.queue_free()
+
+
+func _get_command_buttons() -> Array:
+	return [attack_button, skill_button, item_button, defend_button, flee_button]
+
+
+func _refresh_command_button_state() -> void:
+	for button in _get_command_buttons():
+		if button == null:
+			continue
+		if button.disabled:
+			button.modulate = Color(0.55, 0.55, 0.55, 0.72)
+		else:
+			button.modulate = Color(1, 1, 1, 1)

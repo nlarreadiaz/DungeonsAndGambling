@@ -95,6 +95,7 @@ func get_all_characters(save_slot_id: int = 1) -> Array:
 	var sql = """
 		SELECT
 			c.id,
+			c.class_id,
 			c.name,
 			c.character_type,
 			c.level,
@@ -117,6 +118,24 @@ func get_all_characters(save_slot_id: int = 1) -> Array:
 		ORDER BY c.id;
 	"""
 	return select_rows(sql, [save_slot_id])
+
+
+func get_classes() -> Array:
+	var sql = """
+		SELECT
+			id,
+			name,
+			description,
+			role,
+			base_max_hp,
+			base_max_mana,
+			base_attack,
+			base_defense,
+			base_speed
+		FROM classes
+		ORDER BY id;
+	"""
+	return select_rows(sql)
 
 
 func get_inventory(character_id: int, save_slot_id: int = 1) -> Array:
@@ -354,6 +373,77 @@ func add_character_experience(character_id: int, amount: int, save_slot_id: int 
 		""",
 		[amount, character_id, save_slot_id]
 	)
+
+
+func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skill_ids: Array) -> bool:
+	var class_rows = select_rows(
+		"""
+			SELECT
+				id,
+				base_max_hp,
+				base_max_mana,
+				base_attack,
+				base_defense,
+				base_speed
+			FROM classes
+			WHERE id = ?
+			LIMIT 1;
+		""",
+		[class_id]
+	)
+	if class_rows.is_empty():
+		push_warning("No existe la clase %d para aplicar al personaje." % class_id)
+		return false
+
+	var class_data: Dictionary = class_rows[0]
+	var updated = execute(
+		"""
+			UPDATE characters
+			SET class_id = ?,
+				max_hp = ?,
+				current_hp = ?,
+				max_mana = ?,
+				current_mana = ?,
+				attack = ?,
+				defense = ?,
+				speed = ?,
+				current_state = 'normal',
+				updated_at = CURRENT_TIMESTAMP
+			WHERE id = ? AND save_slot_id = ? AND character_type = 'player';
+		""",
+		[
+			class_id,
+			int(class_data.get("base_max_hp", 1)),
+			int(class_data.get("base_max_hp", 1)),
+			int(class_data.get("base_max_mana", 0)),
+			int(class_data.get("base_max_mana", 0)),
+			int(class_data.get("base_attack", 0)),
+			int(class_data.get("base_defense", 0)),
+			int(class_data.get("base_speed", 0)),
+			character_id,
+			save_slot_id
+		]
+	)
+	if not updated:
+		return false
+
+	if not execute("DELETE FROM character_skills WHERE save_slot_id = ? AND character_id = ?;", [save_slot_id, character_id]):
+		return false
+
+	for raw_skill_id in skill_ids:
+		var skill_id = int(raw_skill_id)
+		if skill_id <= 0:
+			continue
+		if not execute(
+			"""
+				INSERT OR IGNORE INTO character_skills (save_slot_id, character_id, skill_id, learned_at_level, cooldown_remaining)
+				VALUES (?, ?, ?, 1, 0);
+			""",
+			[save_slot_id, character_id, skill_id]
+		):
+			return false
+
+	return true
 
 
 func add_gold(save_slot_id: int, amount: int) -> bool:

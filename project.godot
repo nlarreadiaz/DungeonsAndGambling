@@ -15,14 +15,14 @@ run/main_scene="uid://bnqc2nkcyh04x"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://cum6pwp8uox18"
+
 [autoload]
 
 BattleManager="*res://Scripts/battle/battle_manager.gd"
 GameDatabase="*res://Database/database_manager.gd"
-
-[audio]
-
-buses/default_bus_layout="uid://cum6pwp8uox18"
 
 [display]
 

@@ -29,8 +29,9 @@ func _ready() -> void:
 	_encounter_data = _get_encounter_data()
 	var snapshot = _data_provider.build_snapshot(_encounter_data)
 	_context.setup(_encounter_data, snapshot)
+	battle_ui.call("hide_outcome_banner")
 	battle_ui.call("set_titles", _context.battle_title, _context.battle_subtitle)
-	battle_ui.call("set_hint", "Sistema clasico por turnos: elige comando, luego objetivo si hace falta.")
+	battle_ui.call("set_hint", "Elige comando y objetivo para resolver el turno.")
 	_refresh_battlefield()
 	await _begin_battle()
 
@@ -182,11 +183,8 @@ func _open_skill_selection(actor: Dictionary) -> void:
 	var entries: Array = []
 	for skill in available_skills:
 		entries.append({
-			"label": "%s | MP %d | CD %d" % [
-				str(skill.get("name", "Habilidad")),
-				int(skill.get("mana_cost", 0)),
-				int(skill.get("cooldown_turns", 0))
-			],
+			"label": str(skill.get("name", "Habilidad")),
+			"detail": _format_skill_detail(skill),
 			"payload": skill
 		})
 
@@ -206,6 +204,7 @@ func _open_item_selection(actor: Dictionary) -> void:
 	for item in usable_items:
 		entries.append({
 			"label": "%s x%d" % [str(item.get("item_name", "Objeto")), int(item.get("quantity", 0))],
+			"detail": _format_item_detail(item),
 			"payload": item
 		})
 
@@ -264,12 +263,13 @@ func _open_target_selection(title: String, raw_targets: Array) -> void:
 		if target is not Dictionary:
 			continue
 		entries.append({
-			"label": "%s | HP %d/%d | MP %d/%d" % [
-				str(target.get("name", "Objetivo")),
+			"label": str(target.get("name", "Objetivo")),
+			"detail": "HP %d/%d | MP %d/%d | DEF %d" % [
 				int(target.get("current_hp", 0)),
 				int(target.get("max_hp", 0)),
 				int(target.get("current_mana", 0)),
-				int(target.get("max_mana", 0))
+				int(target.get("max_mana", 0)),
+				int(target.get("defense", 0))
 			],
 			"battle_id": int(target.get("battle_id", -1))
 		})
@@ -282,6 +282,7 @@ func _open_target_selection(title: String, raw_targets: Array) -> void:
 		return
 
 	_state = "choose_target"
+	battle_ui.call("set_commands_enabled", false)
 	battle_ui.call("show_selection", title, entries)
 	battle_ui.call("set_status", title)
 
@@ -390,12 +391,39 @@ func _finish_battle(outcome: String) -> void:
 	_context.outcome = outcome
 	_pending_result = _result_builder.build_result(_context, outcome)
 	_apply_battle_persistence(_pending_result)
-	_context.add_log(str(_pending_result.get("summary", "El combate ha terminado.")))
+	var summary = str(_pending_result.get("summary", "El combate ha terminado."))
+	var log_lines = _context.get_log_lines()
+	if log_lines.is_empty() or str(log_lines[log_lines.size() - 1]) != summary:
+		_context.add_log(summary)
 	_refresh_battlefield()
 	battle_ui.call("set_commands_enabled", false)
 	battle_ui.call("hide_selection")
-	battle_ui.call("set_status", str(_pending_result.get("summary", "El combate ha terminado.")))
-	battle_ui.call("set_hint", "Pulsa Enter o Esc para volver al mapa.")
+	battle_ui.call("set_status", summary)
+	if outcome == "escaped":
+		battle_ui.call("hide_outcome_banner")
+		battle_ui.call("set_hint", "Volviendo al mapa...")
+		_return_to_previous_scene_after_escape()
+	elif outcome == "defeat":
+		battle_ui.call("show_outcome_banner", "DERROTA", "Regresando al inicio del mapa...")
+		battle_ui.call("set_hint", "Regresando al inicio del mapa...")
+		_return_to_map_after_defeat()
+	else:
+		battle_ui.call("show_outcome_banner", "VICTORIA", "Combate completado.")
+		battle_ui.call("set_hint", "Pulsa Enter o Esc para volver al mapa.")
+
+
+func _return_to_previous_scene_after_escape() -> void:
+	await get_tree().create_timer(0.9).timeout
+	if _state != "ended" or _context.outcome != "escaped":
+		return
+	_leave_battle()
+
+
+func _return_to_map_after_defeat() -> void:
+	await get_tree().create_timer(2.0).timeout
+	if _state != "ended" or _context.outcome != "defeat":
+		return
+	_leave_battle()
 
 
 func _leave_battle() -> void:
@@ -523,19 +551,23 @@ func _refresh_battlefield() -> void:
 	battle_ui.call("set_enemy_header", "Enemigos")
 	battle_ui.call("clear_actor_lists")
 
-	var party_container = battle_ui.call("get_party_container") as VBoxContainer
-	var enemy_container = battle_ui.call("get_enemy_container") as VBoxContainer
+	var party_container = battle_ui.call("get_party_container") as Control
+	var enemy_container = battle_ui.call("get_enemy_container") as Control
+	var party_index = 0
+	var enemy_index = 0
 	for actor in _context.party:
-		_add_actor_card(party_container, actor)
+		_add_actor_card(party_container, actor, party_index)
+		party_index += 1
 	for actor in _context.enemies:
-		_add_actor_card(enemy_container, actor)
+		_add_actor_card(enemy_container, actor, enemy_index)
+		enemy_index += 1
 
 	var current_actor = _context.get_actor(_context.current_actor_id)
 	_update_turn_info(current_actor)
 	battle_ui.call("set_log_lines", _context.get_log_lines())
 
 
-func _add_actor_card(container: VBoxContainer, actor_data: Dictionary) -> void:
+func _add_actor_card(container: Control, actor_data: Dictionary, slot_index: int) -> void:
 	if container == null:
 		return
 
@@ -545,6 +577,7 @@ func _add_actor_card(container: VBoxContainer, actor_data: Dictionary) -> void:
 
 	var actor_copy = actor_data.duplicate(true)
 	actor_copy["is_current_turn"] = int(actor_copy.get("battle_id", -1)) == _context.current_actor_id
+	actor_copy["battle_slot_index"] = slot_index
 	container.add_child(actor_card)
 	if actor_card.has_method("apply_actor_data"):
 		actor_card.call("apply_actor_data", actor_copy)
@@ -577,6 +610,39 @@ func _format_turn_queue(queue_ids: Array) -> String:
 	if queue_ids.size() > names.size():
 		queue_text += " -> ..."
 	return queue_text
+
+
+func _format_skill_detail(skill: Dictionary) -> String:
+	var damage = int(skill.get("damage", 0))
+	var effect_text = "Dano %d" % damage
+	if damage < 0:
+		effect_text = "Cura %d" % abs(damage)
+
+	return "%s | MP %d | CD %d | %s" % [
+		effect_text,
+		int(skill.get("mana_cost", 0)),
+		int(skill.get("cooldown_turns", 0)),
+		str(skill.get("damage_type", "physical")).capitalize()
+	]
+
+
+func _format_item_detail(item: Dictionary) -> String:
+	var effect_data = item.get("effect_data", {})
+	if effect_data is String:
+		effect_data = JSON.parse_string(effect_data)
+	if effect_data == null or effect_data is not Dictionary:
+		effect_data = {}
+
+	var details: Array = []
+	if effect_data.has("heal_hp"):
+		details.append("Cura HP %d" % int(effect_data.get("heal_hp", 0)))
+	if effect_data.has("heal_mp"):
+		details.append("Restaura MP %d" % int(effect_data.get("heal_mp", 0)))
+	if effect_data.has("cure_status"):
+		details.append("Cura estado")
+	if details.is_empty():
+		details.append(str(item.get("description", "Sin efecto de combate")))
+	return " | ".join(details)
 
 
 func _extract_actor_ids(actors: Array) -> Array:
