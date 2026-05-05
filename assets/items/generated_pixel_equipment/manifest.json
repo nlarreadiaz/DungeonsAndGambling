@@ -1,0 +1,252 @@
+﻿[
+    {
+        "file":  "armor_01.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_02.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_03.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_04.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_05.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_06.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_07.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_08.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_09.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_10.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_11.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_12.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_13.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_14.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_15.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_16.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_17.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_18.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_19.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "armor_20.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "bow_01.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_02.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_03.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_04.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_05.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_06.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_07.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_08.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_09.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "bow_10.png",
+        "size":  "48x48",
+        "category":  "bow"
+    },
+    {
+        "file":  "staff_01.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_02.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_03.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_04.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_05.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_06.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_07.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_08.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_09.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "staff_10.png",
+        "size":  "48x48",
+        "category":  "staff"
+    },
+    {
+        "file":  "sword_01.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_02.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_03.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_04.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_05.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_06.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_07.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_08.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_09.png",
+        "size":  "48x48",
+        "category":  "sword"
+    },
+    {
+        "file":  "sword_10.png",
+        "size":  "48x48",
+        "category":  "sword"
+    }
+]

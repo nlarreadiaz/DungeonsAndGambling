@@ -81,15 +81,15 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_normal"]
 atlas = ExtResource("5_buttons")
-region = Rect2(0, 192, 32, 16)
+region = Rect2(1631, 208, 48, 15)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_pressed"]
 atlas = ExtResource("5_buttons")
-region = Rect2(64, 192, 32, 16)
+region = Rect2(1728, 208, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_hover"]
 atlas = ExtResource("5_buttons")
-region = Rect2(32, 192, 32, 16)
+region = Rect2(1680, 208, 48, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_button"]
 stacked_outline_count = 1
@@ -312,19 +312,20 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -83.0
-offset_top = -15.000002
-offset_right = -52.433964
-offset_bottom = 1.097559
+offset_left = -68.325
+offset_top = -7.200004
+offset_right = -18.619113
+offset_bottom = 8.409753
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(5.3, 4.1)
+scale = Vector2(2.89, 3.485)
 texture_normal = SubResource("AtlasTexture_back_normal")
 texture_pressed = SubResource("AtlasTexture_back_pressed")
 texture_hover = SubResource("AtlasTexture_back_hover")
 ignore_texture_size = true
 
 [node name="Label" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/BackArea/Atras" unique_id=445872260]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.3773587

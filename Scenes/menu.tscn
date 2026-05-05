@@ -3,9 +3,11 @@
 [ext_resource type="Script" uid="uid://b4gifkcfc5s73" path="res://Scripts/menu.gd" id="1_menu"]
 [ext_resource type="Texture2D" uid="uid://by436d5kuhica" path="res://images/1.png" id="2_bg"]
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_buttons"]
+[ext_resource type="Texture2D" uid="uid://bdb5kaf81tdxp" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Play_Blue.png" id="4_play_blue"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="5_label"]
 [ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="6_ribbons"]
 [ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herrería/PNG/House_exterior.png" id="7_house"]
+[ext_resource type="Texture2D" uid="uid://h8ylokby83v4" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Select_Rol_Blue.png" id="8_select_role"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_panel"]
 bg_color = Color(0.047058824, 0.09019608, 0.105882354, 0.88)
@@ -39,22 +41,58 @@ font_color = Color(0.84705883, 0.9490196, 0.91764706, 1)
 outline_size = 2
 outline_color = Color(0.06666667, 0.10980392, 0.1254902, 0.92)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_button_normal"]
-atlas = ExtResource("3_buttons")
-region = Rect2(0, 160, 32, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_play_text_normal"]
+atlas = ExtResource("4_play_blue")
+region = Rect2(0, 0, 48, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_button_pressed"]
-atlas = ExtResource("3_buttons")
-region = Rect2(64, 160, 32, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_play_text_pressed"]
+atlas = ExtResource("4_play_blue")
+region = Rect2(96, 0, 48, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_button_hover"]
-atlas = ExtResource("3_buttons")
-region = Rect2(32, 160, 32, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_play_text_hover"]
+atlas = ExtResource("4_play_blue")
+region = Rect2(48, 0, 48, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_button"]
 stacked_outline_count = 1
 stacked_shadow_count = 1
 stacked_shadow_0/offset = Vector2(1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_select_role_normal"]
+atlas = ExtResource("8_select_role")
+region = Rect2(0, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_select_role_pressed"]
+atlas = ExtResource("8_select_role")
+region = Rect2(96, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_select_role_hover"]
+atlas = ExtResource("8_select_role")
+region = Rect2(48, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_options_text_normal"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1632, 176, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_options_text_pressed"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1728, 176, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_options_text_hover"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1680, 176, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quit_text_normal"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1632, 144, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quit_text_pressed"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1728, 144, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quit_text_hover"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1680, 144, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_small"]
 atlas = ExtResource("6_ribbons")
@@ -198,20 +236,21 @@ custom_minimum_size = Vector2(0, 178)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PlayButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea"]
+[node name="PlayButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=1925068666]
 layout_mode = 0
-offset_left = 6.0
-offset_top = -1.0
-offset_right = 38.0
-offset_bottom = 15.0
-scale = Vector2(6, 3.4)
+offset_left = 7.0
+offset_top = -6.0
+offset_right = 53.999996
+offset_bottom = 10.0
+scale = Vector2(4, 3.4)
 focus_neighbor_bottom = NodePath("../RoleButton")
-texture_normal = SubResource("AtlasTexture_button_normal")
-texture_pressed = SubResource("AtlasTexture_button_pressed")
-texture_hover = SubResource("AtlasTexture_button_hover")
+texture_normal = SubResource("AtlasTexture_play_text_normal")
+texture_pressed = SubResource("AtlasTexture_play_text_pressed")
+texture_hover = SubResource("AtlasTexture_play_text_hover")
 ignore_texture_size = true
 
-[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton"]
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" unique_id=1079242902]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.49999985
@@ -219,7 +258,7 @@ offset_top = 2.0588238
 offset_right = 112.5
 offset_bottom = 42.058823
 scale = Vector2(0.28, 0.24)
-text = "JUGAR"
+text = "PLAY"
 label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -228,18 +267,19 @@ script = ExtResource("5_label")
 [node name="RoleButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=162885167]
 layout_mode = 0
 offset_left = 6.0
-offset_top = 39.0
-offset_right = 38.0
-offset_bottom = 55.0
-scale = Vector2(6, 3.4)
+offset_top = 37.0
+offset_right = 52.749996
+offset_bottom = 53.0
+scale = Vector2(4, 3.4)
 focus_neighbor_top = NodePath("../PlayButton")
 focus_neighbor_bottom = NodePath("../OptionsButton")
-texture_normal = SubResource("AtlasTexture_button_normal")
-texture_pressed = SubResource("AtlasTexture_button_pressed")
-texture_hover = SubResource("AtlasTexture_button_hover")
+texture_normal = SubResource("AtlasTexture_select_role_normal")
+texture_pressed = SubResource("AtlasTexture_select_role_pressed")
+texture_hover = SubResource("AtlasTexture_select_role_hover")
 ignore_texture_size = true
 
 [node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/RoleButton" unique_id=1009260397]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651
@@ -257,17 +297,18 @@ script = ExtResource("5_label")
 layout_mode = 0
 offset_left = 6.0
 offset_top = 79.0
-offset_right = 38.0
+offset_right = 51.999996
 offset_bottom = 95.0
-scale = Vector2(6, 3.4)
+scale = Vector2(4, 3.4)
 focus_neighbor_top = NodePath("../RoleButton")
 focus_neighbor_bottom = NodePath("../ExitButton")
-texture_normal = SubResource("AtlasTexture_button_normal")
-texture_pressed = SubResource("AtlasTexture_button_pressed")
-texture_hover = SubResource("AtlasTexture_button_hover")
+texture_normal = SubResource("AtlasTexture_options_text_normal")
+texture_pressed = SubResource("AtlasTexture_options_text_pressed")
+texture_hover = SubResource("AtlasTexture_options_text_hover")
 ignore_texture_size = true
 
 [node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/OptionsButton" unique_id=153742705]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651
@@ -285,16 +326,17 @@ script = ExtResource("5_label")
 layout_mode = 0
 offset_left = 4.0
 offset_top = 119.0
-offset_right = 36.0
+offset_right = 51.499996
 offset_bottom = 135.0
-scale = Vector2(6, 3.4)
+scale = Vector2(4, 3.4)
 focus_neighbor_top = NodePath("../OptionsButton")
-texture_normal = SubResource("AtlasTexture_button_normal")
-texture_pressed = SubResource("AtlasTexture_button_pressed")
-texture_hover = SubResource("AtlasTexture_button_hover")
+texture_normal = SubResource("AtlasTexture_quit_text_normal")
+texture_pressed = SubResource("AtlasTexture_quit_text_pressed")
+texture_hover = SubResource("AtlasTexture_quit_text_hover")
 ignore_texture_size = true
 
 [node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/ExitButton" unique_id=1571701515]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 0.16666651

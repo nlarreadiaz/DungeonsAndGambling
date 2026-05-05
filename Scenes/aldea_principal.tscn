@@ -5,9 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://bg70qchfsm56w" path="res://assets/Water_coasts.png" id="3_vqm8v"]
 [ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/player.tscn" id="4_bax37"]
 [ext_resource type="Script" uid="uid://0gmv04ess6qh" path="res://Scripts/aldea_principal.gd" id="5_7361x"]
-[ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herrería/PNG/House_exterior.png" id="6_house_exterior"]
+[ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/HerrerÃƒÂ­a/PNG/House_exterior.png" id="6_house_exterior"]
 [ext_resource type="Texture2D" uid="uid://dvnoux8lyll1y" path="res://assets/Tiled_files/Objects.png" id="7_objects"]
-[ext_resource type="Texture2D" uid="uid://c4r3nlac4oq70" path="res://assets/Herrería/PNG/Walls_street.png" id="8_street"]
+[ext_resource type="Texture2D" uid="uid://c4r3nlac4oq70" path="res://assets/HerrerÃƒÂ­a/PNG/Walls_street.png" id="8_street"]
 [ext_resource type="PackedScene" path="res://Scenes/world/pickup_item.tscn" id="9_pickup_scene"]
 [ext_resource type="Resource" uid="uid://dsbg2fmkmkkp6" path="res://assets/items/item_moneda.tres" id="11_coin_item"]
 [ext_resource type="Texture2D" uid="uid://dbca8hko56o6u" path="res://assets/Boss-DarkQueen/1/Idle.png" id="12_dark_queen"]
@@ -5023,3 +5023,4 @@ shape = SubResource("RectangleShape2D_bounds_vertical_manual")
 position = Vector2(252, -75)
 
 [connection signal="body_entered" from="AldeaManual/PuntosInteres/ReinaOscura/KillZone" to="." method="_on_dark_queen_body_entered"]
+

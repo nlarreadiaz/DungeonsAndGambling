@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_buttons"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4_label"]
 [ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="5_ribbons"]
+[ext_resource type="Texture2D" uid="uid://cnhbojama6yi2" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Back_White.png" id="6_back_white"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_panel"]
 bg_color = Color(0.07058824, 0.12156863, 0.14901961, 0.95)
@@ -77,16 +78,16 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_normal"]
-atlas = ExtResource("3_buttons")
-region = Rect2(0, 64, 32, 16)
+atlas = ExtResource("6_back_white")
+region = Rect2(0, 0, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_pressed"]
-atlas = ExtResource("3_buttons")
-region = Rect2(64, 64, 32, 16)
+atlas = ExtResource("6_back_white")
+region = Rect2(96, 0, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_hover"]
-atlas = ExtResource("3_buttons")
-region = Rect2(32, 64, 32, 16)
+atlas = ExtResource("6_back_white")
+region = Rect2(48, 0, 48, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_button"]
 font_size = 13
@@ -96,6 +97,18 @@ outline_color = Color(0.12941177, 0.18039216, 0.27450982, 0.95)
 stacked_outline_count = 1
 stacked_shadow_count = 1
 stacked_shadow_0/offset = Vector2(1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_menu_normal"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1632, 80, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_menu_pressed"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1728, 80, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_menu_hover"]
+atlas = ExtResource("3_buttons")
+region = Rect2(1680, 80, 48, 16)
 
 [node name="OptionsInGame" type="CanvasLayer" unique_id=487358577]
 layer = 12
@@ -242,11 +255,11 @@ size_flags_horizontal = 3
 
 [node name="BackButton" type="TextureButton" parent="Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=1974226968]
 layout_mode = 0
-offset_left = 18.0
-offset_top = -1.0
-offset_right = 50.0
-offset_bottom = 15.0
-scale = Vector2(6, 4.3)
+offset_left = 66.0
+offset_top = 17.0
+offset_right = 114.0
+offset_bottom = 33.0
+scale = Vector2(2, 2.15)
 focus_neighbor_bottom = NodePath("../MenuButton")
 texture_normal = SubResource("AtlasTexture_back_normal")
 texture_pressed = SubResource("AtlasTexture_back_pressed")
@@ -254,6 +267,7 @@ texture_hover = SubResource("AtlasTexture_back_hover")
 ignore_texture_size = true
 
 [node name="BackLabel" type="Label" parent="Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/ButtonsArea/BackButton" unique_id=830647287]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = -3.0000005
@@ -262,7 +276,7 @@ offset_right = 153.0
 offset_bottom = 40.64482
 scale = Vector2(0.24, 0.22)
 theme_override_font_sizes/font_size = 11
-text = "VOLVER AL JUEGO"
+text = "BACK"
 label_settings = SubResource("LabelSettings_button")
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -270,18 +284,19 @@ script = ExtResource("4_label")
 
 [node name="MenuButton" type="TextureButton" parent="Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=1667850809]
 layout_mode = 0
-offset_left = 17.0
+offset_left = 65.0
 offset_top = 49.0
-offset_right = 49.0
+offset_right = 113.0
 offset_bottom = 65.0
-scale = Vector2(6, 4.3)
+scale = Vector2(2, 2.15)
 focus_neighbor_top = NodePath("../BackButton")
-texture_normal = SubResource("AtlasTexture_back_normal")
-texture_pressed = SubResource("AtlasTexture_back_pressed")
-texture_hover = SubResource("AtlasTexture_back_hover")
+texture_normal = SubResource("AtlasTexture_menu_normal")
+texture_pressed = SubResource("AtlasTexture_menu_pressed")
+texture_hover = SubResource("AtlasTexture_menu_hover")
 ignore_texture_size = true
 
 [node name="MenuLabel" type="Label" parent="Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/ButtonsArea/MenuButton" unique_id=196249044]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 2.7
