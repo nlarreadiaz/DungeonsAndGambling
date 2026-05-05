@@ -98,7 +98,7 @@ stacked_shadow_0/offset = Vector2(1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_small"]
 atlas = ExtResource("8_ribbons")
-region = Rect2(8, 1, 93, 20)
+region = Rect2(8, 1, 65, 20)
 
 [sub_resource type="LabelSettings" id="LabelSettings_badge"]
 font_size = 8
@@ -187,28 +187,30 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -69.0
-offset_right = 69.0
+offset_top = -8.0
+offset_right = 67.0
 offset_bottom = 26.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("AtlasTexture_ribbon_large")
 expand_mode = 1
 
-[node name="Title" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header" unique_id=846291267]
+[node name="Title" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header/Ribbon" unique_id=846291267]
 layout_mode = 0
-offset_top = 16.0
-offset_right = 220.0
-offset_bottom = 38.0
+offset_left = -41.0
+offset_top = -8.0
+offset_right = 179.0
+offset_bottom = 20.0
 text = "OPCIONES"
 label_settings = SubResource("LabelSettings_title")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Subtitle" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header" unique_id=1194762427]
+[node name="Subtitle" type="Label" parent="ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/Header/Ribbon/Title" unique_id=1194762427]
 layout_mode = 0
-offset_top = 38.0
+offset_top = 22.0
 offset_right = 220.0
-offset_bottom = 48.0
+offset_bottom = 35.0
 text = "Ajusta audio, escala y pantalla"
 label_settings = SubResource("LabelSettings_subtitle")
 horizontal_alignment = 1
@@ -314,7 +316,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -68.325
 offset_top = -7.200004
-offset_right = -18.619113
+offset_right = -18.619114
 offset_bottom = 8.409753
 grow_horizontal = 2
 grow_vertical = 2
@@ -367,21 +369,21 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -38.0
-offset_top = -1.0
-offset_right = 74.0
-offset_bottom = 23.0
+offset_left = -55.0
+offset_top = -9.0
+offset_right = 57.0
+offset_bottom = 15.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("AtlasTexture_ribbon_small")
 expand_mode = 1
 
-[node name="Label" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/Badge" unique_id=2124205939]
+[node name="Label" type="Label" parent="ContentCenter/Layout/InfoPanel/MarginContainer/VBoxContainer/Badge/Ribbon" unique_id=2124205939]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 16.0
-offset_right = 125.0
-offset_bottom = 30.0
+offset_left = -3.0
+offset_top = 2.0
+offset_right = 117.0
+offset_bottom = 16.0
 text = "PANTALLA"
 label_settings = SubResource("LabelSettings_badge")
 horizontal_alignment = 1

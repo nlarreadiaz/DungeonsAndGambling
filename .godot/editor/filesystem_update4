@@ -1,8 +1,0 @@
-res://Scenes/menu.tscn
-res://assets/items/item_estrella.tres
-res://assets/items/item_moneda.tres
-res://Scenes/options_ingame.tscn
-res://Scenes/options.tscn
-res://Scenes/ui/inventory_ui.tscn
-res://Scripts/player.gd
-res://Scripts/inventory/inventory_ui.gd
