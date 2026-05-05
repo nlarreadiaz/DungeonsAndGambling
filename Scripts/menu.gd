@@ -35,7 +35,7 @@ func _get_menu_button(primary_name: String, fallback_name: String = "") -> Textu
 
 
 func _on_play_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/aldea_principal.tscn")
+	get_tree().change_scene_to_file("res://Scenes/role_selection.tscn")
 
 
 func _on_role_pressed() -> void:
