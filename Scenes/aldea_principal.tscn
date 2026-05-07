@@ -4292,7 +4292,7 @@ outline_color = Color(0.08, 0.045, 0.025, 0.9)
 shadow_color = Color(0, 0, 0, 0.45)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dialogue_area"]
-radius = 161.63171
+radius = 65.599976
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_0_manual"]
 atlas = ExtResource("12_dark_queen")
