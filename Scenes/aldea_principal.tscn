@@ -4360,7 +4360,7 @@ size = Vector2(1344, 32)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bounds_vertical_manual"]
 size = Vector2(78, 832)
 
-[node name="Aldea principal" type="Node2D" unique_id=410032969]
+[node name="Aldea principal2" type="Node2D" unique_id=410032969]
 position = Vector2(359, 277)
 script = ExtResource("5_7361x")
 
