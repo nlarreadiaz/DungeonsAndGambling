@@ -7,6 +7,8 @@ const TURN_QUEUE_SCRIPT = preload("res://Scripts/battle/turn_queue.gd")
 const ACTION_RESOLVER_SCRIPT = preload("res://Scripts/battle/battle_action_resolver.gd")
 const RESULT_SCRIPT = preload("res://Scripts/battle/battle_result.gd")
 const DisplaySettings = preload("res://Scripts/display_settings.gd")
+const ENEMY_THINK_DELAY = 0.55
+const ACTION_READ_DELAY = 1.45
 
 @onready var battle_ui = $BattleUI
 
@@ -104,7 +106,7 @@ func _begin_enemy_turn(actor: Dictionary) -> void:
 	battle_ui.call("hide_selection")
 	battle_ui.call("set_status", "Turno de %s..." % str(actor.get("name", "Enemigo")))
 	_update_turn_info(actor)
-	await get_tree().create_timer(0.55).timeout
+	await get_tree().create_timer(ENEMY_THINK_DELAY).timeout
 
 	var action = _build_enemy_action(actor)
 	await _execute_action(action)
@@ -354,6 +356,12 @@ func _pick_lowest_hp_target(targets: Array) -> Dictionary:
 func _execute_action(action: Dictionary) -> void:
 	_state = "resolving"
 	battle_ui.call("set_commands_enabled", false)
+	battle_ui.call("hide_selection")
+
+	await _play_actor_action_animation(
+		int(action.get("attacker_id", -1)),
+		str(action.get("type", "attack"))
+	)
 
 	var result = _action_resolver.resolve_action(_context, action)
 	for line in result.get("log_lines", []):
@@ -361,7 +369,7 @@ func _execute_action(action: Dictionary) -> void:
 
 	_persist_action(result)
 	_refresh_battlefield()
-	await get_tree().create_timer(0.55).timeout
+	await get_tree().create_timer(ACTION_READ_DELAY).timeout
 
 	if _check_battle_end():
 		return
@@ -576,11 +584,46 @@ func _add_actor_card(container: Control, actor_data: Dictionary, slot_index: int
 		return
 
 	var actor_copy = actor_data.duplicate(true)
+	actor_card.set_meta("battle_id", int(actor_copy.get("battle_id", -1)))
 	actor_copy["is_current_turn"] = int(actor_copy.get("battle_id", -1)) == _context.current_actor_id
 	actor_copy["battle_slot_index"] = slot_index
+	if battle_ui.has_method("get_actor_slot_position"):
+		actor_copy["battle_stage_position"] = battle_ui.call(
+			"get_actor_slot_position",
+			str(actor_copy.get("side", "party")),
+			slot_index
+		)
 	container.add_child(actor_card)
 	if actor_card.has_method("apply_actor_data"):
 		actor_card.call("apply_actor_data", actor_copy)
+
+
+func _play_actor_action_animation(attacker_id: int, action_type: String) -> void:
+	if action_type == "defend" or action_type == "flee":
+		return
+
+	var attacker = _context.get_actor(attacker_id)
+	if attacker.is_empty():
+		return
+
+	var actor_card = _find_actor_card(attacker_id)
+	if actor_card == null or not actor_card.has_method("play_action_animation"):
+		return
+
+	await actor_card.call("play_action_animation", action_type)
+
+
+func _find_actor_card(actor_id: int) -> Node:
+	for container in [
+		battle_ui.call("get_party_container") as Control,
+		battle_ui.call("get_enemy_container") as Control
+	]:
+		if container == null:
+			continue
+		for child in container.get_children():
+			if int(child.get_meta("battle_id", -1)) == actor_id:
+				return child
+	return null
 
 
 func _update_turn_info(actor: Dictionary) -> void:

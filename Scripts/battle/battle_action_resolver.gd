@@ -55,7 +55,6 @@ func _resolve_attack(context: BattleContext, action: Dictionary) -> Dictionary:
 		target_hp_before,
 		target_hp_after
 	]]
-	log_lines.append(_format_damage_formula(calculation))
 	if not context.is_actor_alive(target_id):
 		log_lines.append("%s ha sido derrotado." % str(target.get("name", "Objetivo")))
 
@@ -138,7 +137,6 @@ func _resolve_skill(context: BattleContext, action: Dictionary) -> Dictionary:
 				heal_before,
 				heal_after
 			])
-			log_lines.append(_format_heal_formula(heal_calculation))
 			continue
 
 		var target_hp_before = int(target.get("current_hp", 0))
@@ -155,7 +153,6 @@ func _resolve_skill(context: BattleContext, action: Dictionary) -> Dictionary:
 			target_hp_before,
 			target_hp_after
 		])
-		log_lines.append(_format_damage_formula(damage_calculation))
 		if not context.is_actor_alive(int(target.get("battle_id", -1))):
 			log_lines.append("%s ha sido derrotado." % str(target.get("name", "Objetivo")))
 
@@ -336,26 +333,6 @@ func _calculate_heal(attacker: Dictionary, base_power: int) -> Dictionary:
 		"stat_bonus": stat_bonus,
 		"final_heal": max(base_power + stat_bonus, 1)
 	}
-
-
-func _format_damage_formula(calculation: Dictionary) -> String:
-	var text = "Calculo: base %d + stats %d - defensa %d = %d." % [
-		int(calculation.get("base_damage", 0)),
-		int(calculation.get("stat_bonus", 0)),
-		int(calculation.get("defense_reduction", 0)),
-		int(calculation.get("final_damage", 0))
-	]
-	if bool(calculation.get("defending", false)):
-		text += " Defensa activa reduce el dano."
-	return text
-
-
-func _format_heal_formula(calculation: Dictionary) -> String:
-	return "Calculo: base %d + bonus %d = %d." % [
-		int(calculation.get("base_heal", 0)),
-		int(calculation.get("stat_bonus", 0)),
-		int(calculation.get("final_heal", 0))
-	]
 
 
 func _resolve_primary_target_database_id(context: BattleContext, target_ids: Array) -> Variant:

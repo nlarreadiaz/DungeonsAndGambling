@@ -67,6 +67,13 @@ offset_bottom = 78.0
 mouse_filter = 2
 stretch_mode = 5
 
+[node name="AnimatedSprite" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(12, 0)
+scale = Vector2(0.6875, 0.6875)
+centered = false
+
 [node name="TurnMarker" type="Label" parent="."]
 layout_mode = 0
 offset_left = -9.0

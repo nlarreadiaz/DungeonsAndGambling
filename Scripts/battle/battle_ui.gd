@@ -12,6 +12,7 @@ const SELECTION_ENTRY_SCENE: PackedScene = preload("res://Scenes/battle/battle_s
 @onready var queue_label: Label = $TopHud/TurnBox/QueueLabel
 @onready var party_container: Control = $StagePanel/Stage/PartyActors
 @onready var enemy_container: Control = $StagePanel/Stage/EnemyActors
+@onready var battle_slots: Control = $StagePanel/Stage/BattleSlots
 @onready var attack_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/AttackButton
 @onready var skill_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/SkillButton
 @onready var item_button: TextureButton = $BottomArea/CommandPanel/MarginContainer/CommandContent/Buttons/ItemButton
@@ -37,6 +38,8 @@ var _selected_index = -1
 
 
 func _ready() -> void:
+	if battle_slots != null:
+		battle_slots.visible = false
 	attack_button.pressed.connect(_on_attack_pressed)
 	skill_button.pressed.connect(_on_skill_pressed)
 	item_button.pressed.connect(_on_item_pressed)
@@ -88,6 +91,25 @@ func get_party_container() -> Control:
 
 func get_enemy_container() -> Control:
 	return enemy_container
+
+
+func get_actor_slot_position(side: String, slot_index: int) -> Vector2:
+	if battle_slots == null:
+		return Vector2.ZERO
+
+	var slot_prefix = "PartySlot"
+	if side == "enemy":
+		slot_prefix = "EnemySlot"
+
+	var slot = battle_slots.get_node_or_null("%s%d" % [slot_prefix, slot_index]) as Control
+	if slot == null:
+		return Vector2.ZERO
+
+	var real_actor = slot.get_node_or_null("RealActor") as Control
+	if real_actor != null:
+		return slot.position + real_actor.position
+
+	return slot.position
 
 
 func set_commands_for_actor(actor_data: Dictionary, has_skills: bool, has_items: bool, can_flee: bool = true) -> void:
@@ -163,8 +185,7 @@ func hide_selection() -> void:
 func set_log_lines(lines: Array) -> void:
 	log_text.clear()
 	var formatted_lines: Array = []
-	var first_visible_line = max(lines.size() - 3, 0)
-	for line_index in range(first_visible_line, lines.size()):
+	for line_index in range(lines.size()):
 		formatted_lines.append("[p]%s[/p]" % str(lines[line_index]))
 	log_text.append_text("\n".join(formatted_lines))
 	log_text.scroll_to_line(max(log_text.get_line_count() - 1, 0))

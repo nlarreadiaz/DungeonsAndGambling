@@ -4,6 +4,23 @@
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://bxr0p7f7i4q4k" path="res://assets/battle/battle_background_pokemon_village.png" id="5_battle_bg"]
+[ext_resource type="Texture2D" uid="uid://osfc8bm8nvbn" path="res://assets/NightBorne.png" id="6_hero_preview"]
+[ext_resource type="Texture2D" uid="uid://d3b7fmgu122fo" path="res://assets/npcs/Peasants_3/Idle.png" id="7_mage_preview"]
+[ext_resource type="Texture2D" uid="uid://b56wavw522nnd" path="res://assets/npcs/Peasants_4/Idle.png" id="8_support_preview"]
+[ext_resource type="Texture2D" uid="uid://dbca8hko56o6u" path="res://assets/Boss-DarkQueen/1/Idle.png" id="9_dark_queen_preview"]
+[ext_resource type="PackedScene" path="res://Scenes/battle/battle_actor.tscn" id="10_battle_actor"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_outcome_title"]
+font_size = 34
+font_color = Color(0.90588236, 0.24313726, 0.21568628, 1)
+outline_size = 6
+outline_color = Color(0.09019608, 0.03529412, 0.043137256, 0.98)
+
+[sub_resource type="LabelSettings" id="LabelSettings_outcome_subtitle"]
+font_size = 11
+font_color = Color(0.96862745, 0.93333334, 0.8509804, 1)
+outline_size = 2
+outline_color = Color(0.09019608, 0.105882354, 0.15686275, 0.96)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stage"]
 bg_color = Color(0.7490196, 0.80784315, 0.87058824, 0.9)
@@ -19,17 +36,33 @@ corner_radius_bottom_left = 2
 shadow_color = Color(0.011764706, 0.019607844, 0.039215688, 0.55)
 shadow_size = 5
 
-[sub_resource type="LabelSettings" id="LabelSettings_title"]
-font_size = 12
-font_color = Color(0.9647059, 0.9411765, 0.7882353, 1)
-outline_size = 2
-outline_color = Color(0.101960786, 0.07450981, 0.050980393, 0.98)
+[sub_resource type="AtlasTexture" id="AtlasTexture_preview_hero"]
+atlas = ExtResource("6_hero_preview")
+region = Rect2(0, 0, 80, 80)
 
 [sub_resource type="LabelSettings" id="LabelSettings_small"]
 font_size = 8
 font_color = Color(0.07450981, 0.105882354, 0.14509805, 1)
 outline_size = 1
 outline_color = Color(0.92156863, 0.9607843, 1, 0.8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_preview_mage"]
+atlas = ExtResource("7_mage_preview")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_preview_support"]
+atlas = ExtResource("8_support_preview")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_preview_dark_queen"]
+atlas = ExtResource("9_dark_queen_preview")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 12
+font_color = Color(0.9647059, 0.9411765, 0.7882353, 1)
+outline_size = 2
+outline_color = Color(0.101960786, 0.07450981, 0.050980393, 0.98)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.78039217, 0.8352941, 0.8980392, 0.96)
@@ -107,18 +140,6 @@ font_color = Color(0.18431373, 0.11372549, 0.09019608, 1)
 outline_size = 1
 outline_color = Color(0.92156863, 0.93333334, 0.8666667, 0.7)
 
-[sub_resource type="LabelSettings" id="LabelSettings_outcome_title"]
-font_size = 34
-font_color = Color(0.90588236, 0.24313726, 0.21568628, 1)
-outline_size = 6
-outline_color = Color(0.09019608, 0.03529412, 0.043137256, 0.98)
-
-[sub_resource type="LabelSettings" id="LabelSettings_outcome_subtitle"]
-font_size = 11
-font_color = Color(0.96862745, 0.93333334, 0.8509804, 1)
-outline_size = 2
-outline_color = Color(0.09019608, 0.105882354, 0.15686275, 0.96)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_button_danger_normal"]
 atlas = ExtResource("3")
 region = Rect2(0, 192, 32, 16)
@@ -150,7 +171,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Shade" type="ColorRect" parent="OutcomeOverlay"]
+[node name="Shade" type="ColorRect" parent="OutcomeOverlay" unique_id=399421509]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -160,7 +181,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.015686275, 0.023529412, 0.043137256, 0.46)
 
-[node name="CenterBox" type="VBoxContainer" parent="OutcomeOverlay"]
+[node name="CenterBox" type="VBoxContainer" parent="OutcomeOverlay" unique_id=1098352863]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -176,16 +197,14 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
-[node name="Title" type="Label" parent="OutcomeOverlay/CenterBox"]
+[node name="Title" type="Label" parent="OutcomeOverlay/CenterBox" unique_id=143154466]
 layout_mode = 2
-mouse_filter = 2
 text = "DERROTA"
 label_settings = SubResource("LabelSettings_outcome_title")
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="OutcomeOverlay/CenterBox"]
+[node name="Subtitle" type="Label" parent="OutcomeOverlay/CenterBox" unique_id=1704588620]
 layout_mode = 2
-mouse_filter = 2
 text = "Regresando al inicio del mapa..."
 label_settings = SubResource("LabelSettings_outcome_subtitle")
 horizontal_alignment = 1
@@ -310,6 +329,208 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="BattleSlots" type="Control" parent="StagePanel/Stage" unique_id=1590667935]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PartySlot0" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=1344108476]
+anchors_preset = 0
+offset_left = 72.0
+offset_top = 54.0
+offset_right = 182.0
+offset_bottom = 132.0
+mouse_filter = 2
+
+[node name="Preview" type="TextureRect" parent="StagePanel/Stage/BattleSlots/PartySlot0" unique_id=757476534]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_left = 2.0
+offset_top = 8.0
+offset_right = 78.0
+offset_bottom = 78.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_preview_hero")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StagePanel/Stage/BattleSlots/PartySlot0" unique_id=417567082]
+visible = false
+layout_mode = 0
+offset_top = -11.0
+offset_right = 84.0
+offset_bottom = 5.0
+text = "Aliado 1"
+label_settings = SubResource("LabelSettings_small")
+
+[node name="RealActor" parent="StagePanel/Stage/BattleSlots/PartySlot0" unique_id=121085144 instance=ExtResource("10_battle_actor")]
+z_index = 40
+anchors_preset = 0
+offset_left = -19.0
+offset_top = -2.0
+offset_right = 91.0
+offset_bottom = 76.0
+editor_preview_enabled = true
+
+[node name="PartySlot1" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=1268327494]
+visible = false
+anchors_preset = 0
+offset_left = 113.0
+offset_top = 61.0
+offset_right = 223.0
+offset_bottom = 139.0
+mouse_filter = 2
+
+[node name="Preview" type="TextureRect" parent="StagePanel/Stage/BattleSlots/PartySlot1" unique_id=1721780908]
+texture_filter = 1
+layout_mode = 0
+offset_left = 7.0
+offset_top = 15.0
+offset_right = 79.0
+offset_bottom = 87.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_preview_mage")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StagePanel/Stage/BattleSlots/PartySlot1" unique_id=1333657145]
+layout_mode = 0
+offset_top = -11.0
+offset_right = 84.0
+offset_bottom = 5.0
+text = "Aliado 2"
+label_settings = SubResource("LabelSettings_small")
+
+[node name="PartySlot2" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=1134947626]
+visible = false
+anchors_preset = 0
+offset_left = 51.0
+offset_top = 63.0
+offset_right = 161.0
+offset_bottom = 141.0
+mouse_filter = 2
+
+[node name="Preview" type="TextureRect" parent="StagePanel/Stage/BattleSlots/PartySlot2" unique_id=1412537043]
+texture_filter = 1
+layout_mode = 0
+offset_left = 7.0
+offset_top = 15.0
+offset_right = 79.0
+offset_bottom = 87.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_preview_support")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StagePanel/Stage/BattleSlots/PartySlot2" unique_id=815332020]
+layout_mode = 0
+offset_top = -11.0
+offset_right = 84.0
+offset_bottom = 5.0
+text = "Aliado 3"
+label_settings = SubResource("LabelSettings_small")
+
+[node name="EnemySlot0" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=1810916203]
+anchors_preset = 0
+offset_left = 282.0
+offset_top = -50.0
+offset_right = 392.0
+offset_bottom = 28.0
+mouse_filter = 2
+
+[node name="Preview" type="TextureRect" parent="StagePanel/Stage/BattleSlots/EnemySlot0" unique_id=25364301]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_left = -8.0
+offset_top = -1.0
+offset_right = 120.0
+offset_bottom = 127.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_preview_dark_queen")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StagePanel/Stage/BattleSlots/EnemySlot0" unique_id=887337651]
+visible = false
+layout_mode = 0
+offset_left = -2.0
+offset_top = -11.0
+offset_right = 104.0
+offset_bottom = 5.0
+text = "Enemigo 1"
+label_settings = SubResource("LabelSettings_small")
+
+[node name="RealActor" parent="StagePanel/Stage/BattleSlots/EnemySlot0" unique_id=748951866 instance=ExtResource("10_battle_actor")]
+z_index = 20
+anchors_preset = 0
+offset_left = 11.0
+offset_top = 30.0
+offset_right = 121.0
+offset_bottom = 108.0
+editor_preview_enabled = true
+editor_preview_side = "enemy"
+editor_preview_name = "Reina Oscura"
+editor_preview_role = "Boss"
+editor_preview_level = 8
+
+[node name="EnemySlot1" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=357607063]
+visible = false
+anchors_preset = 0
+offset_left = 252.0
+offset_top = -50.0
+offset_right = 362.0
+offset_bottom = 28.0
+mouse_filter = 2
+
+[node name="Preview" type="TextureRect" parent="StagePanel/Stage/BattleSlots/EnemySlot1" unique_id=2059787070]
+texture_filter = 1
+layout_mode = 0
+offset_left = 12.0
+offset_right = 100.0
+offset_bottom = 88.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_preview_dark_queen")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StagePanel/Stage/BattleSlots/EnemySlot1" unique_id=2016801511]
+layout_mode = 0
+offset_left = -2.0
+offset_top = -11.0
+offset_right = 104.0
+offset_bottom = 5.0
+text = "Enemigo 2"
+label_settings = SubResource("LabelSettings_small")
+
+[node name="EnemySlot2" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=2040250701]
+visible = false
+anchors_preset = 0
+offset_left = 312.0
+offset_top = -41.0
+offset_right = 422.0
+offset_bottom = 37.0
+mouse_filter = 2
+
+[node name="Preview" type="TextureRect" parent="StagePanel/Stage/BattleSlots/EnemySlot2" unique_id=386597556]
+texture_filter = 1
+layout_mode = 0
+offset_left = 12.0
+offset_right = 100.0
+offset_bottom = 88.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_preview_dark_queen")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="StagePanel/Stage/BattleSlots/EnemySlot2" unique_id=1555757552]
+layout_mode = 0
+offset_left = -2.0
+offset_top = -11.0
+offset_right = 104.0
+offset_bottom = 5.0
+text = "Enemigo 3"
+label_settings = SubResource("LabelSettings_small")
+
 [node name="TopHud" type="HBoxContainer" parent="." unique_id=1055289604]
 layout_mode = 1
 anchors_preset = 10
@@ -418,8 +639,6 @@ size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.043137256, 0.06666667, 0.101960786, 1)
 theme_override_font_sizes/normal_font_size = 8
 bbcode_enabled = true
-fit_content = true
-scroll_active = false
 
 [node name="SelectionPanel" type="PanelContainer" parent="BottomArea/MessageStack" unique_id=559051717]
 visible = false
