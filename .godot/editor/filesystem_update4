@@ -12,3 +12,5 @@ res://Scripts/options_ingame.gd
 res://Scripts/scale_control.gd
 res://assets/items/item_estrella.tres
 res://assets/items/item_moneda.tres
+res://Scenes/cerdillo.tscn
+res://Scripts/cerdillo.gd

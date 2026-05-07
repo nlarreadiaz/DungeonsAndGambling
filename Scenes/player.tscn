@@ -40,7 +40,7 @@ func _physics_process(delta):
 	handle_attack()
 	update_animations()
 
-func handle_movement(delta):
+func handle_movement(_delta):
 	# Solo bloqueamos si REALMENTE está atacando o herido
 	if is_attacking or is_hurt: 
 		velocity = Vector2.ZERO 
@@ -539,4 +539,4 @@ animation = &"daño"
 frame_progress = 0.12073322
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=709968110]
-zoom = Vector2(2.55, 2.55)
+zoom = Vector2(1.55, 1.55)
