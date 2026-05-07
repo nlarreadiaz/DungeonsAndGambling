@@ -3000,7 +3000,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="herrería" type="Node2D" unique_id=1330417833]
+[node name="herreria" type="Node2D" unique_id=1330417833]
 
 [node name="layers" type="Node2D" parent="." unique_id=1332085335]
 
