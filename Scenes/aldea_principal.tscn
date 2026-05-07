@@ -8702,6 +8702,9 @@ texture = ExtResource("14_h8wt0")
 [sub_resource type="TileSet" id="TileSet_e5rbw"]
 sources/0 = SubResource("TileSetAtlasSource_1dl7a")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_smith_entry_area"]
+radius = 62.0
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_dialogue_bubble_restored"]
 atlas = ExtResource("66_ui_all")
 region = Rect2(780, 12, 24, 31)
@@ -9355,6 +9358,15 @@ position = Vector2(354, 51)
 scale = Vector2(1.3124998, 1.3124998)
 texture = ExtResource("10_nv5u5")
 
+[node name="SmithEntryArea" type="Area2D" parent="aldea" unique_id=1232127995]
+position = Vector2(354, 118)
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="aldea/SmithEntryArea" unique_id=39482889]
+position = Vector2(-5, -61)
+shape = SubResource("CircleShape2D_smith_entry_area")
+
 [node name="Fountain" type="Sprite2D" parent="aldea" unique_id=265819281]
 position = Vector2(456, 201.99998)
 scale = Vector2(0.5156249, 0.5156249)
@@ -9574,7 +9586,7 @@ walk_speed = 9.0
 [node name="DialogueIcon" type="Sprite2D" parent="npcs/CampesinoSuperior" unique_id=116478137]
 z_index = 40
 texture_filter = 1
-position = Vector2(52, -30)
+position = Vector2(63.888885, 40.27777)
 scale = Vector2(1.15, 1.15)
 texture = SubResource("AtlasTexture_dialogue_bubble_restored")
 
@@ -9628,7 +9640,8 @@ shape = SubResource("CircleShape2D_dark_queen_zone_restored")
 position = Vector2(18.1875, -76)
 scale = Vector2(1.1367188, 1.0859374)
 sprite_frames = SubResource("SpriteFrames_ygmve")
-frame_progress = 0.49172494
+frame = 3
+frame_progress = 0.3285211
 
 [node name="Vaquilla1" parent="npcs" unique_id=534940220 instance=ExtResource("38_q0vaq")]
 position = Vector2(14, -136)
@@ -9654,16 +9667,19 @@ script = SubResource("GDScript_1qxr5")
 [node name="barco1" type="AnimatedSprite2D" parent="animaciones" unique_id=925678886]
 position = Vector2(302, 656)
 sprite_frames = SubResource("SpriteFrames_wx245")
+autoplay = "default"
 frame_progress = 0.98861206
 
 [node name="barco2" type="AnimatedSprite2D" parent="animaciones" unique_id=1292923012]
 position = Vector2(270, 771)
 sprite_frames = SubResource("SpriteFrames_mw20a")
+autoplay = "default"
 frame_progress = 0.9627572
 
 [node name="barco3" type="AnimatedSprite2D" parent="animaciones" unique_id=433288103]
 position = Vector2(144, 774)
 sprite_frames = SubResource("SpriteFrames_qv6fa")
+autoplay = "default"
 frame_progress = 0.9917047
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="animaciones" unique_id=1027660487]
@@ -9680,6 +9696,8 @@ texture = ExtResource("63_il78g")
 position = Vector2(203, 16)
 texture = ExtResource("34_pjt85")
 
+[connection signal="body_entered" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_entered"]
+[connection signal="body_exited" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_exited"]
 [connection signal="body_entered" from="npcs/CampesinoSuperior/DialogueArea" to="npcs/CampesinoSuperior" method="_on_dialogue_area_body_entered"]
 [connection signal="body_exited" from="npcs/CampesinoSuperior/DialogueArea" to="npcs/CampesinoSuperior" method="_on_dialogue_area_body_exited"]
 [connection signal="body_entered" from="npcs/ReinaOscura/KillZone" to="." method="_on_dark_queen_body_entered"]

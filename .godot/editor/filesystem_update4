@@ -39,3 +39,4 @@ res://Scripts/inventory/item_data.gd
 res://Scripts/world/animated_npc.gd
 res://Scripts/world/pickup_item.gd
 res://Scripts/world/static_animated_sprite.gd
+res://Scripts/herreria.gd

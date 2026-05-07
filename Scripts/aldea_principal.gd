@@ -4,12 +4,15 @@ const OPTIONS_INGAME_SCENE: PackedScene = preload("res://Scenes/options_ingame.t
 
 const PLAYER_NODE_PATH = NodePath("player")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
+const HERRERIA_SCENE = "res://Scenes/herreria.tscn"
+const INTERACT_ACTION = "interact"
 const CAMERA_LIMIT_LEFT = -560
 const CAMERA_LIMIT_TOP = -360
 const CAMERA_LIMIT_RIGHT = 780
 const CAMERA_LIMIT_BOTTOM = 920
 
 var options_ingame: CanvasLayer = null
+var _player_can_enter_herreria = false
 
 
 func _ready() -> void:
@@ -18,6 +21,13 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _is_interact_event(event) and _player_can_enter_herreria:
+		var viewport = get_viewport()
+		if viewport != null:
+			viewport.set_input_as_handled()
+		_try_enter_herreria()
+		return
+
 	if not _is_pause_event(event):
 		return
 
@@ -105,6 +115,36 @@ func _on_dungeon_trap_body_entered(body: Node2D) -> void:
 
 	if player.has_method("recibir_daÃ±o"):
 		player.call("recibir_daÃ±o")
+
+
+func _on_smith_entry_area_body_entered(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_enter_herreria = true
+
+
+func _on_smith_entry_area_body_exited(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_enter_herreria = false
+
+
+func _try_enter_herreria() -> bool:
+	if not _player_can_enter_herreria or is_instance_valid(options_ingame):
+		return false
+
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player != null and player.has_method("is_inventory_open") and bool(player.call("is_inventory_open")):
+		return false
+
+	var tree = get_tree()
+	if tree == null:
+		return false
+
+	return tree.change_scene_to_file(HERRERIA_SCENE) == OK
+
+
+func _is_player_body(body: Node2D) -> bool:
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	return body != null and player != null and body == player
 
 
 func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: String, battle_subtitle: String, status_message: String, return_offset: Vector2, experience_reward: int, gold_reward: int) -> void:
@@ -222,6 +262,21 @@ func _apply_battle_return_position() -> void:
 
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
 		player.global_position = return_data["player_position"]
+
+
+func _is_interact_event(event: InputEvent) -> bool:
+	if event is InputEventKey:
+		var key_event = event as InputEventKey
+		if not key_event.pressed or key_event.echo:
+			return false
+		if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
+			return true
+		return key_event.keycode == KEY_E or key_event.physical_keycode == KEY_E
+
+	if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
+		return true
+
+	return false
 
 
 func _is_pause_event(event: InputEvent) -> bool:
