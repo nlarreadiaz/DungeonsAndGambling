@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2g6yk0qlih1q"
-path="res://.godot/imported/Smith_forge_idle-back_part.png-eeae78333887bcb33cabf43201a0a2d1.ctex"
+path="res://.godot/imported/Smith_forge_idle-back_part.png-14330209cd1959a8bce5107207e91bd7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Herrería/PNG/Smith/Forge/back/Smith_forge_idle-back_part.png"
-dest_files=["res://.godot/imported/Smith_forge_idle-back_part.png-eeae78333887bcb33cabf43201a0a2d1.ctex"]
+source_file="res://assets/Herrería/PNG/ /Forge/back/Smith_forge_idle-back_part.png"
+dest_files=["res://.godot/imported/Smith_forge_idle-back_part.png-14330209cd1959a8bce5107207e91bd7.ctex"]
 
 [params]
 

@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://bl6e70st6teoi"]
+
+[ext_resource type="Texture2D" uid="uid://ca3brf1unigxk" path="res://assets/muelle/Characters/Boy_amazed.png" id="1_yi4pj"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ofy30"]
+height = 26.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5sabh"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(0, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_it4ps"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(32, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_358g3"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(64, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_odedl"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(96, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_03ou2"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(128, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m0bjv"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(160, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ibpid"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(192, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hfor4"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(224, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4g4p3"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(256, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7vnfs"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(288, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_om4dn"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(320, 0, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_811o6"]
+atlas = ExtResource("1_yi4pj")
+region = Rect2(352, 0, 32, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_v0e18"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5sabh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_it4ps")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_358g3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_odedl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_03ou2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m0bjv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ibpid")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hfor4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4g4p3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7vnfs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_om4dn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_811o6")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="pescador" type="CharacterBody2D" unique_id=1351483465]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=662804210]
+position = Vector2(4, -1)
+shape = SubResource("CapsuleShape2D_ofy30")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=632526537]
+sprite_frames = SubResource("SpriteFrames_v0e18")
+autoplay = "default"
+frame_progress = 0.793262

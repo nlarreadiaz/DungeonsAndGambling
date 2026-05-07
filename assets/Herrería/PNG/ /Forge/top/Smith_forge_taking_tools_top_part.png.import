@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://djlrhjo0u2w2s"
-path="res://.godot/imported/Smith_forge_taking_tools_top_part.png-830d0c8533ea84c1119babc510800e11.ctex"
+path="res://.godot/imported/Smith_forge_taking_tools_top_part.png-b8d2abd0c98115f1d8dc179b20fbaa28.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Herrería/PNG/Smith/Forge/top/Smith_forge_taking_tools_top_part.png"
-dest_files=["res://.godot/imported/Smith_forge_taking_tools_top_part.png-830d0c8533ea84c1119babc510800e11.ctex"]
+source_file="res://assets/Herrería/PNG/ /Forge/top/Smith_forge_taking_tools_top_part.png"
+dest_files=["res://.godot/imported/Smith_forge_taking_tools_top_part.png-b8d2abd0c98115f1d8dc179b20fbaa28.ctex"]
 
 [params]
 

@@ -14,3 +14,6 @@ res://assets/items/item_estrella.tres
 res://assets/items/item_moneda.tres
 res://Scenes/cerdillo.tscn
 res://Scripts/cerdillo.gd
+res://Scenes/vaquilla.tscn
+res://Scenes/herreria.tscn
+res://Scenes/pescador.tscn

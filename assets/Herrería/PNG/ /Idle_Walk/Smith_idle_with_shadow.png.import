@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://di8ru1syut03a"
-path="res://.godot/imported/Smith_idle_with_shadow.png-05992f931cc16cc2b0f2e5a24830f244.ctex"
+path="res://.godot/imported/Smith_idle_with_shadow.png-88443bd198ccc67d68492b00851fd43e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Herrería/PNG/Smith/Idle_Walk/Smith_idle_with_shadow.png"
-dest_files=["res://.godot/imported/Smith_idle_with_shadow.png-05992f931cc16cc2b0f2e5a24830f244.ctex"]
+source_file="res://assets/Herrería/PNG/ /Idle_Walk/Smith_idle_with_shadow.png"
+dest_files=["res://.godot/imported/Smith_idle_with_shadow.png-88443bd198ccc67d68492b00851fd43e.ctex"]
 
 [params]
 

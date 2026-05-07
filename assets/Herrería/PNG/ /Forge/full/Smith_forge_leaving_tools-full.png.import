@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cr20cup3gigae"
-path="res://.godot/imported/Smith_forge_leaving_tools-full.png-18f20d238224a278a53ff41f3066383e.ctex"
+path="res://.godot/imported/Smith_forge_leaving_tools-full.png-f71e179ba166e59c80fc4560a1227487.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Herrería/PNG/Smith/Forge/full/Smith_forge_leaving_tools-full.png"
-dest_files=["res://.godot/imported/Smith_forge_leaving_tools-full.png-18f20d238224a278a53ff41f3066383e.ctex"]
+source_file="res://assets/Herrería/PNG/ /Forge/full/Smith_forge_leaving_tools-full.png"
+dest_files=["res://.godot/imported/Smith_forge_leaving_tools-full.png-f71e179ba166e59c80fc4560a1227487.ctex"]
 
 [params]
 
