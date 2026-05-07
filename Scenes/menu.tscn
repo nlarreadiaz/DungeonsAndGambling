@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bdb5kaf81tdxp" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Play_Blue.png" id="4_play_blue"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="5_label"]
 [ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="6_ribbons"]
-[ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herrería/PNG/House_exterior.png" id="7_house"]
+[ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herreria/PNG/House_exterior.png" id="7_house"]
 [ext_resource type="Texture2D" uid="uid://h8ylokby83v4" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Select_Rol_Blue.png" id="8_select_role"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_panel"]
