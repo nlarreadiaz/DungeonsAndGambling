@@ -1,12 +1,12 @@
 [gd_scene format=4 uid="uid://bqv6ekbfrndmp"]
 
-[ext_resource type="Texture2D" uid="uid://d00g0pkw7tkoc" path="res://assets/Herrería/PNG/Walls_interior.png" id="1_164jt"]
-[ext_resource type="Texture2D" uid="uid://b4ockofipsopc" path="res://assets/Herrería/PNG/House_interior_objects.png" id="2_x6fog"]
-[ext_resource type="Texture2D" uid="uid://dqba7jaoj7yh5" path="res://assets/Herrería/PNG/Light_animation.png" id="3_bewk8"]
-[ext_resource type="Texture2D" uid="uid://bbyq56lm5hge5" path="res://assets/Herrería/PNG/water_animation.png" id="4_65dfg"]
-[ext_resource type="Texture2D" uid="uid://buwsvxljivcwq" path="res://assets/Herrería/PNG/Forge_animation.png" id="5_lyb3c"]
-[ext_resource type="Texture2D" uid="uid://bgak8jvxbrmua" path="res://assets/Herrería/Tiled_files/Smith_forge_full.png" id="6_8leyo"]
-[ext_resource type="Texture2D" uid="uid://b41epm1painln" path="res://assets/Herrería/PNG/Torch_animation.png" id="7_j1wxd"]
+[ext_resource type="Texture2D" uid="uid://d00g0pkw7tkoc" path="res://assets/Herreria/PNG/Walls_interior.png" id="1_164jt"]
+[ext_resource type="Texture2D" uid="uid://b4ockofipsopc" path="res://assets/Herreria/PNG/House_interior_objects.png" id="2_x6fog"]
+[ext_resource type="Texture2D" uid="uid://dqba7jaoj7yh5" path="res://assets/Herreria/PNG/Light_animation.png" id="3_bewk8"]
+[ext_resource type="Texture2D" uid="uid://bbyq56lm5hge5" path="res://assets/Herreria/PNG/water_animation.png" id="4_65dfg"]
+[ext_resource type="Texture2D" uid="uid://buwsvxljivcwq" path="res://assets/Herreria/PNG/Forge_animation.png" id="5_lyb3c"]
+[ext_resource type="Texture2D" uid="uid://bgak8jvxbrmua" path="res://assets/Herreria/Tiled_files/Smith_forge_full.png" id="6_8leyo"]
+[ext_resource type="Texture2D" uid="uid://b41epm1painln" path="res://assets/Herreria/PNG/Torch_animation.png" id="7_j1wxd"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p5y6t"]
 texture = ExtResource("1_164jt")
@@ -3038,34 +3038,34 @@ tile_set = SubResource("TileSet_n7al8")
 position = Vector2(200, 120)
 sprite_frames = SubResource("SpriteFrames_1yy5h")
 autoplay = "default"
-frame_progress = 0.30546087
+frame_progress = 0.93279624
 
 [node name="agua" type="AnimatedSprite2D" parent="animaciones" unique_id=1490141819]
 position = Vector2(264, 144)
 sprite_frames = SubResource("SpriteFrames_erucg")
 autoplay = "default"
-frame_progress = 0.35183144
+frame_progress = 0.67009294
 
 [node name="horno" type="AnimatedSprite2D" parent="animaciones" unique_id=1343215151]
 position = Vector2(200, 95)
 sprite_frames = SubResource("SpriteFrames_h8yyi")
 autoplay = "default"
-frame_progress = 0.00075985515
+frame_progress = 0.9111469
 
 [node name="herrero" type="AnimatedSprite2D" parent="animaciones" unique_id=778827]
 position = Vector2(200, 120)
 sprite_frames = SubResource("SpriteFrames_pnt5x")
 autoplay = "default"
-frame_progress = 0.07325186
+frame_progress = 0.8978101
 
 [node name="antorcha1" type="AnimatedSprite2D" parent="animaciones" unique_id=360374370]
 position = Vector2(100, 65)
 sprite_frames = SubResource("SpriteFrames_pgyv1")
 autoplay = "default"
-frame_progress = 0.22284523
+frame_progress = 0.60494214
 
 [node name="antorcha2" type="AnimatedSprite2D" parent="animaciones" unique_id=315286042]
 position = Vector2(309, 66)
 sprite_frames = SubResource("SpriteFrames_pgyv1")
 autoplay = "default"
-frame_progress = 0.32168752
+frame_progress = 0.5541885
