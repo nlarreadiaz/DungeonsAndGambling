@@ -40,3 +40,4 @@ res://Scripts/world/animated_npc.gd
 res://Scripts/world/pickup_item.gd
 res://Scripts/world/static_animated_sprite.gd
 res://Scripts/herreria.gd
+res://Scenes/player.tscn
