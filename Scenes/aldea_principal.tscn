@@ -44,10 +44,10 @@
 [ext_resource type="Texture2D" uid="uid://db86wfxrc4u5k" path="res://assets/decoracion/Ruin3_grass_shadow.png" id="35_0shgk"]
 [ext_resource type="Texture2D" uid="uid://cjkq1pl4861ao" path="res://assets/granja/Sails_animation.png" id="36_t8m5d"]
 [ext_resource type="Texture2D" uid="uid://7jnfbp47x54w" path="res://assets/decoracion/Rpck_grass5.png" id="36_y5njt"]
-[ext_resource type="PackedScene" uid="uid://d3c7s35rdukej" path="res://Scenes/cerdillo.tscn" id="37_8wmw7"]
+[ext_resource type="PackedScene" path="res://Scenes/cerdillo.tscn" id="37_8wmw7"]
 [ext_resource type="Texture2D" uid="uid://c73t2yvb6l242" path="res://assets/decoracion/Rpck_grass4.png" id="37_woitp"]
 [ext_resource type="Texture2D" uid="uid://bmd2gaktlyobc" path="res://assets/decoracion/Rpck_grass2.png" id="38_0shgk"]
-[ext_resource type="PackedScene" uid="uid://duc506l5a46tp" path="res://Scenes/vaquilla.tscn" id="38_q0vaq"]
+[ext_resource type="PackedScene" path="res://Scenes/vaquilla.tscn" id="38_q0vaq"]
 [ext_resource type="Texture2D" uid="uid://fykwbx8vblgh" path="res://assets/decoracion/Flower11.png" id="39_o31p1"]
 [ext_resource type="Texture2D" uid="uid://bexyh6t7rhde3" path="res://assets/decoracion/Flower10.png" id="40_o5cy0"]
 [ext_resource type="Texture2D" uid="uid://caywggkordv8u" path="res://assets/decoracion/Bush9.png" id="41_sos2r"]
@@ -57,12 +57,15 @@
 [ext_resource type="Texture2D" uid="uid://bo43amaog8lxy" path="res://assets/decoracion/grass_element1.png" id="45_h8wt0"]
 [ext_resource type="Texture2D" uid="uid://3fpcmhkdcm4q" path="res://assets/decoracion/Flower9.png" id="46_30w88"]
 [ext_resource type="Texture2D" uid="uid://mynvu40n8vew" path="res://assets/decoracion/Flower4.png" id="47_ncvew"]
-[ext_resource type="PackedScene" uid="uid://bl6e70st6teoi" path="res://Scenes/pescador.tscn" id="57_h8wt0"]
+[ext_resource type="PackedScene" path="res://Scenes/pescador.tscn" id="57_h8wt0"]
 [ext_resource type="Texture2D" uid="uid://n4hsmkjos1u2" path="res://assets/muelle/Boats/Boat1.png" id="58_ncvew"]
 [ext_resource type="Texture2D" uid="uid://bygqgr4cvw7ni" path="res://assets/muelle/Boats/Small_boat_v1_1.png" id="59_il78g"]
 [ext_resource type="Texture2D" uid="uid://c28kblt6jelmb" path="res://assets/muelle/Boats/Boat2.png" id="60_h4gq8"]
 [ext_resource type="Texture2D" uid="uid://cf28nhx57wk2l" path="res://assets/decoracion/Stone5_grass_shadow.png" id="62_ncvew"]
 [ext_resource type="Texture2D" uid="uid://drauymdrn2ah5" path="res://assets/decoracion/Stone4_grass_shadow.png" id="63_il78g"]
+[ext_resource type="PackedScene" path="res://Scenes/world/animated_npc.tscn" id="64_animated_npc"]
+[ext_resource type="Texture2D" uid="uid://dbca8hko56o6u" path="res://assets/Boss-DarkQueen/1/Idle.png" id="65_dark_queen"]
+[ext_resource type="Texture2D" uid="uid://e301shrib62f" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_ALL.png" id="66_ui_all"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fgkqh"]
 texture = ExtResource("1_d5mya")
@@ -8699,6 +8702,96 @@ texture = ExtResource("14_h8wt0")
 [sub_resource type="TileSet" id="TileSet_e5rbw"]
 sources/0 = SubResource("TileSetAtlasSource_1dl7a")
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_dialogue_bubble_restored"]
+atlas = ExtResource("66_ui_all")
+region = Rect2(780, 12, 24, 31)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dialogue_panel_restored"]
+content_margin_left = 7.0
+content_margin_top = 5.0
+content_margin_right = 7.0
+content_margin_bottom = 5.0
+bg_color = Color(0.12, 0.075, 0.045, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.96, 0.72, 0.42, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_dialogue_text_restored"]
+font_size = 14
+font_color = Color(1, 0.93, 0.76, 1)
+outline_size = 2
+outline_color = Color(0.08, 0.045, 0.025, 0.9)
+shadow_color = Color(0, 0, 0, 0.45)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dialogue_area_restored"]
+radius = 92.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_0"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_1"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_2"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_3"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_4"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_5"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dark_queen_idle_6"]
+atlas = ExtResource("65_dark_queen")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dark_queen_idle_restored"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dark_queen_idle_6")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dark_queen_zone_restored"]
+radius = 44.0
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_0shgk"]
 atlas = ExtResource("8_boiju")
 region = Rect2(0, 120, 32, 40)
@@ -9464,11 +9557,72 @@ position = Vector2(-150, -160)
 texture = ExtResource("44_nospq")
 
 [node name="player" parent="." unique_id=479730859 instance=ExtResource("4_bax37")]
-position = Vector2(293, -17.000002)
+z_index = 35
+position = Vector2(360, 132)
 scale = Vector2(0.5361837, 0.5361837)
 SPEED = 75.0
 
 [node name="npcs" type="Node2D" parent="." unique_id=757760745]
+
+[node name="CampesinoSuperior" parent="npcs" unique_id=784577671 instance=ExtResource("64_animated_npc")]
+z_index = 34
+position = Vector2(438, 116)
+scale = Vector2(0.72, 0.72)
+wander_radius = 18.0
+walk_speed = 9.0
+
+[node name="DialogueIcon" type="Sprite2D" parent="npcs/CampesinoSuperior" unique_id=116478137]
+z_index = 40
+texture_filter = 1
+position = Vector2(52, -30)
+scale = Vector2(1.15, 1.15)
+texture = SubResource("AtlasTexture_dialogue_bubble_restored")
+
+[node name="DialogueMessage" type="PanelContainer" parent="npcs/CampesinoSuperior" unique_id=969481510]
+visible = false
+z_index = 45
+offset_left = -86.0
+offset_top = -88.0
+offset_right = 88.0
+offset_bottom = -30.0
+scale = Vector2(1.5, 1.5)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dialogue_panel_restored")
+
+[node name="Message" type="Label" parent="npcs/CampesinoSuperior/DialogueMessage" unique_id=2034309439]
+custom_minimum_size = Vector2(174, 0)
+layout_mode = 2
+text = "veo tu cartera muy llena. Quieres probar suerte!!!"
+label_settings = SubResource("LabelSettings_dialogue_text_restored")
+autowrap_mode = 3
+
+[node name="DialogueArea" type="Area2D" parent="npcs/CampesinoSuperior" unique_id=959767903]
+position = Vector2(64, 64)
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="npcs/CampesinoSuperior/DialogueArea" unique_id=164230254]
+shape = SubResource("CircleShape2D_dialogue_area_restored")
+
+[node name="ReinaOscura" type="Node2D" parent="npcs" unique_id=591778553]
+z_index = 34
+position = Vector2(604, 226)
+
+[node name="DarkQueen" type="AnimatedSprite2D" parent="npcs/ReinaOscura" unique_id=969607953]
+z_index = 12
+texture_filter = 1
+scale = Vector2(0.58, 0.58)
+sprite_frames = SubResource("SpriteFrames_dark_queen_idle_restored")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="KillZone" type="Area2D" parent="npcs/ReinaOscura" unique_id=72018725]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="npcs/ReinaOscura/KillZone" unique_id=1532248872]
+position = Vector2(1, 5)
+shape = SubResource("CircleShape2D_dark_queen_zone_restored")
 
 [node name="puertas" type="AnimatedSprite2D" parent="npcs" unique_id=743801504]
 position = Vector2(18.1875, -76)
@@ -9525,3 +9679,7 @@ texture = ExtResource("63_il78g")
 [node name="Tree5" type="Sprite2D" parent="." unique_id=1733916973]
 position = Vector2(203, 16)
 texture = ExtResource("34_pjt85")
+
+[connection signal="body_entered" from="npcs/CampesinoSuperior/DialogueArea" to="npcs/CampesinoSuperior" method="_on_dialogue_area_body_entered"]
+[connection signal="body_exited" from="npcs/CampesinoSuperior/DialogueArea" to="npcs/CampesinoSuperior" method="_on_dialogue_area_body_exited"]
+[connection signal="body_entered" from="npcs/ReinaOscura/KillZone" to="." method="_on_dark_queen_body_entered"]

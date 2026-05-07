@@ -4,10 +4,10 @@ const OPTIONS_INGAME_SCENE: PackedScene = preload("res://Scenes/options_ingame.t
 
 const PLAYER_NODE_PATH = NodePath("player")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
-const CAMERA_LIMIT_LEFT = 96
-const CAMERA_LIMIT_TOP = 96
-const CAMERA_LIMIT_RIGHT = 2480
-const CAMERA_LIMIT_BOTTOM = 928
+const CAMERA_LIMIT_LEFT = -560
+const CAMERA_LIMIT_TOP = -360
+const CAMERA_LIMIT_RIGHT = 780
+const CAMERA_LIMIT_BOTTOM = 920
 
 var options_ingame: CanvasLayer = null
 
