@@ -55,7 +55,7 @@ func _process(delta: float) -> void:
 
 func _get_random_target_position() -> Vector2:
 	var angle = _rng.randf_range(0.0, TAU)
-	var distance = _rng.randf_range(6.0, wander_radius)
+	var distance = _rng.randf_range(15.0, wander_radius)
 	return _home_position + Vector2(cos(angle), sin(angle)) * distance
 
 
