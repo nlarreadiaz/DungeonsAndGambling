@@ -461,10 +461,10 @@ label_settings = SubResource("LabelSettings_small")
 [node name="RealActor" parent="StagePanel/Stage/BattleSlots/EnemySlot0" unique_id=748951866 instance=ExtResource("10_battle_actor")]
 z_index = 20
 anchors_preset = 0
-offset_left = 8.0
-offset_top = 29.0
-offset_right = 118.0
-offset_bottom = 107.0
+offset_left = 10.0
+offset_top = 25.0
+offset_right = 120.0
+offset_bottom = 103.0
 editor_preview_enabled = true
 editor_preview_side = "enemy"
 editor_preview_name = "Reina Oscura"

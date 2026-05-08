@@ -276,7 +276,7 @@ func _build_muelle_boy_amazed_enemy() -> Dictionary:
 		"sprite_display_width": 56.0,
 		"sprite_display_height": 84.0,
 		"sprite_position_x": 18.0,
-		"sprite_position_y": -2.0,
+		"sprite_position_y": 28.0,
 		"always_use_first_skill": true,
 		"skills": [
 			{

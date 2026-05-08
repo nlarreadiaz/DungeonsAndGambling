@@ -24,3 +24,4 @@ res://Scripts/battle/battle_scene.gd
 res://Scripts/battle/battle_ui.gd
 res://Scripts/battle/battle_result.gd
 res://Scenes/world/vaquilla.tscn
+res://Scenes/battle/battle_ui.tscn
