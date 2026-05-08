@@ -1,7 +1,7 @@
 extends Node2D
 
 const PLAYER_NODE_PATH = NodePath("player")
-const ALDEA_SCENE = "res://Scenes/aldea_principal.tscn"
+const ALDEA_SCENE = "res://Scenes/world/aldea_principal.tscn"
 const INTERACT_ACTION = "interact"
 
 var _player_can_exit = false

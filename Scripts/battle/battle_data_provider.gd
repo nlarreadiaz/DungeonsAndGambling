@@ -349,6 +349,17 @@ func _normalize_enemy_list(raw_enemies: Variant) -> Array:
 			"state": str(enemy.get("state", "normal")),
 			"experience_reward": int(enemy.get("experience_reward", 0)),
 			"gold_reward": int(enemy.get("gold_reward", 0)),
+			"sprite_texture_path": str(enemy.get("sprite_texture_path", "")),
+			"sprite_frame_x": int(enemy.get("sprite_frame_x", 0)),
+			"sprite_frame_y": int(enemy.get("sprite_frame_y", 0)),
+			"sprite_frame_width": int(enemy.get("sprite_frame_width", 0)),
+			"sprite_frame_height": int(enemy.get("sprite_frame_height", 0)),
+			"sprite_display_width": float(enemy.get("sprite_display_width", 0.0)),
+			"sprite_display_height": float(enemy.get("sprite_display_height", 0.0)),
+			"sprite_position_x": float(enemy.get("sprite_position_x", 0.0)),
+			"sprite_position_y": float(enemy.get("sprite_position_y", 0.0)),
+			"sprite_flip_h": bool(enemy.get("sprite_flip_h", false)),
+			"always_use_first_skill": bool(enemy.get("always_use_first_skill", false)),
 			"skills": _normalize_skills(enemy.get("skills", [])),
 			"loot_table": enemy.get("loot_table", [])
 		})

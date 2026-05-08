@@ -34,8 +34,8 @@ func _build_victory_rewards(context: BattleContext) -> Dictionary:
 	}
 
 	for enemy in context.enemies:
-		rewards["experience"] += int(enemy.get("experience_reward", 0))
-		rewards["gold"] += int(enemy.get("gold_reward", 0))
+		rewards["experience"] += _to_int(enemy.get("experience_reward", 0))
+		rewards["gold"] += _to_int(enemy.get("gold_reward", 0))
 		rewards["loot"] += _roll_enemy_loot(enemy)
 
 	return rewards
@@ -48,11 +48,11 @@ func _roll_enemy_loot(enemy: Dictionary) -> Array:
 		for raw_loot in raw_loot_table:
 			if raw_loot is not Dictionary:
 				continue
-			if _rng.randf() > float(raw_loot.get("drop_chance", 0.0)):
+			if _rng.randf() > _to_float(raw_loot.get("drop_chance", 0.0)):
 				continue
 			var quantity = _rng.randi_range(
-				int(raw_loot.get("min_quantity", 1)),
-				int(raw_loot.get("max_quantity", raw_loot.get("min_quantity", 1)))
+				_to_int(raw_loot.get("min_quantity", 1), 1),
+				_to_int(raw_loot.get("max_quantity", raw_loot.get("min_quantity", 1)), 1)
 			)
 			loot_results.append({
 				"item_id": raw_loot.get("item_id", null),
@@ -61,7 +61,7 @@ func _roll_enemy_loot(enemy: Dictionary) -> Array:
 			})
 		return loot_results
 
-	var enemy_template_id = int(enemy.get("enemy_template_id", 0))
+	var enemy_template_id = _to_int(enemy.get("enemy_template_id", 0))
 	if enemy_template_id <= 0:
 		return loot_results
 
@@ -76,11 +76,11 @@ func _roll_enemy_loot(enemy: Dictionary) -> Array:
 	for row in loot_rows:
 		if row is not Dictionary:
 			continue
-		if _rng.randf() > float(row.get("drop_chance", 0.0)):
+		if _rng.randf() > _to_float(row.get("drop_chance", 0.0)):
 			continue
 		var quantity = _rng.randi_range(
-			int(row.get("min_quantity", 1)),
-			int(row.get("max_quantity", row.get("min_quantity", 1)))
+			_to_int(row.get("min_quantity", 1), 1),
+			_to_int(row.get("max_quantity", row.get("min_quantity", 1)), 1)
 		)
 		loot_results.append({
 			"item_id": row.get("item_id", null),
@@ -96,8 +96,8 @@ func _build_summary(context: BattleContext, outcome: String, rewards: Dictionary
 		"victory":
 			var loot_summary = _format_loot(rewards.get("loot", []))
 			return "Victoria. EXP +%d, Oro +%d%s" % [
-				int(rewards.get("experience", 0)),
-				int(rewards.get("gold", 0)),
+				_to_int(rewards.get("experience", 0)),
+				_to_int(rewards.get("gold", 0)),
 				loot_summary
 			]
 		"defeat":
@@ -121,7 +121,7 @@ func _format_loot(loot_entries: Variant) -> String:
 			continue
 		chunks.append("%s x%d" % [
 			str(entry.get("item_name", "Objeto")),
-			int(entry.get("quantity", 1))
+			_to_int(entry.get("quantity", 1), 1)
 		])
 
 	if chunks.is_empty():
@@ -134,3 +134,41 @@ func _get_database_manager() -> Node:
 	if tree == null:
 		return null
 	return tree.root.get_node_or_null("GameDatabase")
+
+
+func _to_int(value: Variant, default_value: int = 0) -> int:
+	if value == null:
+		return default_value
+	if value is int:
+		return value
+	if value is float:
+		return int(value)
+	if value is bool:
+		return 1 if value else 0
+	if value is String:
+		var text = value.strip_edges()
+		if text.is_empty():
+			return default_value
+		if text.is_valid_int():
+			return text.to_int()
+		if text.is_valid_float():
+			return int(text.to_float())
+	return default_value
+
+
+func _to_float(value: Variant, default_value: float = 0.0) -> float:
+	if value == null:
+		return default_value
+	if value is float:
+		return value
+	if value is int:
+		return float(value)
+	if value is bool:
+		return 1.0 if value else 0.0
+	if value is String:
+		var text = value.strip_edges()
+		if text.is_empty():
+			return default_value
+		if text.is_valid_float():
+			return text.to_float()
+	return default_value

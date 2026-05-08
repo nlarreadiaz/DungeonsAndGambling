@@ -1,16 +1,12 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://c1sway3rb5j88"]
 
-[ext_resource type="Texture2D" path="res://assets/muelle/Characters/Old_man_idle.png" id="1_texture"]
-[ext_resource type="Script" path="res://Scripts/world/muelle_wandering_npc.gd" id="2_script"]
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
-radius = 6.0
-height = 18.0
+[ext_resource type="Texture2D" uid="uid://bt842c1ip1trn" path="res://assets/muelle/Characters/Old_man_idle.png" id="1_texture"]
+[ext_resource type="Script" uid="uid://crqwcrokclwj3" path="res://Scripts/world/muelle_wandering_npc.gd" id="2_script"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wander"]
-radius = 44.0
+radius = 110.0409
 
-[node name="MuelleOldManIdleNpc" type="CharacterBody2D"]
+[node name="MuelleOldManIdleNpc" type="CharacterBody2D" unique_id=1945205767]
 script = ExtResource("2_script")
 speed = 14.0
 idle_min_seconds = 1.8
@@ -18,20 +14,17 @@ idle_max_seconds = 4.0
 animation_fps = 5.0
 frame_count = 10
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 6)
-shape = SubResource("CapsuleShape2D_body")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1321600732]
 texture_filter = 1
 texture = ExtResource("1_texture")
-hframes = 10
 offset = Vector2(0, -6)
+hframes = 10
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=222222674]
 one_shot = true
 
-[node name="WanderArea" type="Area2D" parent="."]
+[node name="WanderArea" type="Area2D" parent="." unique_id=16493813]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WanderArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WanderArea" unique_id=6363976]
+position = Vector2(-1, -1)
 shape = SubResource("CircleShape2D_wander")

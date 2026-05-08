@@ -7,8 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://buwsvxljivcwq" path="res://assets/Herreria/PNG/Forge_animation.png" id="5_lyb3c"]
 [ext_resource type="Texture2D" uid="uid://bgak8jvxbrmua" path="res://assets/Herreria/Tiled_files/Smith_forge_full.png" id="6_8leyo"]
 [ext_resource type="Texture2D" uid="uid://b41epm1painln" path="res://assets/Herreria/PNG/Torch_animation.png" id="7_j1wxd"]
-[ext_resource type="Script" path="res://Scripts/herreria.gd" id="8_script"]
-[ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/player.tscn" id="9_player"]
+[ext_resource type="Script" uid="uid://ctroacoev6km" path="res://Scripts/herreria.gd" id="8_script"]
+[ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/world/player.tscn" id="9_player"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p5y6t"]
 texture = ExtResource("1_164jt")
@@ -3082,37 +3082,37 @@ sprite_frames = SubResource("SpriteFrames_pgyv1")
 autoplay = "default"
 frame_progress = 0.5541885
 
-[node name="Limits" type="StaticBody2D" parent="."]
+[node name="Limits" type="StaticBody2D" parent="." unique_id=968905474]
 
-[node name="Top" type="CollisionShape2D" parent="Limits"]
+[node name="Top" type="CollisionShape2D" parent="Limits" unique_id=2106777100]
 position = Vector2(192, 54)
 shape = SubResource("RectangleShape2D_herreria_boundary_horizontal")
 
-[node name="Bottom" type="CollisionShape2D" parent="Limits"]
+[node name="Bottom" type="CollisionShape2D" parent="Limits" unique_id=1371233286]
 position = Vector2(192, 202)
 shape = SubResource("RectangleShape2D_herreria_boundary_horizontal")
 
-[node name="Left" type="CollisionShape2D" parent="Limits"]
+[node name="Left" type="CollisionShape2D" parent="Limits" unique_id=473014308]
 position = Vector2(54, 126)
 shape = SubResource("RectangleShape2D_herreria_boundary_vertical")
 
-[node name="Right" type="CollisionShape2D" parent="Limits"]
+[node name="Right" type="CollisionShape2D" parent="Limits" unique_id=298636395]
 position = Vector2(330, 126)
 shape = SubResource("RectangleShape2D_herreria_boundary_vertical")
 
-[node name="player" parent="." instance=ExtResource("9_player")]
+[node name="player" parent="." unique_id=42828668 instance=ExtResource("9_player")]
 z_index = 12
 position = Vector2(200, 174)
 scale = Vector2(0.4, 0.4)
 SPEED = 80.0
 RUN_SPEED = 125.0
 
-[node name="ExitArea" type="Area2D" parent="."]
+[node name="ExitArea" type="Area2D" parent="." unique_id=447510531]
 position = Vector2(200, 188)
 collision_layer = 0
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitArea" unique_id=661776213]
 shape = SubResource("CircleShape2D_herreria_exit_area")
 
 [connection signal="body_entered" from="ExitArea" to="." method="_on_exit_area_body_entered"]

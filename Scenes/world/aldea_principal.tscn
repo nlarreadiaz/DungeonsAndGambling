@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://do5wb2xx5i43e" path="res://assets/ground_grasss.png" id="2_70vlp"]
 [ext_resource type="Texture2D" uid="uid://fhr4bqdgmg4r" path="res://assets/granja/water_detilazation.png" id="3_0shgk"]
 [ext_resource type="Texture2D" uid="uid://bg70qchfsm56w" path="res://assets/Water_coasts.png" id="3_vqm8v"]
-[ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/player.tscn" id="4_bax37"]
+[ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/world/player.tscn" id="4_bax37"]
 [ext_resource type="Texture2D" uid="uid://4hogvg4yf1ie" path="res://assets/ravenisland/casa1.png" id="5_3bmk2"]
 [ext_resource type="Script" uid="uid://0gmv04ess6qh" path="res://Scripts/aldea_principal.gd" id="5_7361x"]
 [ext_resource type="Texture2D" uid="uid://dpxnk1pnwnoj3" path="res://assets/Houses.png" id="5_ocmsi"]
@@ -44,10 +44,10 @@
 [ext_resource type="Texture2D" uid="uid://db86wfxrc4u5k" path="res://assets/decoracion/Ruin3_grass_shadow.png" id="35_0shgk"]
 [ext_resource type="Texture2D" uid="uid://cjkq1pl4861ao" path="res://assets/granja/Sails_animation.png" id="36_t8m5d"]
 [ext_resource type="Texture2D" uid="uid://7jnfbp47x54w" path="res://assets/decoracion/Rpck_grass5.png" id="36_y5njt"]
-[ext_resource type="PackedScene" uid="uid://d3c7s35rdukej" path="res://Scenes/cerdillo.tscn" id="37_8wmw7"]
+[ext_resource type="PackedScene" uid="uid://d3c7s35rdukej" path="res://Scenes/world/cerdillo.tscn" id="37_8wmw7"]
 [ext_resource type="Texture2D" uid="uid://c73t2yvb6l242" path="res://assets/decoracion/Rpck_grass4.png" id="37_woitp"]
 [ext_resource type="Texture2D" uid="uid://bmd2gaktlyobc" path="res://assets/decoracion/Rpck_grass2.png" id="38_0shgk"]
-[ext_resource type="PackedScene" uid="uid://duc506l5a46tp" path="res://Scenes/vaquilla.tscn" id="38_q0vaq"]
+[ext_resource type="PackedScene" uid="uid://duc506l5a46tp" path="res://Scenes/world/vaquilla.tscn" id="38_q0vaq"]
 [ext_resource type="Texture2D" uid="uid://fykwbx8vblgh" path="res://assets/decoracion/Flower11.png" id="39_o31p1"]
 [ext_resource type="Texture2D" uid="uid://bexyh6t7rhde3" path="res://assets/decoracion/Flower10.png" id="40_o5cy0"]
 [ext_resource type="Texture2D" uid="uid://caywggkordv8u" path="res://assets/decoracion/Bush9.png" id="41_sos2r"]
@@ -57,19 +57,19 @@
 [ext_resource type="Texture2D" uid="uid://bo43amaog8lxy" path="res://assets/decoracion/grass_element1.png" id="45_h8wt0"]
 [ext_resource type="Texture2D" uid="uid://3fpcmhkdcm4q" path="res://assets/decoracion/Flower9.png" id="46_30w88"]
 [ext_resource type="Texture2D" uid="uid://mynvu40n8vew" path="res://assets/decoracion/Flower4.png" id="47_ncvew"]
-[ext_resource type="PackedScene" uid="uid://bl6e70st6teoi" path="res://Scenes/pescador.tscn" id="57_h8wt0"]
+[ext_resource type="PackedScene" uid="uid://bl6e70st6teoi" path="res://Scenes/world/pescador.tscn" id="57_h8wt0"]
 [ext_resource type="Texture2D" uid="uid://n4hsmkjos1u2" path="res://assets/muelle/Boats/Boat1.png" id="58_ncvew"]
 [ext_resource type="Texture2D" uid="uid://bygqgr4cvw7ni" path="res://assets/muelle/Boats/Small_boat_v1_1.png" id="59_il78g"]
 [ext_resource type="Texture2D" uid="uid://c28kblt6jelmb" path="res://assets/muelle/Boats/Boat2.png" id="60_h4gq8"]
 [ext_resource type="Texture2D" uid="uid://cf28nhx57wk2l" path="res://assets/decoracion/Stone5_grass_shadow.png" id="62_ncvew"]
 [ext_resource type="Texture2D" uid="uid://drauymdrn2ah5" path="res://assets/decoracion/Stone4_grass_shadow.png" id="63_il78g"]
-[ext_resource type="PackedScene" path="res://Scenes/world/NPCS/animated_npc.tscn" id="64_animated_npc"]
+[ext_resource type="PackedScene" uid="uid://c767twn3qosde" path="res://Scenes/world/NPCS/animated_npc.tscn" id="64_animated_npc"]
 [ext_resource type="Texture2D" uid="uid://dbca8hko56o6u" path="res://assets/Boss-DarkQueen/1/Idle.png" id="65_dark_queen"]
 [ext_resource type="Texture2D" uid="uid://e301shrib62f" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_ALL.png" id="66_ui_all"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_boy_amazed_npc.tscn" id="67_muelle_boy_amazed"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_boy_looking_npc.tscn" id="68_muelle_boy_looking"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_boy_weaves_npc.tscn" id="69_muelle_boy_weaves"]
-[ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_old_man_idle_npc.tscn" id="70_muelle_old_man_idle"]
+[ext_resource type="PackedScene" uid="uid://c1sway3rb5j88" path="res://Scenes/world/NPCS/muelle_old_man_idle_npc.tscn" id="70_muelle_old_man_idle"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_old_man_orders_npc.tscn" id="71_muelle_old_man_orders"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_seller_gramma_npc.tscn" id="72_muelle_seller"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_cobold_floor_npc.tscn" id="75_muelle_cobold_floor"]
@@ -8713,6 +8713,9 @@ sources/0 = SubResource("TileSetAtlasSource_1dl7a")
 [sub_resource type="CircleShape2D" id="CircleShape2D_smith_entry_area"]
 radius = 62.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_campesino_superior_wander_area"]
+radius = 34.0
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_dialogue_bubble_restored"]
 atlas = ExtResource("66_ui_all")
 region = Rect2(780, 12, 24, 31)
@@ -8838,6 +8841,9 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_muelle_boy_amazed_battle_area"]
+radius = 44.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8wmw7"]
 atlas = ExtResource("36_t8m5d")
@@ -9178,6 +9184,15 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tcsyn"]
+size = Vector2(188.75, 14)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kjjl3"]
+size = Vector2(18, 53)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l2x50"]
+size = Vector2(307.5, 11.5)
 
 [node name="Aldea principal2" type="Node2D" unique_id=410032969]
 script = ExtResource("5_7361x")
@@ -9590,6 +9605,16 @@ position = Vector2(438, 116)
 scale = Vector2(0.72, 0.72)
 wander_radius = 18.0
 walk_speed = 9.0
+min_target_distance = 10.0
+
+[node name="WanderArea" type="Area2D" parent="npcs/CampesinoSuperior" unique_id=88672176]
+collision_layer = 0
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="npcs/CampesinoSuperior/WanderArea" unique_id=262588135]
+position = Vector2(-66.66667, 47.222225)
+shape = SubResource("CircleShape2D_campesino_superior_wander_area")
 
 [node name="DialogueIcon" type="Sprite2D" parent="npcs/CampesinoSuperior" unique_id=116478137]
 z_index = 40
@@ -9664,7 +9689,14 @@ position = Vector2(47, 801)
 
 [node name="MuelleBoyAmazedNpc" parent="npcs" unique_id=1574355486 instance=ExtResource("67_muelle_boy_amazed")]
 z_index = 12
-position = Vector2(-419, 651)
+position = Vector2(-314, 617)
+
+[node name="BattleArea" type="Area2D" parent="npcs/MuelleBoyAmazedNpc" unique_id=509616399]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="npcs/MuelleBoyAmazedNpc/BattleArea" unique_id=105237519]
+shape = SubResource("CircleShape2D_muelle_boy_amazed_battle_area")
 
 [node name="MuelleBoyLookingNpc" parent="npcs" unique_id=551537256 instance=ExtResource("68_muelle_boy_looking")]
 z_index = 12
@@ -9736,8 +9768,35 @@ texture = ExtResource("63_il78g")
 position = Vector2(203, 16)
 texture = ExtResource("34_pjt85")
 
+[node name="Limits" type="StaticBody2D" parent="." unique_id=1359316368]
+
+[node name="Top" type="CollisionShape2D" parent="Limits" unique_id=1428365829]
+position = Vector2(34, -185)
+shape = SubResource("RectangleShape2D_tcsyn")
+
+[node name="Bottom" type="CollisionShape2D" parent="Limits" unique_id=1094094298]
+position = Vector2(33.625, -81)
+shape = SubResource("RectangleShape2D_tcsyn")
+
+[node name="Left" type="CollisionShape2D" parent="Limits" unique_id=1417464336]
+position = Vector2(-65, 137.5)
+shape = SubResource("RectangleShape2D_kjjl3")
+
+[node name="Right" type="CollisionShape2D" parent="Limits" unique_id=1032091885]
+position = Vector2(132, -133.5)
+shape = SubResource("RectangleShape2D_kjjl3")
+
+[node name="Right2" type="CollisionShape2D" parent="Limits" unique_id=1993147442]
+position = Vector2(852, 217)
+shape = SubResource("RectangleShape2D_l2x50")
+
+[node name="Right3" type="CollisionShape2D" parent="Limits" unique_id=48766328]
+position = Vector2(854, 252)
+shape = SubResource("RectangleShape2D_l2x50")
+
 [connection signal="body_entered" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_entered"]
 [connection signal="body_exited" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_exited"]
 [connection signal="body_entered" from="npcs/CampesinoSuperior/DialogueArea" to="npcs/CampesinoSuperior" method="_on_dialogue_area_body_entered"]
 [connection signal="body_exited" from="npcs/CampesinoSuperior/DialogueArea" to="npcs/CampesinoSuperior" method="_on_dialogue_area_body_exited"]
 [connection signal="body_entered" from="npcs/ReinaOscura/KillZone" to="." method="_on_dark_queen_body_entered"]
+[connection signal="body_entered" from="npcs/MuelleBoyAmazedNpc/BattleArea" to="." method="_on_muelle_boy_amazed_battle_area_body_entered"]

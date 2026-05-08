@@ -35,7 +35,7 @@ func _get_menu_button(primary_name: String, fallback_name: String = "") -> Textu
 
 
 func _on_play_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/role_selection.tscn")
+	get_tree().change_scene_to_file("res://Scenes/ui/role_selection.tscn")
 
 
 func _on_role_pressed() -> void:
@@ -43,11 +43,11 @@ func _on_role_pressed() -> void:
 		_on_play_pressed()
 		return
 
-	get_tree().change_scene_to_file("res://Scenes/role_selection.tscn")
+	get_tree().change_scene_to_file("res://Scenes/ui/role_selection.tscn")
 
 
 func _on_options_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/options.tscn")
+	get_tree().change_scene_to_file("res://Scenes/ui/options.tscn")
 
 
 func _on_quit_pressed() -> void:

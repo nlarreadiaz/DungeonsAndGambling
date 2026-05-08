@@ -130,6 +130,8 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	shadow_rect.size = Vector2(66, 6)
 
 	if side == "enemy":
+		if _try_apply_custom_enemy_sprite(actor_data):
+			return
 		_is_dark_queen = true
 		sprite_rect.visible = false
 		animated_sprite.visible = true
@@ -138,9 +140,7 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 		_play_dark_queen_idle()
 		shadow_rect.position = Vector2(23, 75)
 		shadow_rect.size = Vector2(72, 7)
-		status_panel.position = Vector2(-48, 60)
-		status_panel.size = Vector2(84, 38)
-		turn_marker.position = Vector2(-62, 67)
+		_apply_enemy_status_layout()
 		return
 
 	if actor_name.contains("ariadna"):
@@ -167,6 +167,54 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 		status_panel.position.x = status_panel.position.x + 10.0
 		status_panel.size.x = 96.0
 		turn_marker.position.x = turn_marker.position.x + 10.0
+
+
+func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
+	var texture_path = str(actor_data.get("sprite_texture_path", "")).strip_edges()
+	if texture_path.is_empty():
+		return false
+
+	var texture = load(texture_path) as Texture2D
+	if texture == null:
+		push_warning("No se pudo cargar el sprite de enemigo: %s" % texture_path)
+		return false
+
+	var frame_x = int(actor_data.get("sprite_frame_x", 0))
+	var frame_y = int(actor_data.get("sprite_frame_y", 0))
+	var frame_width = int(actor_data.get("sprite_frame_width", 0))
+	var frame_height = int(actor_data.get("sprite_frame_height", 0))
+	if frame_width <= 0:
+		frame_width = texture.get_width()
+	if frame_height <= 0:
+		frame_height = texture.get_height()
+
+	var display_width = float(actor_data.get("sprite_display_width", 0.0))
+	var display_height = float(actor_data.get("sprite_display_height", 0.0))
+	if display_width <= 0.0:
+		display_width = float(frame_width)
+	if display_height <= 0.0:
+		display_height = float(frame_height)
+
+	sprite_rect.texture = _make_atlas_texture(texture, Rect2(frame_x, frame_y, frame_width, frame_height))
+	sprite_rect.visible = true
+	sprite_rect.flip_h = bool(actor_data.get("sprite_flip_h", false))
+	sprite_rect.position = Vector2(
+		float(actor_data.get("sprite_position_x", 0.0)),
+		float(actor_data.get("sprite_position_y", 0.0))
+	)
+	sprite_rect.size = Vector2(display_width, display_height)
+	animated_sprite.visible = false
+	animated_sprite.stop()
+	shadow_rect.position = Vector2(19, 75)
+	shadow_rect.size = Vector2(60, 7)
+	_apply_enemy_status_layout()
+	return true
+
+
+func _apply_enemy_status_layout() -> void:
+	status_panel.position = Vector2(-48, 60)
+	status_panel.size = Vector2(84, 38)
+	turn_marker.position = Vector2(-62, 67)
 
 
 func _apply_status(actor_data: Dictionary) -> void:

@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const MENU_SCENE = "res://Scenes/menu.tscn"
+const MENU_SCENE = "res://Scenes/ui/menu.tscn"
 const VOLUME_SLIDER_PATH = NodePath("Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/VolumeRow/VolumeSlider")
 const FULL_SCREEN_TOGGLE_PATH = NodePath("Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/SettingsRows/FullScreenRow/FullScreenToggle")
 const SETTINGS_PANEL_PATH = NodePath("Root/ContentCenter/Layout/SettingsPanel")

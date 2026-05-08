@@ -73,6 +73,17 @@ func _decorate_actors(raw_actors: Variant, side: String) -> Array:
 			"defending": false,
 			"experience_reward": max(int(raw_actor.get("experience_reward", 0)), 0),
 			"gold_reward": max(int(raw_actor.get("gold_reward", 0)), 0),
+			"sprite_texture_path": str(raw_actor.get("sprite_texture_path", "")),
+			"sprite_frame_x": int(raw_actor.get("sprite_frame_x", 0)),
+			"sprite_frame_y": int(raw_actor.get("sprite_frame_y", 0)),
+			"sprite_frame_width": int(raw_actor.get("sprite_frame_width", 0)),
+			"sprite_frame_height": int(raw_actor.get("sprite_frame_height", 0)),
+			"sprite_display_width": float(raw_actor.get("sprite_display_width", 0.0)),
+			"sprite_display_height": float(raw_actor.get("sprite_display_height", 0.0)),
+			"sprite_position_x": float(raw_actor.get("sprite_position_x", 0.0)),
+			"sprite_position_y": float(raw_actor.get("sprite_position_y", 0.0)),
+			"sprite_flip_h": bool(raw_actor.get("sprite_flip_h", false)),
+			"always_use_first_skill": bool(raw_actor.get("always_use_first_skill", false)),
 			"loot_table": raw_actor.get("loot_table", [])
 		}
 		_next_battle_id += 1

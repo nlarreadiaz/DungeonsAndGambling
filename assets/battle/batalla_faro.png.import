@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://csaiui34cnd5k"
-path="res://.godot/imported/battle_background_lighthouse_close_coast_day.png-e07e9a8a80426767c0c5e277b041e674.ctex"
+path="res://.godot/imported/batalla_faro.png-4c3f880eb16cc458d5d4eec28efe5cc4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/battle/battle_background_lighthouse_close_coast_day.png"
-dest_files=["res://.godot/imported/battle_background_lighthouse_close_coast_day.png-e07e9a8a80426767c0c5e277b041e674.ctex"]
+source_file="res://assets/battle/batalla_faro.png"
+dest_files=["res://.godot/imported/batalla_faro.png-4c3f880eb16cc458d5d4eec28efe5cc4.ctex"]
 
 [params]
 
