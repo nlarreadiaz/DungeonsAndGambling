@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://bqciwycu64uyk"]
+
+[ext_resource type="Script" uid="uid://b2ectrm4xysvm" path="res://Scripts/slots.gd" id="1_slots_script"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2jc64"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lever_handle"]
+radius = 5.5
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lever_knob"]
+radius = 7.5
+
+[sub_resource type="LabelSettings" id="LabelSettings_result"]
+font_size = 10
+font_color = Color(0.95, 0.95, 0.92, 1)
+outline_size = 2
+outline_color = Color(0.08, 0.08, 0.08, 0.95)
+
+[node name="Slots" type="Node2D" unique_id=1976139841]
+script = ExtResource("1_slots_script")
+
+[node name="SlotMachine" type="AnimatedSprite2D" parent="." unique_id=396227654]
+texture_filter = 1
+position = Vector2(240, 128)
+sprite_frames = SubResource("SpriteFrames_2jc64")
+
+[node name="Reels" type="Node2D" parent="SlotMachine" unique_id=667938694]
+z_index = 1
+
+[node name="ReelLeft" type="Sprite2D" parent="SlotMachine/Reels" unique_id=1878987768]
+texture_filter = 1
+position = Vector2(-27, -10)
+
+[node name="ReelCenter" type="Sprite2D" parent="SlotMachine/Reels" unique_id=292662078]
+texture_filter = 1
+position = Vector2(-4, -10)
+
+[node name="ReelRight" type="Sprite2D" parent="SlotMachine/Reels" unique_id=1446011556]
+texture_filter = 1
+position = Vector2(19, -10)
+
+[node name="SlotMask" type="Sprite2D" parent="SlotMachine" unique_id=935760037]
+z_index = 2
+texture_filter = 1
+
+[node name="LeverHitbox" type="Area2D" parent="SlotMachine" unique_id=494993015]
+
+[node name="LeverUpperHandleHitbox" type="CollisionShape2D" parent="SlotMachine/LeverHitbox" unique_id=405697778]
+position = Vector2(55, -9)
+shape = SubResource("CircleShape2D_lever_handle")
+
+[node name="LeverLowerHandleHitbox" type="CollisionShape2D" parent="SlotMachine/LeverHitbox" unique_id=925966623]
+position = Vector2(52, 5)
+shape = SubResource("CircleShape2D_lever_handle")
+
+[node name="LeverKnobHitbox" type="CollisionShape2D" parent="SlotMachine/LeverHitbox" unique_id=1508538745]
+position = Vector2(61, -22)
+shape = SubResource("CircleShape2D_lever_knob")
+
+[node name="ResultLabel" type="Label" parent="." unique_id=1470094484]
+offset_left = 137.0
+offset_top = 220.0
+offset_right = 343.0
+offset_bottom = 245.0
+text = "Tira de la palanca"
+label_settings = SubResource("LabelSettings_result")
+horizontal_alignment = 1

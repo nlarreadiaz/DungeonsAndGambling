@@ -3,18 +3,67 @@ extends Node2D
 const OPTIONS_INGAME_SCENE: PackedScene = preload("res://Scenes/options_ingame.tscn")
 
 const PLAYER_NODE_PATH = NodePath("player")
+const VILLAGE_NODE_PATH = NodePath("aldea")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const CAMERA_LIMIT_LEFT = -560
 const CAMERA_LIMIT_TOP = -360
 const CAMERA_LIMIT_RIGHT = 780
 const CAMERA_LIMIT_BOTTOM = 920
+const BUILDING_FADE_ALPHA := 0.56
+const BUILDING_FADE_SPEED := 7.5
+const DEFAULT_BUILDING_ALPHA := 1.0
+const PLAYER_BEHIND_ALPHA := 0.78
+const PLAYER_FADE_SPEED := 8.5
+const PLAYER_VISUAL_NODE_PATH = NodePath("animaciones")
+const VILLAGE_BUILDINGS = [
+	{
+		"sprite_path": "aldea/Casa1Body/Casa1",
+		"fade_size_ratio": Vector2(0.98, 0.66),
+		"fade_offset_ratio_y": -0.08,
+		"fade_cut_ratio_y": 0.2
+	},
+	{
+		"sprite_path": "aldea/SmithBody/Smith",
+		"fade_size_ratio": Vector2(0.98, 0.67),
+		"fade_offset_ratio_y": -0.09,
+		"fade_cut_ratio_y": 0.2
+	},
+	{
+		"sprite_path": "aldea/Casa2Body/Casa2",
+		"fade_size_ratio": Vector2(0.98, 0.66),
+		"fade_offset_ratio_y": -0.08,
+		"fade_cut_ratio_y": 0.2
+	},
+	{
+		"sprite_path": "aldea/Casa3Body/Casa3",
+		"fade_size_ratio": Vector2(0.96, 0.64),
+		"fade_offset_ratio_y": -0.1,
+		"fade_cut_ratio_y": 0.18
+	},
+	{
+		"sprite_path": "aldea/CathedralBody/Cathedral",
+		"fade_size_ratio": Vector2(0.92, 0.72),
+		"fade_offset_ratio_y": -0.08,
+		"fade_cut_ratio_y": 0.22
+	},
+	{
+		"sprite_path": "aldea/LighthouseBody/Lighthouse",
+		"fade_size_ratio": Vector2(0.68, 0.74),
+		"fade_offset_ratio_y": -0.08,
+		"fade_cut_ratio_y": 0.18
+	}
+]
 
 var options_ingame: CanvasLayer = null
+var _building_fade_data: Array[Dictionary] = []
+var _player_node: Node2D = null
+var _player_visual: CanvasItem = null
 
 
 func _ready() -> void:
 	_apply_battle_return_position()
 	_configure_player_camera()
+	_setup_village_buildings()
 
 
 func _input(event: InputEvent) -> void:
@@ -235,3 +284,132 @@ func _is_pause_event(event: InputEvent) -> bool:
 		)
 
 	return false
+
+
+func _process(delta: float) -> void:
+	if _building_fade_data.is_empty():
+		return
+
+	if _player_node == null or not is_instance_valid(_player_node):
+		_player_node = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+		if _player_node == null:
+			return
+		_player_visual = _resolve_player_visual(_player_node)
+	elif _player_visual == null or not is_instance_valid(_player_visual):
+		_player_visual = _resolve_player_visual(_player_node)
+
+	_update_building_fade(delta)
+
+
+func _setup_village_buildings() -> void:
+	if get_node_or_null(VILLAGE_NODE_PATH) == null:
+		return
+
+	_player_node = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	_player_visual = _resolve_player_visual(_player_node)
+	_building_fade_data.clear()
+
+	for building_variant in VILLAGE_BUILDINGS:
+		var building = building_variant as Dictionary
+		var sprite_path = NodePath(str(building.get("sprite_path", "")))
+		var sprite = get_node_or_null(sprite_path) as Sprite2D
+		if sprite == null:
+			continue
+
+		var sprite_world_size = _get_sprite_world_size(sprite)
+		if sprite_world_size == Vector2.ZERO:
+			continue
+
+		_building_fade_data.append({
+			"sprite": sprite,
+			"world_size": sprite_world_size,
+			"fade_size_ratio": building.get("fade_size_ratio", Vector2(0.95, 0.66)),
+			"fade_offset_ratio_y": float(building.get("fade_offset_ratio_y", -0.1)),
+			"fade_cut_ratio_y": float(building.get("fade_cut_ratio_y", 0.2))
+		})
+
+	set_process(not _building_fade_data.is_empty())
+
+
+func _update_building_fade(delta: float) -> void:
+	var is_player_behind_any_building = false
+
+	for data in _building_fade_data:
+		var sprite = data.get("sprite", null) as Sprite2D
+		if sprite == null or not is_instance_valid(sprite):
+			continue
+
+		var should_fade = _is_player_behind_building(sprite, data)
+		if should_fade:
+			is_player_behind_any_building = true
+		var target_alpha = BUILDING_FADE_ALPHA if should_fade else DEFAULT_BUILDING_ALPHA
+		var current_modulate = sprite.self_modulate
+		current_modulate.a = move_toward(current_modulate.a, target_alpha, BUILDING_FADE_SPEED * delta)
+		sprite.self_modulate = current_modulate
+
+	_update_player_behind_fade(delta, is_player_behind_any_building)
+
+
+func _is_player_behind_building(sprite: Sprite2D, data: Dictionary) -> bool:
+	if _player_node == null:
+		return false
+
+	var world_size = data.get("world_size", Vector2.ZERO) as Vector2
+	if world_size == Vector2.ZERO:
+		return false
+
+	var fade_size_ratio = data.get("fade_size_ratio", Vector2(0.95, 0.66)) as Vector2
+	var fade_offset_ratio_y = float(data.get("fade_offset_ratio_y", -0.1))
+	var fade_cut_ratio_y = float(data.get("fade_cut_ratio_y", 0.2))
+
+	var fade_size = Vector2(
+		world_size.x * fade_size_ratio.x,
+		world_size.y * fade_size_ratio.y
+	)
+	var fade_center_y = world_size.y * fade_offset_ratio_y
+	var local_player_position = sprite.to_local(_player_node.global_position)
+
+	var inside_x = absf(local_player_position.x) <= fade_size.x * 0.5
+	var inside_y = absf(local_player_position.y - fade_center_y) <= fade_size.y * 0.5
+	if not inside_x or not inside_y:
+		return false
+
+	var behind_cut = world_size.y * fade_cut_ratio_y
+	return local_player_position.y <= behind_cut
+
+
+func _get_sprite_world_size(sprite: Sprite2D) -> Vector2:
+	if sprite.texture == null:
+		return Vector2.ZERO
+
+	var texture_size = sprite.texture.get_size()
+	var sprite_scale = Vector2(absf(sprite.scale.x), absf(sprite.scale.y))
+	return Vector2(texture_size.x * sprite_scale.x, texture_size.y * sprite_scale.y)
+
+
+func _update_player_behind_fade(delta: float, should_fade: bool) -> void:
+	if _player_visual == null or not is_instance_valid(_player_visual):
+		if _player_node != null and is_instance_valid(_player_node):
+			_player_visual = _resolve_player_visual(_player_node)
+		if _player_visual == null:
+			return
+
+	var target_alpha = PLAYER_BEHIND_ALPHA if should_fade else DEFAULT_BUILDING_ALPHA
+	var visual_modulate = _player_visual.self_modulate
+	visual_modulate.a = move_toward(visual_modulate.a, target_alpha, PLAYER_FADE_SPEED * delta)
+	_player_visual.self_modulate = visual_modulate
+
+
+func _resolve_player_visual(player: Node2D) -> CanvasItem:
+	if player == null:
+		return null
+
+	var animated_sprite = player.get_node_or_null(PLAYER_VISUAL_NODE_PATH) as CanvasItem
+	if animated_sprite != null:
+		return animated_sprite
+
+	for child in player.get_children():
+		if child is AnimatedSprite2D or child is Sprite2D:
+			return child as CanvasItem
+
+	return null
