@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://clov14uu85opx"
-path="res://.godot/imported/Water_animation3.png-d360d1fb9554ef21f493e7b9b686f335.ctex"
+uid="uid://dpxnk1pnwnoj3"
+path="res://.godot/imported/Houses.png-c60c38411b589358730808f443e48ccc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Water_animation3.png"
-dest_files=["res://.godot/imported/Water_animation3.png-d360d1fb9554ef21f493e7b9b686f335.ctex"]
+source_file="res://assets/Tiled_files/Houses.png"
+dest_files=["res://.godot/imported/Houses.png-c60c38411b589358730808f443e48ccc.ctex"]
 
 [params]
 

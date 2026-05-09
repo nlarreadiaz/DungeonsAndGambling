@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dtn11umacevhn"]
 
-[ext_resource type="Texture2D" uid="uid://osfc8bm8nvbn" path="res://assets/NightBorne.png" id="1_4flbx"]
+[ext_resource type="Texture2D" uid="uid://osfc8bm8nvbn" path="res://assets/Tiled_files/NightBorne.png" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://bnv477m6kva51" path="res://Scripts/player.gd" id="2_ky8r3"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]

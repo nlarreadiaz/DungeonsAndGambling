@@ -1,7 +1,7 @@
 @tool
 extends Control
 
-const HERO_TEXTURE: Texture2D = preload("res://assets/NightBorne.png")
+const HERO_TEXTURE: Texture2D = preload("res://assets/Tiled_files/NightBorne.png")
 const MAGE_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_3/Idle.png")
 const SUPPORT_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_4/Idle.png")
 const DARK_QUEEN_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")

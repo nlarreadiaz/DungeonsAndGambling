@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3"]
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://bxr0p7f7i4q4k" path="res://assets/battle/battle_background_pokemon_village.png" id="5_battle_bg"]
-[ext_resource type="Texture2D" uid="uid://osfc8bm8nvbn" path="res://assets/NightBorne.png" id="6_hero_preview"]
+[ext_resource type="Texture2D" uid="uid://osfc8bm8nvbn" path="res://assets/Tiled_files/NightBorne.png" id="6_hero_preview"]
 [ext_resource type="Texture2D" uid="uid://d3b7fmgu122fo" path="res://assets/npcs/Peasants_3/Idle.png" id="7_mage_preview"]
 [ext_resource type="Texture2D" uid="uid://b56wavw522nnd" path="res://assets/npcs/Peasants_4/Idle.png" id="8_support_preview"]
 [ext_resource type="Texture2D" uid="uid://dbca8hko56o6u" path="res://assets/Boss-DarkQueen/1/Idle.png" id="9_dark_queen_preview"]
@@ -461,10 +461,6 @@ label_settings = SubResource("LabelSettings_small")
 [node name="RealActor" parent="StagePanel/Stage/BattleSlots/EnemySlot0" unique_id=748951866 instance=ExtResource("10_battle_actor")]
 z_index = 20
 anchors_preset = 0
-offset_left = 10.0
-offset_top = 25.0
-offset_right = 120.0
-offset_bottom = 103.0
 editor_preview_enabled = true
 editor_preview_side = "enemy"
 editor_preview_name = "Reina Oscura"

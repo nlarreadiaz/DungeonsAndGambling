@@ -40,3 +40,7 @@ res://Scenes/world/NPCS/muelle_seller_gramma_npc.tscn
 res://default_bus_layout.tres
 res://Scenes/ui/Inicio.tscn
 res://Scripts/main_menu_music.gd
+res://assets/Tiled_files/ground_grasss.png
+res://assets/Tiled_files/NightBorne.png
+res://assets/Tiled_files/Water_coasts.png
+res://Scenes/ui/role_selection.tscn
