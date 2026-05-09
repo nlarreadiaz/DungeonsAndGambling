@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://b41epm1painln" path="res://assets/Herreria/PNG/Torch_animation.png" id="7_j1wxd"]
 [ext_resource type="Script" uid="uid://ctroacoev6km" path="res://Scripts/herreria.gd" id="8_script"]
 [ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/world/player.tscn" id="9_player"]
+[ext_resource type="Texture2D" uid="uid://cjwem13cdpyov" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Pop_Up.png" id="10_dialogue_popup"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p5y6t"]
 texture = ExtResource("1_164jt")
@@ -2952,6 +2953,10 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_smith_dialogue_bubble"]
+atlas = ExtResource("10_dialogue_popup")
+region = Rect2(0, 0, 48, 48)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_dwimj"]
 atlas = ExtResource("7_j1wxd")
 region = Rect2(0, 0, 48, 48)
@@ -3069,6 +3074,13 @@ position = Vector2(200, 120)
 sprite_frames = SubResource("SpriteFrames_pnt5x")
 autoplay = "default"
 frame_progress = 0.8978101
+
+[node name="DialogueBubble" type="Sprite2D" parent="animaciones/herrero" unique_id=544678184]
+z_index = 20
+texture_filter = 1
+position = Vector2(1, -23)
+scale = Vector2(0.65, 0.65)
+texture = SubResource("AtlasTexture_smith_dialogue_bubble")
 
 [node name="antorcha1" type="AnimatedSprite2D" parent="animaciones" unique_id=360374370]
 position = Vector2(100, 65)

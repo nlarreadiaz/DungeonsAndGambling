@@ -7,8 +7,10 @@ const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const HERRERIA_SCENE = "res://Scenes/world/herreria.tscn"
 const INTERACT_ACTION = "interact"
 const SAVE_SLOT_ID = 1
+const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
 const MUELLE_BOY_AMAZED_ENCOUNTER_ID = "muelle_boy_amazed_lighthouse"
 const MUELLE_BOY_AMAZED_NODE_PATH = NodePath("npcs/MuelleBoyAmazedNpc")
+const MUELLE_BOY_AMAZED_BATTLE_AREA_PATH = NodePath("npcs/MuelleBoyAmazedNpc/BattleArea")
 const FARO_BATTLE_BACKGROUND_PATH = "res://assets/battle/batalla_faro.png"
 const MUELLE_BOY_AMAZED_SPRITE_PATH = "res://assets/muelle/Characters/Boy_amazed.png"
 const CAMERA_LIMIT_LEFT = -560
@@ -18,6 +20,8 @@ const CAMERA_LIMIT_BOTTOM = 920
 
 var options_ingame: CanvasLayer = null
 var _player_can_enter_herreria = false
+var _muelle_boy_amazed_cooldown_until_msec = 0
+var _muelle_boy_amazed_retry_scheduled = false
 
 
 func _ready() -> void:
@@ -115,6 +119,13 @@ func _on_dungeon_boss_body_entered(body: Node2D) -> void:
 
 
 func _on_muelle_boy_amazed_battle_area_body_entered(body: Node2D) -> void:
+	if not _is_player_body(body):
+		return
+
+	if _is_muelle_boy_amazed_battle_on_cooldown():
+		_schedule_muelle_boy_amazed_battle_retry()
+		return
+
 	_start_battle_encounter(
 		body,
 		MUELLE_BOY_AMAZED_ENCOUNTER_ID,
@@ -331,9 +342,33 @@ func _apply_battle_return_position() -> void:
 
 	if battle_result is Dictionary and str(battle_result.get("outcome", "")) == "victory":
 		_apply_defeated_encounter(str(return_data.get("encounter_id", "")))
+	elif battle_result is Dictionary and str(battle_result.get("outcome", "")) == "escaped":
+		if str(return_data.get("encounter_id", "")) == MUELLE_BOY_AMAZED_ENCOUNTER_ID:
+			_muelle_boy_amazed_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
 
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
 		player.global_position = return_data["player_position"]
+
+
+func _is_muelle_boy_amazed_battle_on_cooldown() -> bool:
+	return Time.get_ticks_msec() < _muelle_boy_amazed_cooldown_until_msec
+
+
+func _schedule_muelle_boy_amazed_battle_retry() -> void:
+	if _muelle_boy_amazed_retry_scheduled:
+		return
+
+	var remaining_msec = max(_muelle_boy_amazed_cooldown_until_msec - Time.get_ticks_msec(), 0)
+	_muelle_boy_amazed_retry_scheduled = true
+	await get_tree().create_timer(float(remaining_msec) / 1000.0).timeout
+	_muelle_boy_amazed_retry_scheduled = false
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var battle_area = get_node_or_null(MUELLE_BOY_AMAZED_BATTLE_AREA_PATH) as Area2D
+	if player == null or battle_area == null:
+		return
+	if battle_area.get_overlapping_bodies().has(player):
+		_on_muelle_boy_amazed_battle_area_body_entered(player)
 
 
 func _apply_defeated_encounter_state() -> void:

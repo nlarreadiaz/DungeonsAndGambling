@@ -66,7 +66,7 @@
 [ext_resource type="PackedScene" uid="uid://c767twn3qosde" path="res://Scenes/world/NPCS/animated_npc.tscn" id="64_animated_npc"]
 [ext_resource type="Texture2D" uid="uid://dbca8hko56o6u" path="res://assets/Boss-DarkQueen/1/Idle.png" id="65_dark_queen"]
 [ext_resource type="Texture2D" uid="uid://e301shrib62f" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_ALL.png" id="66_ui_all"]
-[ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_boy_amazed_npc.tscn" id="67_muelle_boy_amazed"]
+[ext_resource type="PackedScene" uid="uid://bo3et463ao2mu" path="res://Scenes/world/NPCS/muelle_boy_amazed_npc.tscn" id="67_muelle_boy_amazed"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_boy_looking_npc.tscn" id="68_muelle_boy_looking"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_boy_weaves_npc.tscn" id="69_muelle_boy_weaves"]
 [ext_resource type="PackedScene" uid="uid://c1sway3rb5j88" path="res://Scenes/world/NPCS/muelle_old_man_idle_npc.tscn" id="70_muelle_old_man_idle"]
@@ -9217,11 +9217,13 @@ frame_progress = 0.14162947
 [node name="agua2" type="AnimatedSprite2D" parent="TilemapLayers/Background/agua" unique_id=173802559]
 position = Vector2(-44, 143)
 sprite_frames = SubResource("SpriteFrames_ey7f4")
+autoplay = "default"
 frame_progress = 0.9337257
 
 [node name="agua3" type="AnimatedSprite2D" parent="TilemapLayers/Background/agua" unique_id=1958114118]
 position = Vector2(122, 186)
 sprite_frames = SubResource("SpriteFrames_i1v7i")
+autoplay = "default"
 frame_progress = 0.9907524
 
 [node name="Foreground" type="TileMapLayer" parent="TilemapLayers" unique_id=779025327]
@@ -9793,6 +9795,24 @@ shape = SubResource("RectangleShape2D_l2x50")
 [node name="Right3" type="CollisionShape2D" parent="Limits" unique_id=48766328]
 position = Vector2(854, 252)
 shape = SubResource("RectangleShape2D_l2x50")
+
+[node name="agua3" type="AnimatedSprite2D" parent="." unique_id=472062087]
+position = Vector2(205, 657)
+sprite_frames = SubResource("SpriteFrames_i1v7i")
+autoplay = "default"
+frame_progress = 0.9907524
+
+[node name="agua3" type="AnimatedSprite2D" parent="agua3" unique_id=1395532554]
+position = Vector2(134, 121)
+sprite_frames = SubResource("SpriteFrames_i1v7i")
+autoplay = "default"
+frame_progress = 0.9907524
+
+[node name="agua3" type="AnimatedSprite2D" parent="agua3/agua3" unique_id=915375270]
+position = Vector2(-370, 60)
+sprite_frames = SubResource("SpriteFrames_i1v7i")
+autoplay = "default"
+frame_progress = 0.9907524
 
 [connection signal="body_entered" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_entered"]
 [connection signal="body_exited" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_exited"]

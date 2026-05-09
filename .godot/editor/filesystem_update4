@@ -25,3 +25,6 @@ res://Scripts/battle/battle_ui.gd
 res://Scripts/battle/battle_result.gd
 res://Scenes/world/vaquilla.tscn
 res://Scenes/battle/battle_ui.tscn
+res://Scenes/ui/menu.tscn
+res://Scenes/world/NPCS/muelle_boy_amazed_npc.tscn
+res://Scenes/world/herreria.tscn
