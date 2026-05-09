@@ -162,6 +162,31 @@ func get_inventory(character_id: int, save_slot_id: int = 1) -> Array:
 	return select_rows(sql, [save_slot_id, character_id])
 
 
+func get_item_by_name(item_name: String) -> Dictionary:
+	var rows = select_rows(
+		"""
+			SELECT
+				id,
+				name,
+				description,
+				item_type,
+				rarity,
+				price,
+				icon,
+				max_stack,
+				usable_in_battle,
+				effect_data
+			FROM items
+			WHERE name = ?
+			LIMIT 1;
+		""",
+		[item_name]
+	)
+	if rows.is_empty():
+		return {}
+	return rows[0].duplicate(true)
+
+
 func get_character_skills(character_id: int, save_slot_id: int = 1) -> Array:
 	var sql = """
 		SELECT
@@ -316,6 +341,41 @@ func set_inventory_quantity(inventory_id: int, quantity: int) -> bool:
 	if quantity <= 0:
 		return execute("DELETE FROM inventory WHERE id = ?;", [inventory_id])
 	return execute("UPDATE inventory SET quantity = ? WHERE id = ?;", [quantity, inventory_id])
+
+
+func replace_inventory(character_id: int, save_slot_id: int, slot_entries: Array) -> bool:
+	if character_id <= 0:
+		return false
+
+	if not execute("BEGIN TRANSACTION;"):
+		return false
+
+	if not execute("DELETE FROM inventory WHERE save_slot_id = ? AND character_id = ?;", [save_slot_id, character_id]):
+		execute("ROLLBACK;")
+		return false
+
+	for raw_entry in slot_entries:
+		if raw_entry is not Dictionary:
+			continue
+
+		var item_id = int(raw_entry.get("item_id", 0))
+		var quantity = int(raw_entry.get("quantity", 0))
+		var slot_index = int(raw_entry.get("slot_index", -1))
+		if item_id <= 0 or quantity <= 0 or slot_index < 0:
+			continue
+
+		var row_id = insert_row("inventory", {
+			"save_slot_id": save_slot_id,
+			"character_id": character_id,
+			"item_id": item_id,
+			"quantity": quantity,
+			"slot_index": slot_index
+		})
+		if row_id == -1:
+			execute("ROLLBACK;")
+			return false
+
+	return execute("COMMIT;")
 
 
 func set_character_health(character_id: int, new_hp: int, save_slot_id: int = 1) -> bool:

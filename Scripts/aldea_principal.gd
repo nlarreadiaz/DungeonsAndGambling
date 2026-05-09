@@ -8,6 +8,9 @@ const HERRERIA_SCENE = "res://Scenes/world/herreria.tscn"
 const INTERACT_ACTION = "interact"
 const SAVE_SLOT_ID = 1
 const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
+const DARK_QUEEN_GATE_ENCOUNTER_ID = "dark_queen_gate"
+const DUNGEON_QUEEN_SANCTUM_ENCOUNTER_ID = "dungeon_queen_sanctum"
+const DARK_QUEEN_NODE_PATH = NodePath("npcs/ReinaOscura")
 const MUELLE_BOY_AMAZED_ENCOUNTER_ID = "muelle_boy_amazed_lighthouse"
 const MUELLE_BOY_AMAZED_NODE_PATH = NodePath("npcs/MuelleBoyAmazedNpc")
 const MUELLE_BOY_AMAZED_BATTLE_AREA_PATH = NodePath("npcs/MuelleBoyAmazedNpc/BattleArea")
@@ -95,7 +98,7 @@ func _configure_player_camera() -> void:
 func _on_dark_queen_body_entered(body: Node2D) -> void:
 	_start_battle_encounter(
 		body,
-		"dark_queen_gate",
+		DARK_QUEEN_GATE_ENCOUNTER_ID,
 		"Emboscada de la Reina Oscura",
 		"El mapa da paso a un combate clasico por turnos.",
 		"La Reina Oscura te desafia. Selecciona comandos, objetivos y resiste su magia.",
@@ -108,7 +111,7 @@ func _on_dark_queen_body_entered(body: Node2D) -> void:
 func _on_dungeon_boss_body_entered(body: Node2D) -> void:
 	_start_battle_encounter(
 		body,
-		"dungeon_queen_sanctum",
+		DUNGEON_QUEEN_SANCTUM_ENCOUNTER_ID,
 		"Santuario de la Reina Oscura",
 		"Has llegado al corazon de la dungeon.",
 		"Una presencia oscura emerge del altar. Preparate para un combate decisivo.",
@@ -133,8 +136,8 @@ func _on_muelle_boy_amazed_battle_area_body_entered(body: Node2D) -> void:
 		"El muelle se convierte en un combate rapido.",
 		"MuelleBoyAmazedNpc te desafia junto al faro.",
 		Vector2.ZERO,
-		18,
-		6,
+		1000,
+		1000,
 		[_build_muelle_boy_amazed_enemy()],
 		FARO_BATTLE_BACKGROUND_PATH
 	)
@@ -279,8 +282,8 @@ func _build_muelle_boy_amazed_enemy() -> Dictionary:
 		"defense": 3,
 		"speed": 6,
 		"state": "normal",
-		"experience_reward": 18,
-		"gold_reward": 6,
+		"experience_reward": 1000,
+		"gold_reward": 1000,
 		"sprite_texture_path": MUELLE_BOY_AMAZED_SPRITE_PATH,
 		"sprite_frame_width": 32,
 		"sprite_frame_height": 48,
@@ -387,15 +390,22 @@ func _apply_defeated_encounter_state() -> void:
 		return
 
 	var defeated_encounters = important_flags.get("defeated_encounters", {})
-	if defeated_encounters is Dictionary and bool(defeated_encounters.get(MUELLE_BOY_AMAZED_ENCOUNTER_ID, false)):
-		_apply_defeated_encounter(MUELLE_BOY_AMAZED_ENCOUNTER_ID)
+	if defeated_encounters is String:
+		defeated_encounters = JSON.parse_string(defeated_encounters)
+	if defeated_encounters == null or defeated_encounters is not Dictionary:
+		return
+
+	for encounter_id in defeated_encounters.keys():
+		if bool(defeated_encounters.get(encounter_id, false)):
+			_apply_defeated_encounter(str(encounter_id))
 
 
 func _apply_defeated_encounter(encounter_id: String) -> void:
-	if encounter_id != MUELLE_BOY_AMAZED_ENCOUNTER_ID:
+	var node_path = _get_encounter_npc_path(encounter_id)
+	if str(node_path).is_empty():
 		return
 
-	var npc = get_node_or_null(MUELLE_BOY_AMAZED_NODE_PATH) as Node2D
+	var npc = get_node_or_null(node_path) as Node2D
 	if npc == null:
 		return
 
@@ -405,19 +415,32 @@ func _apply_defeated_encounter(encounter_id: String) -> void:
 		var collision_object = npc as CollisionObject2D
 		collision_object.collision_layer = 0
 		collision_object.collision_mask = 0
+
 	for area in npc.find_children("*", "Area2D", true, false):
 		var area_node = area as Area2D
 		if area_node == null:
 			continue
 		area_node.monitoring = false
 		area_node.monitorable = false
+
 	for collision_shape in npc.find_children("*", "CollisionShape2D", true, false):
 		var shape_node = collision_shape as CollisionShape2D
 		if shape_node == null:
 			continue
 		shape_node.disabled = true
+
 	if not npc.is_queued_for_deletion():
 		npc.queue_free()
+
+
+func _get_encounter_npc_path(encounter_id: String) -> NodePath:
+	match encounter_id:
+		DARK_QUEEN_GATE_ENCOUNTER_ID, DUNGEON_QUEEN_SANCTUM_ENCOUNTER_ID:
+			return DARK_QUEEN_NODE_PATH
+		MUELLE_BOY_AMAZED_ENCOUNTER_ID:
+			return MUELLE_BOY_AMAZED_NODE_PATH
+		_:
+			return NodePath("")
 
 
 func _is_interact_event(event: InputEvent) -> bool:

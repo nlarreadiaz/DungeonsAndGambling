@@ -75,6 +75,9 @@
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_cobold_floor_npc.tscn" id="75_muelle_cobold_floor"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_cobold_shark_npc.tscn" id="76_muelle_cobold_shark"]
 [ext_resource type="AudioStream" uid="uid://cantpeaa644lp" path="res://assets/Music/Mediaval-Village.mp3" id="77_village_music"]
+[ext_resource type="PackedScene" path="res://Scenes/world/pickup_item.tscn" id="78_pickup_item"]
+[ext_resource type="Resource" uid="uid://boufauqh357b2" path="res://assets/items/item_estrella.tres" id="79_item_estrella"]
+[ext_resource type="Resource" uid="uid://dsbg2fmkmkkp6" path="res://assets/items/item_moneda.tres" id="80_item_moneda"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fgkqh"]
 texture = ExtResource("1_d5mya")
@@ -9603,6 +9606,16 @@ z_index = 35
 position = Vector2(360, 132)
 scale = Vector2(0.5361837, 0.5361837)
 SPEED = 75.0
+
+[node name="PickupEstrella" parent="." instance=ExtResource("78_pickup_item")]
+position = Vector2(306, 129)
+item_data = ExtResource("79_item_estrella")
+amount = 3
+
+[node name="PickupMoneda" parent="." instance=ExtResource("78_pickup_item")]
+position = Vector2(421, 130)
+item_data = ExtResource("80_item_moneda")
+amount = 5
 
 [node name="npcs" type="Node2D" parent="." unique_id=757760745]
 

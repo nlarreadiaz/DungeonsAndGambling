@@ -5,6 +5,8 @@ const SQLITE_CLASS_NAME = &"SQLite"
 const TEMPLATE_DATABASE_PATH = "res://Database/game_database.db"
 const RUNTIME_DIRECTORY_PATH = "user://Database"
 const RUNTIME_DATABASE_PATH = "user://Database/game_database.db"
+const FALLBACK_STATE_PATH = "user://Database/fallback_game_state.json"
+const STARTING_GOLD = 235
 const SCHEMA_PATH = "res://Database/schema.sql"
 const SEED_PATH = "res://Database/seed_data.sql"
 const QUERIES_SCRIPT = preload("res://Database/queries.gd")
@@ -15,6 +17,8 @@ var _initialized = false
 var _sqlite_unavailable = false
 var _sqlite_notice_shown = false
 var _selected_player_role_data: Dictionary = {}
+var _fallback_game_states: Dictionary = {}
+var _fallback_state_loaded = false
 
 
 func _ready() -> void:
@@ -150,6 +154,12 @@ func get_inventory(character_id: int, save_slot_id: int = 1) -> Array:
 	return _queries.get_inventory(character_id, save_slot_id)
 
 
+func get_item_by_name(item_name: String) -> Dictionary:
+	if not _ensure_ready():
+		return {}
+	return _queries.get_item_by_name(item_name)
+
+
 func get_character_skills(character_id: int, save_slot_id: int = 1) -> Array:
 	if not _ensure_ready():
 		return []
@@ -170,7 +180,7 @@ func get_enemy_loot(enemy_id: int) -> Array:
 
 func get_game_state(save_slot_id: int = 1) -> Dictionary:
 	if not _ensure_ready():
-		return {}
+		return _get_fallback_game_state(save_slot_id)
 	return _queries.get_game_state(save_slot_id)
 
 
@@ -184,6 +194,12 @@ func set_inventory_quantity(inventory_id: int, quantity: int) -> bool:
 	if not _ensure_ready():
 		return false
 	return _queries.set_inventory_quantity(inventory_id, quantity)
+
+
+func replace_inventory(character_id: int, save_slot_id: int, slot_entries: Array) -> bool:
+	if not _ensure_ready():
+		return false
+	return _queries.replace_inventory(character_id, save_slot_id, slot_entries)
 
 
 func update_character_health(character_id: int, new_hp: int, save_slot_id: int = 1) -> bool:
@@ -218,7 +234,7 @@ func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skil
 
 func add_gold(save_slot_id: int, amount: int) -> bool:
 	if not _ensure_ready():
-		return false
+		return _add_fallback_gold(save_slot_id, amount)
 	return _queries.add_gold(save_slot_id, amount)
 
 
@@ -230,7 +246,7 @@ func equip_item(character_id: int, item_id: int, equip_slot: String, save_slot_i
 
 func save_basic_game_state(save_slot_id: int, state_data: Dictionary) -> bool:
 	if not _ensure_ready():
-		return false
+		return _save_fallback_game_state(save_slot_id, state_data)
 	return _queries.save_basic_game_state(save_slot_id, state_data)
 
 
@@ -320,3 +336,100 @@ func _has_any_save_slot() -> bool:
 
 	var result = _database.get("query_result")
 	return result is Array and not result.is_empty()
+
+
+func _get_fallback_game_state(save_slot_id: int) -> Dictionary:
+	_ensure_fallback_state_loaded()
+	var slot_key = str(save_slot_id)
+	var state = _fallback_game_states.get(slot_key, {})
+	if state is not Dictionary:
+		state = {}
+	if state.is_empty():
+		state = _build_default_fallback_game_state(save_slot_id)
+		_fallback_game_states[slot_key] = state
+		_save_fallback_state_file()
+	return state.duplicate(true)
+
+
+func _add_fallback_gold(save_slot_id: int, amount: int) -> bool:
+	if amount == 0:
+		return true
+
+	var state = _get_fallback_game_state(save_slot_id)
+	state["gold"] = max(int(state.get("gold", 0)) + amount, 0)
+	state["updated_at"] = Time.get_datetime_string_from_system()
+	_fallback_game_states[str(save_slot_id)] = state
+	return _save_fallback_state_file()
+
+
+func _save_fallback_game_state(save_slot_id: int, state_data: Dictionary) -> bool:
+	_ensure_fallback_state_loaded()
+	var slot_key = str(save_slot_id)
+	var existing_state = _fallback_game_states.get(slot_key, {})
+	if existing_state is not Dictionary or existing_state.is_empty():
+		existing_state = _build_default_fallback_game_state(save_slot_id)
+
+	var updated_at = Time.get_datetime_string_from_system()
+	var state: Dictionary = existing_state.duplicate(true)
+	state["id"] = int(state.get("id", save_slot_id))
+	state["save_slot_id"] = save_slot_id
+	state["save_name"] = str(state_data.get("save_name", state.get("save_name", "Partida %d" % save_slot_id)))
+	state["current_location"] = str(state_data.get("current_location", state.get("current_location", "aldea_principal")))
+	state["playtime_seconds"] = max(int(state_data.get("playtime_seconds", state.get("playtime_seconds", 0))), 0)
+	state["gold"] = max(int(state_data.get("gold", state.get("gold", 0))), 0)
+	state["main_progress"] = max(int(state_data.get("main_progress", state.get("main_progress", 0))), 0)
+	state["important_flags"] = state_data.get("important_flags", state.get("important_flags", {}))
+	state["saved_at"] = str(state_data.get("saved_at", updated_at))
+	state["updated_at"] = updated_at
+
+	_fallback_game_states[slot_key] = state
+	return _save_fallback_state_file()
+
+
+func _build_default_fallback_game_state(save_slot_id: int) -> Dictionary:
+	var now = Time.get_datetime_string_from_system()
+	return {
+		"id": save_slot_id,
+		"save_slot_id": save_slot_id,
+		"gold": STARTING_GOLD,
+		"current_location": "aldea_principal",
+		"main_progress": 0,
+		"important_flags": {},
+		"updated_at": now,
+		"save_name": "Partida %d" % save_slot_id,
+		"playtime_seconds": 0,
+		"saved_at": now
+	}
+
+
+func _ensure_fallback_state_loaded() -> void:
+	if _fallback_state_loaded:
+		return
+
+	_fallback_state_loaded = true
+	if not FileAccess.file_exists(FALLBACK_STATE_PATH):
+		return
+
+	var parsed = JSON.parse_string(FileAccess.get_file_as_string(FALLBACK_STATE_PATH))
+	if parsed is not Dictionary:
+		return
+
+	var loaded_states = parsed.get("game_states", {})
+	if loaded_states is not Dictionary:
+		return
+
+	for raw_key in loaded_states.keys():
+		var loaded_state = loaded_states[raw_key]
+		if loaded_state is Dictionary:
+			_fallback_game_states[str(raw_key)] = loaded_state.duplicate(true)
+
+
+func _save_fallback_state_file() -> bool:
+	_ensure_runtime_directory()
+	var file = FileAccess.open(FALLBACK_STATE_PATH, FileAccess.WRITE)
+	if file == null:
+		push_warning("No se pudo guardar el estado de respaldo de la partida.")
+		return false
+
+	file.store_string(JSON.stringify({"game_states": _fallback_game_states}))
+	return true

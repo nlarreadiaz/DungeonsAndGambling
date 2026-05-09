@@ -11,6 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/world/player.tscn" id="9_player"]
 [ext_resource type="Texture2D" uid="uid://cjwem13cdpyov" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Pop_Up.png" id="10_dialogue_popup"]
 [ext_resource type="AudioStream" uid="uid://14op6ho55ik8" path="res://assets/Music/The Bannered Mare.mp3" id="11_blacksmith_music"]
+[ext_resource type="Texture2D" uid="uid://dw2dj0tjwmcv3" path="res://assets/items/generated_pixel_equipment/armor_01.png" id="12_armor_leather"]
+[ext_resource type="Texture2D" uid="uid://brqctrj1e05qk" path="res://assets/items/generated_pixel_equipment/armor_06.png" id="13_armor_mail"]
+[ext_resource type="Texture2D" uid="uid://bw7crhxy5yyfg" path="res://assets/items/generated_pixel_equipment/armor_14.png" id="14_armor_guard"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p5y6t"]
 texture = ExtResource("1_164jt")
@@ -3017,10 +3020,85 @@ size = Vector2(18, 158)
 [sub_resource type="CircleShape2D" id="CircleShape2D_herreria_exit_area"]
 radius = 34.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_smith_interaction_area"]
+radius = 34.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_panel"]
+bg_color = Color(0.16, 0.12, 0.085, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.54, 0.25, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_button"]
+bg_color = Color(0.38, 0.23, 0.12, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.74, 0.5, 0.24, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_button_pressed"]
+bg_color = Color(0.24, 0.15, 0.09, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.76, 0.32, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_button_hover"]
+bg_color = Color(0.48, 0.3, 0.15, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.95, 0.68, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_card"]
+bg_color = Color(0.2, 0.15, 0.105, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.29, 0.15, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_confirmation_panel"]
+bg_color = Color(0.22, 0.16, 0.1, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.62, 0.42, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="herreria" type="Node2D" unique_id=1330417833]
 script = ExtResource("8_script")
 
-[node name="BlacksmithMusic" type="AudioStreamPlayer" parent="."]
+[node name="BlacksmithMusic" type="AudioStreamPlayer" parent="." unique_id=1267803969]
 stream = ExtResource("11_blacksmith_music")
 autoplay = true
 
@@ -3132,5 +3210,279 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ExitArea" unique_id=661776213]
 shape = SubResource("CircleShape2D_herreria_exit_area")
 
+[node name="SmithInteractionArea" type="Area2D" parent="." unique_id=1875204445]
+position = Vector2(200, 120)
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SmithInteractionArea" unique_id=1684022056]
+shape = SubResource("CircleShape2D_smith_interaction_area")
+
+[node name="ShopLayer" type="CanvasLayer" parent="." unique_id=1312446722]
+layer = 12
+
+[node name="ShopRoot" type="Control" parent="ShopLayer" unique_id=41010641]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="ShopLayer/ShopRoot" unique_id=1870841001]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.018, 0.014, 0.45)
+
+[node name="Center" type="CenterContainer" parent="ShopLayer/ShopRoot" unique_id=1957077586]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ShopPanel" type="PanelContainer" parent="ShopLayer/ShopRoot/Center" unique_id=1748907417]
+custom_minimum_size = Vector2(430, 238)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_panel")
+
+[node name="Margin" type="MarginContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel" unique_id=1889406050]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="Layout" type="VBoxContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin" unique_id=1715389076]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="HBoxContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout" unique_id=162299462]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/Header" unique_id=1035841158]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.86, 0.56, 1)
+theme_override_font_sizes/font_size = 14
+text = "Herreria"
+
+[node name="GoldLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/Header" unique_id=1440829969]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.38, 1)
+theme_override_font_sizes/font_size = 12
+text = "Oro: 0"
+
+[node name="CloseButton" type="Button" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/Header" unique_id=177022983]
+custom_minimum_size = Vector2(24, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.8, 0.46, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.82, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_shop_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_shop_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_shop_button_hover")
+text = "X"
+
+[node name="DialogueLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout" unique_id=1151325933]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.9, 0.76, 1)
+theme_override_font_sizes/font_size = 10
+text = "Herrero: Si buscas aguantar mas golpes, tengo piezas recien templadas."
+autowrap_mode = 2
+
+[node name="ShopGrid" type="GridContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout" unique_id=1748006787]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 4
+columns = 3
+
+[node name="LeatherCard" type="PanelContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid" unique_id=1724163784]
+custom_minimum_size = Vector2(126, 92)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_card")
+
+[node name="Margin" type="MarginContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard" unique_id=342832982]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 5
+
+[node name="Layout" type="VBoxContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard/Margin" unique_id=344270511]
+layout_mode = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="IconButton" type="TextureButton" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard/Margin/Layout" unique_id=285972806]
+texture_filter = 1
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+texture_normal = ExtResource("12_armor_leather")
+texture_pressed = ExtResource("12_armor_leather")
+texture_hover = ExtResource("12_armor_leather")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard/Margin/Layout" unique_id=647500533]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_override_font_sizes/font_size = 10
+text = "Cuero"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard/Margin/Layout" unique_id=279026018]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.78, 0.58, 1)
+theme_override_font_sizes/font_size = 8
+text = "+6 DEF | 90 oro"
+horizontal_alignment = 1
+
+[node name="MailCard" type="PanelContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid" unique_id=1043627782]
+custom_minimum_size = Vector2(126, 92)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_card")
+
+[node name="Margin" type="MarginContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard" unique_id=1833456984]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 5
+
+[node name="Layout" type="VBoxContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard/Margin" unique_id=513253809]
+layout_mode = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="IconButton" type="TextureButton" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard/Margin/Layout" unique_id=865898384]
+texture_filter = 1
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+texture_normal = ExtResource("13_armor_mail")
+texture_pressed = ExtResource("13_armor_mail")
+texture_hover = ExtResource("13_armor_mail")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard/Margin/Layout" unique_id=1183003541]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_override_font_sizes/font_size = 10
+text = "Malla"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard/Margin/Layout" unique_id=1395301480]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.78, 0.58, 1)
+theme_override_font_sizes/font_size = 8
+text = "+10 DEF | 145 oro"
+horizontal_alignment = 1
+
+[node name="GuardCard" type="PanelContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid" unique_id=1087190113]
+custom_minimum_size = Vector2(126, 92)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_card")
+
+[node name="Margin" type="MarginContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard" unique_id=2048590293]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 5
+
+[node name="Layout" type="VBoxContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard/Margin" unique_id=1785128517]
+layout_mode = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="IconButton" type="TextureButton" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard/Margin/Layout" unique_id=375840064]
+texture_filter = 1
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+texture_normal = ExtResource("14_armor_guard")
+texture_pressed = ExtResource("14_armor_guard")
+texture_hover = ExtResource("14_armor_guard")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard/Margin/Layout" unique_id=92431829]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_override_font_sizes/font_size = 10
+text = "Guardia"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard/Margin/Layout" unique_id=1480627124]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.78, 0.58, 1)
+theme_override_font_sizes/font_size = 8
+text = "+15 DEF | 220 oro"
+horizontal_alignment = 1
+
+[node name="ConfirmationPanel" type="PanelContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout" unique_id=1819425891]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_confirmation_panel")
+
+[node name="Margin" type="MarginContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel" unique_id=1342945456]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 5
+
+[node name="Row" type="HBoxContainer" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel/Margin" unique_id=961061070]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ConfirmationLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel/Margin/Row" unique_id=1855729922]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.92, 0.72, 1)
+theme_override_font_sizes/font_size = 10
+autowrap_mode = 2
+
+[node name="BuyButton" type="Button" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel/Margin/Row" unique_id=1729099380]
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.8, 0.46, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.82, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_shop_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_shop_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_shop_button_hover")
+text = "Comprar"
+
+[node name="CancelButton" type="Button" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel/Margin/Row" unique_id=1255249282]
+custom_minimum_size = Vector2(70, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.8, 0.46, 1)
+theme_override_colors/font_hover_color = Color(1, 0.96, 0.82, 1)
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_shop_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_shop_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_shop_button_hover")
+text = "Cancelar"
+
+[node name="StatusLabel" type="Label" parent="ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout" unique_id=392217025]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.78, 0.58, 1)
+theme_override_font_sizes/font_size = 9
+
 [connection signal="body_entered" from="ExitArea" to="." method="_on_exit_area_body_entered"]
 [connection signal="body_exited" from="ExitArea" to="." method="_on_exit_area_body_exited"]
+[connection signal="body_entered" from="SmithInteractionArea" to="." method="_on_smith_interaction_area_body_entered"]
+[connection signal="body_exited" from="SmithInteractionArea" to="." method="_on_smith_interaction_area_body_exited"]
