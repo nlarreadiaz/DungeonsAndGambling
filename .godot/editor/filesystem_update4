@@ -28,3 +28,15 @@ res://Scenes/battle/battle_ui.tscn
 res://Scenes/ui/menu.tscn
 res://Scenes/world/NPCS/muelle_boy_amazed_npc.tscn
 res://Scenes/world/herreria.tscn
+res://Scenes/ui/options_ingame.tscn
+res://Scenes/world/pescador.tscn
+res://Scenes/world/player.tscn
+res://Scenes/world/NPCS/muelle_boy_looking_npc.tscn
+res://Scenes/world/NPCS/muelle_boy_weaves_npc.tscn
+res://Scenes/world/NPCS/muelle_cobold_floor_npc.tscn
+res://Scenes/world/NPCS/muelle_cobold_shark_npc.tscn
+res://Scenes/world/NPCS/muelle_old_man_orders_npc.tscn
+res://Scenes/world/NPCS/muelle_seller_gramma_npc.tscn
+res://default_bus_layout.tres
+res://Scenes/ui/Inicio.tscn
+res://Scripts/main_menu_music.gd

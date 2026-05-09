@@ -74,6 +74,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_seller_gramma_npc.tscn" id="72_muelle_seller"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_cobold_floor_npc.tscn" id="75_muelle_cobold_floor"]
 [ext_resource type="PackedScene" path="res://Scenes/world/NPCS/muelle_cobold_shark_npc.tscn" id="76_muelle_cobold_shark"]
+[ext_resource type="AudioStream" uid="uid://cantpeaa644lp" path="res://assets/Music/Mediaval-Village.mp3" id="77_village_music"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fgkqh"]
 texture = ExtResource("1_d5mya")
@@ -9196,6 +9197,10 @@ size = Vector2(307.5, 11.5)
 
 [node name="Aldea principal2" type="Node2D" unique_id=410032969]
 script = ExtResource("5_7361x")
+
+[node name="VillageMusic" type="AudioStreamPlayer" parent="." unique_id=208764326]
+stream = ExtResource("77_village_music")
+autoplay = true
 
 [node name="TilemapLayers" type="Node2D" parent="." unique_id=576793525]
 position = Vector2(0, -2)

@@ -23,6 +23,7 @@ buses/default_bus_layout="uid://cum6pwp8uox18"
 
 BattleManager="*res://Scripts/battle/battle_manager.gd"
 GameDatabase="*res://Database/database_manager.gd"
+MainMenuMusic="*res://Scripts/main_menu_music.gd"
 
 [display]
 

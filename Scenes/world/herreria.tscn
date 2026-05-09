@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://ctroacoev6km" path="res://Scripts/herreria.gd" id="8_script"]
 [ext_resource type="PackedScene" uid="uid://dtn11umacevhn" path="res://Scenes/world/player.tscn" id="9_player"]
 [ext_resource type="Texture2D" uid="uid://cjwem13cdpyov" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Pop_Up.png" id="10_dialogue_popup"]
+[ext_resource type="AudioStream" uid="uid://14op6ho55ik8" path="res://assets/Music/The Bannered Mare.mp3" id="11_blacksmith_music"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_p5y6t"]
 texture = ExtResource("1_164jt")
@@ -3018,6 +3019,10 @@ radius = 34.0
 
 [node name="herreria" type="Node2D" unique_id=1330417833]
 script = ExtResource("8_script")
+
+[node name="BlacksmithMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_blacksmith_music")
+autoplay = true
 
 [node name="layers" type="Node2D" parent="." unique_id=1332085335]
 
