@@ -118,6 +118,7 @@ func _try_exit_herreria() -> bool:
 	if tree == null:
 		return false
 
+	_persist_player_inventory_state()
 	return tree.change_scene_to_file(ALDEA_SCENE) == OK
 
 
@@ -354,6 +355,12 @@ func _lock_player_controls(is_locked: bool) -> void:
 
 	player.set_physics_process(not is_locked)
 	player.set_process_input(not is_locked)
+
+
+func _persist_player_inventory_state() -> void:
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player != null and player.has_method("save_inventory_layout"):
+		player.call("save_inventory_layout")
 
 
 func _is_shop_open() -> bool:

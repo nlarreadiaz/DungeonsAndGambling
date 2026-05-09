@@ -28,7 +28,9 @@ var _muelle_boy_amazed_retry_scheduled = false
 
 
 func _ready() -> void:
-	_apply_battle_return_position()
+	var used_battle_return = _apply_battle_return_position()
+	if not used_battle_return:
+		_apply_saved_player_position()
 	_apply_defeated_encounter_state()
 	_configure_player_camera()
 
@@ -69,10 +71,15 @@ func _open_options_ingame() -> void:
 
 func _on_options_ingame_closed() -> void:
 	options_ingame = null
+	if not is_inside_tree():
+		return
 	_set_tree_paused(false)
 
 
 func _set_tree_paused(is_paused: bool) -> void:
+	if not is_inside_tree():
+		return
+
 	var tree = get_tree()
 	if tree == null:
 		return
@@ -174,6 +181,7 @@ func _try_enter_herreria() -> bool:
 	if tree == null:
 		return false
 
+	_persist_player_inventory_state()
 	return tree.change_scene_to_file(HERRERIA_SCENE) == OK
 
 
@@ -218,6 +226,7 @@ func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: S
 	if not battle_background_path.strip_edges().is_empty():
 		encounter_data["battle_background_path"] = battle_background_path
 
+	_persist_player_inventory_state()
 	var encounter_started = bool(battle_manager.call("start_battle", encounter_data))
 
 	if not encounter_started and player.has_method("morir"):
@@ -320,37 +329,75 @@ func _close_player_inventory_if_open() -> bool:
 	return false
 
 
-func _apply_battle_return_position() -> void:
+func _persist_player_inventory_state() -> void:
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player != null and player.has_method("save_inventory_layout"):
+		player.call("save_inventory_layout")
+
+
+func _apply_battle_return_position() -> bool:
 	var battle_manager = get_node_or_null(BATTLE_MANAGER_ROOT_PATH)
 	if battle_manager == null:
-		return
+		return false
 
 	var tree = get_tree()
 	if tree == null or tree.current_scene == null:
-		return
+		return false
 
 	var return_data = battle_manager.call("consume_return_data", tree.current_scene.scene_file_path)
 	if return_data is not Dictionary:
-		return
+		return false
 
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	if player == null:
-		return
+		return false
 
 	var battle_result = return_data.get("battle_result", {})
 	if battle_result is Dictionary and bool(battle_result.get("player_should_respawn", false)):
 		if player.has_method("morir"):
 			player.call_deferred("morir")
-		return
+		return true
 
 	if battle_result is Dictionary and str(battle_result.get("outcome", "")) == "victory":
-		_apply_defeated_encounter(str(return_data.get("encounter_id", "")))
+		var encounter_id = str(return_data.get("encounter_id", ""))
+		if _should_hide_defeated_encounter(encounter_id):
+			_apply_defeated_encounter(encounter_id)
 	elif battle_result is Dictionary and str(battle_result.get("outcome", "")) == "escaped":
 		if str(return_data.get("encounter_id", "")) == MUELLE_BOY_AMAZED_ENCOUNTER_ID:
 			_muelle_boy_amazed_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
 
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
 		player.global_position = return_data["player_position"]
+	return true
+
+
+func _apply_saved_player_position() -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("get_game_state"):
+		return
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		return
+
+	var important_flags = game_state.get("important_flags", {})
+	if important_flags is String:
+		important_flags = JSON.parse_string(important_flags)
+	if important_flags == null or important_flags is not Dictionary:
+		return
+
+	var player_position = important_flags.get("player_position", {})
+	if player_position is not Dictionary:
+		return
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if player == null:
+		return
+
+	player.global_position = Vector2(
+		float(player_position.get("x", player.global_position.x)),
+		float(player_position.get("y", player.global_position.y))
+	)
 
 
 func _is_muelle_boy_amazed_battle_on_cooldown() -> bool:
@@ -396,8 +443,13 @@ func _apply_defeated_encounter_state() -> void:
 		return
 
 	for encounter_id in defeated_encounters.keys():
-		if bool(defeated_encounters.get(encounter_id, false)):
-			_apply_defeated_encounter(str(encounter_id))
+		var encounter_id_text = str(encounter_id)
+		if bool(defeated_encounters.get(encounter_id, false)) and _should_hide_defeated_encounter(encounter_id_text):
+			_apply_defeated_encounter(encounter_id_text)
+
+
+func _should_hide_defeated_encounter(encounter_id: String) -> bool:
+	return not encounter_id.strip_edges().is_empty()
 
 
 func _apply_defeated_encounter(encounter_id: String) -> void:

@@ -1,13 +1,2 @@
 res://Scripts/aldea_principal.gd
-res://Scenes/ui/inventory_ui.tscn
-res://addons/TileMapDual/tile_map_dual.gd
-res://assets/items/item_estrella.tres
-res://Scenes/ui/inventory_slot.tscn
 res://Database/database_manager.gd
-res://Database/queries.gd
-res://Scripts/herreria.gd
-res://Scripts/player.gd
-res://Scripts/inventory/inventory_data.gd
-res://Scripts/inventory/inventory_slot_data.gd
-res://Scripts/inventory/inventory_ui.gd
-res://Scripts/inventory/item_data.gd

@@ -48,6 +48,11 @@ func _ready() -> void:
 	_initialize_inventory()
 
 
+func _exit_tree() -> void:
+	if inventory_data != null:
+		_persist_current_inventory_layout()
+
+
 func _input(event: InputEvent) -> void:
 	if is_dead:
 		return
@@ -244,6 +249,10 @@ func close_inventory() -> void:
 	if inventory_ui == null:
 		return
 	inventory_ui.set_inventory_visible(false)
+
+
+func save_inventory_layout() -> void:
+	_persist_current_inventory_layout()
 
 
 func _initialize_inventory() -> void:
