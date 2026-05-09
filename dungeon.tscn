@@ -1,16 +1,5 @@
 [gd_scene format=3 uid="uid://0h8et68867u5"]
 
-[node name="Dungeon" type="Node2D" unique_id=876342852]
+[ext_resource type="PackedScene" uid="uid://b7aq4yn1ow5l6" path="res://assets/dungeon/Dungeon3.tmx" id="1_6elmv"]
 
-[node name="Mapa" type="Node2D" parent="." unique_id=1040625250]
-
-[node name="suelo" type="TileMapLayer" parent="Mapa" unique_id=739492541]
-position = Vector2(0, -9)
-
-[node name="Paredes" type="TileMapLayer" parent="Mapa" unique_id=913845957]
-
-[node name="1" type="TileMapLayer" parent="Mapa" unique_id=1771516730]
-
-[node name="2" type="TileMapLayer" parent="Mapa" unique_id=1478819319]
-
-[node name="3" type="TileMapLayer" parent="Mapa" unique_id=1417293125]
+[node name="Dungeon3" unique_id=408220040 instance=ExtResource("1_6elmv")]

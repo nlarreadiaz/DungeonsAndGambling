@@ -1,9 +1,9 @@
-TileMapDual
+AnimatedSprite2D
 TileMapLayer
+TileMapDual
 Node2D
 CollisionShape2D
 StaticBody2D
-AnimatedSprite2D
 CharacterBody2D
 TileMap
 Node
@@ -12,4 +12,3 @@ Timer
 PathFollow2D
 Path2D
 Sprite2D
-AnimationPlayer

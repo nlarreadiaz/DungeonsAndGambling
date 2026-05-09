@@ -1,0 +1,14 @@
+[remap]
+
+importer="naddys.tiled_tilemap"
+type="PackedScene"
+uid="uid://c6fu26luswlhq"
+path="res://.godot/imported/Blackmith_character.tmx-b2dd699950cb7faa4aa74e39a214a9e4.scn"
+
+[deps]
+
+source_file="res://assets/Herreria/Tiled_files/Blackmith_character.tmx"
+dest_files=["res://.godot/imported/Blackmith_character.tmx-b2dd699950cb7faa4aa74e39a214a9e4.scn"]
+
+[params]
+

@@ -1,6 +1,1 @@
-res://Scenes/aldea_principal.tscn
-res://addons/TileMapDual/tile_map_dual.gd
-res://Scenes/player.tscn
-res://Scripts/cerdillo.gd
-res://Scripts/player.gd
-res://Scripts/aldea_principal.gd
+res://addons/GDScript/addons/YATI/CommonUtils.gd
