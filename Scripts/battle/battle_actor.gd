@@ -1,13 +1,36 @@
 @tool
 extends Control
 
-const HERO_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Idle.png")
-const HERO_ATTACK_1_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 1.png")
-const HERO_ATTACK_2_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 2.png")
-const HERO_ATTACK_3_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 3.png")
-const HERO_SWORD_ATTACK_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Run+Attack.png")
-const ARCHER_ROLE_TEXTURE: Texture2D = preload("res://images/Sprite-0001.png")
-const MAGE_ROLE_TEXTURE: Texture2D = preload("res://images/mago.png")
+const PLAYER_SCENE: PackedScene = preload("res://Scenes/world/player.tscn")
+const HERO_ROLE_VISUALS := {
+	"guerrero": {
+		"idle": preload("res://assets/player/guerrero/Idle.png"),
+		"attack": preload("res://assets/player/guerrero/Attack 3.png"),
+		"frame_size": Vector2(128, 128),
+		"scale": Vector2(0.72, 0.72),
+		"position": Vector2(-7, -8),
+		"shadow_position": Vector2(11, 86),
+		"shadow_size": Vector2(74, 7)
+	},
+	"arquero": {
+		"idle": preload("res://assets/player/arquera/idle.png"),
+		"attack": preload("res://assets/player/arquera/attack.png"),
+		"frame_size": Vector2(84, 84),
+		"scale": Vector2(1.1, 1.1),
+		"position": Vector2(-1, -8),
+		"shadow_position": Vector2(11, 86),
+		"shadow_size": Vector2(74, 7)
+	},
+	"mago": {
+		"idle": preload("res://assets/player/mago/idle.png"),
+		"attack": preload("res://assets/player/mago/attack.png"),
+		"frame_size": Vector2(128, 128),
+		"scale": Vector2(0.72, 0.72),
+		"position": Vector2(-7, -8),
+		"shadow_position": Vector2(11, 86),
+		"shadow_size": Vector2(74, 7)
+	}
+}
 const MAGE_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_3/Idle.png")
 const SUPPORT_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_4/Idle.png")
 const DARK_QUEEN_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")
@@ -15,19 +38,12 @@ const DARK_QUEEN_ATTACK_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQuee
 const ESBIRRO_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/2/Idle.png")
 const ESBIRRO_ATTACK_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/2/Attack.png")
 
-const HERO_FRAME = Rect2(0, 56, 128, 72)
-const HERO_FRAME_SIZE = Vector2(128, 72)
-const HERO_IDLE_FRAME_COUNT = 4
-const HERO_ATTACK_1_FRAME_COUNT = 5
-const HERO_ATTACK_2_FRAME_COUNT = 4
-const HERO_ATTACK_3_FRAME_COUNT = 4
-const HERO_SWORD_ATTACK_FRAME_COUNT = 6
-const HERO_IDLE_OFFSET = Vector2(0, 56)
-const HERO_ATTACK_OFFSET = Vector2(0, 56)
-const HERO_SWORD_ATTACK_OFFSET = Vector2(0, 56)
 const HERO_IDLE_ANIMATION = &"idle"
 const HERO_ATTACK_ANIMATION = &"attack"
-const ROLE_IDLE_ANIMATION = &"role_idle"
+const HERO_ANIMATION_SPEED = 12.0
+const HERO_ROLE_SCENE_SPRITES := {
+	"mago": "MagoSprite"
+}
 const NPC_FRAME = Rect2(0, 0, 128, 128)
 const DARK_QUEEN_FRAME = Rect2(0, 0, 128, 128)
 const DARK_QUEEN_FRAME_SIZE = Vector2(128, 128)
@@ -61,6 +77,7 @@ var _is_warrior = false
 var _is_dark_queen = false
 var _is_esbirro = false
 var _attack_lunge_direction = 1.0
+var _current_hero_role_id = "guerrero"
 
 @export var editor_preview_enabled = false:
 	set(value):
@@ -154,6 +171,7 @@ func _apply_stage_position(side: String, slot_index: int, slot_position: Variant
 func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	var actor_name = str(actor_data.get("name", "")).to_lower()
 	var role_name = str(actor_data.get("role", "")).to_lower()
+	var role_id = _normalize_player_role_id(str(actor_data.get("role_id", role_name)))
 	_is_warrior = false
 	_is_dark_queen = false
 	_is_esbirro = false
@@ -161,7 +179,7 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	animated_sprite.visible = false
 	animated_sprite.stop()
 	animated_sprite.flip_h = false
-	sprite_rect.texture = _make_atlas_texture(HERO_TEXTURE, HERO_FRAME)
+	sprite_rect.texture = _make_atlas_texture(HERO_ROLE_VISUALS["guerrero"]["idle"], Rect2(0, 0, 128, 128))
 	sprite_rect.visible = true
 	sprite_rect.flip_h = false
 	sprite_rect.position = Vector2(2, 8)
@@ -186,18 +204,12 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 		_apply_minimal_status_layout(Vector2(30, 4), Vector2(28, 82))
 		return
 
-	if _uses_hero_attack_sprite(actor_name, role_name):
+	if HERO_ROLE_VISUALS.has(role_id) or actor_name.contains("ariadna"):
 		_is_warrior = true
-		sprite_rect.visible = false
-		animated_sprite.visible = true
-		animated_sprite.position = Vector2(-7, 16)
-		animated_sprite.scale = Vector2(0.72, 0.72)
-		_play_hero_idle()
-	elif _uses_mage_role_sprite(actor_name, role_name):
-		_apply_party_role_sprite(MAGE_ROLE_TEXTURE)
-	elif _uses_archer_role_sprite(actor_name, role_name):
-		_apply_party_role_sprite(ARCHER_ROLE_TEXTURE)
-	elif actor_name.contains("selene"):
+		if not HERO_ROLE_VISUALS.has(role_id):
+			role_id = "guerrero"
+		_apply_hero_role_sprite(role_id)
+	elif actor_name.contains("selene") or role_name.contains("mago"):
 		sprite_rect.texture = _make_atlas_texture(MAGE_TEXTURE, NPC_FRAME)
 		sprite_rect.position = Vector2(7, 15)
 		sprite_rect.size = Vector2(72, 72)
@@ -216,31 +228,6 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 		status_panel.size.x = 96.0
 		turn_marker.position.x = turn_marker.position.x + 10.0
 		_apply_minimal_status_layout(Vector2(26, 9), Vector2(20, 80))
-
-
-func _uses_hero_attack_sprite(actor_name: String, role_name: String) -> bool:
-	return actor_name.contains("ariadna") or actor_name.contains("guerrero") or role_name.contains("guerrero")
-
-
-func _uses_mage_role_sprite(actor_name: String, role_name: String) -> bool:
-	return actor_name.contains("mago") or role_name.contains("mago")
-
-
-func _uses_archer_role_sprite(actor_name: String, role_name: String) -> bool:
-	return actor_name.contains("arquero") or actor_name.contains("arquera") or role_name.contains("arquero") or role_name.contains("arquera")
-
-
-func _apply_party_role_sprite(texture: Texture2D) -> void:
-	sprite_rect.visible = false
-	animated_sprite.visible = true
-	animated_sprite.position = Vector2(3, 1)
-	animated_sprite.scale = Vector2(0.62, 0.62)
-	animated_sprite.sprite_frames = _make_role_strip_sprite_frames(texture)
-	animated_sprite.animation = ROLE_IDLE_ANIMATION
-	animated_sprite.play(ROLE_IDLE_ANIMATION)
-	shadow_rect.position = Vector2(14, 74)
-	shadow_rect.size = Vector2(58, 6)
-	_apply_minimal_status_layout(Vector2(24, 9), Vector2(18, 81))
 
 
 func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
@@ -397,9 +384,7 @@ func play_action_animation(action_type: String = "attack") -> void:
 		return
 
 	if _is_warrior:
-		animated_sprite.sprite_frames = _make_hero_attack_sprite_frames(action_type)
-		animated_sprite.animation = HERO_ATTACK_ANIMATION
-		animated_sprite.play(HERO_ATTACK_ANIMATION)
+		_play_hero_attack()
 		await animated_sprite.animation_finished
 		_play_hero_idle()
 		return
@@ -624,64 +609,50 @@ func _make_circle_line(center: Vector2, radius: float, segments: int, width: flo
 	return _make_hit_line(points, width, color)
 
 
-func _make_hero_attack_sprite_frames(action_type: String = "attack") -> SpriteFrames:
-	var frames = SpriteFrames.new()
-	frames.remove_animation(&"default")
-	frames.add_animation(HERO_ATTACK_ANIMATION)
-	frames.set_animation_loop(HERO_ATTACK_ANIMATION, false)
-	frames.set_animation_speed(HERO_ATTACK_ANIMATION, 14.0)
-	if action_type == "attack":
-		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_1_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_1_FRAME_COUNT, HERO_ATTACK_OFFSET)
-		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_2_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_2_FRAME_COUNT, HERO_ATTACK_OFFSET)
-		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_3_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_3_FRAME_COUNT, HERO_ATTACK_OFFSET)
-	else:
-		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_3_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_3_FRAME_COUNT, HERO_ATTACK_OFFSET)
-		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_SWORD_ATTACK_TEXTURE, HERO_FRAME_SIZE, HERO_SWORD_ATTACK_FRAME_COUNT, HERO_SWORD_ATTACK_OFFSET)
-	return frames
-
-
-func _add_sprite_sheet_frames(frames: SpriteFrames, animation_name: StringName, texture: Texture2D, frame_size: Vector2, frame_count: int, start_offset: Vector2 = Vector2.ZERO) -> void:
-	for frame_index in range(frame_count):
-		frames.add_frame(
-			animation_name,
-			_make_atlas_texture(texture, Rect2(start_offset.x + frame_size.x * frame_index, start_offset.y, frame_size.x, frame_size.y))
-		)
-
-
-func _make_role_strip_sprite_frames(texture: Texture2D) -> SpriteFrames:
-	var frames = SpriteFrames.new()
-	frames.remove_animation(&"default")
-	frames.add_animation(ROLE_IDLE_ANIMATION)
-	frames.set_animation_loop(ROLE_IDLE_ANIMATION, true)
-	frames.set_animation_speed(ROLE_IDLE_ANIMATION, 8.5)
-
-	if texture == null:
-		return frames
-
-	var frame_size = int(texture.get_height())
-	if frame_size <= 0:
-		frame_size = 128
-	var frame_count = max(int(floor(float(texture.get_width()) / float(frame_size))), 1)
-	for frame_index in range(frame_count):
-		frames.add_frame(
-			ROLE_IDLE_ANIMATION,
-			_make_atlas_texture(texture, Rect2(frame_size * frame_index, 0, frame_size, frame_size))
-		)
-	return frames
-
-
 func _play_hero_idle() -> void:
-	animated_sprite.sprite_frames = _make_sprite_frames(
-		HERO_TEXTURE,
-		HERO_FRAME_SIZE,
-		HERO_IDLE_FRAME_COUNT,
-		HERO_IDLE_ANIMATION,
-		12.0,
-		true,
-		HERO_IDLE_OFFSET
-	)
+	var visual_data: Dictionary = HERO_ROLE_VISUALS.get(_current_hero_role_id, HERO_ROLE_VISUALS["guerrero"])
+	var scene_sprite_frames = _get_scene_role_sprite_frames(_current_hero_role_id, HERO_IDLE_ANIMATION)
+	if scene_sprite_frames != null:
+		animated_sprite.sprite_frames = scene_sprite_frames
+	else:
+		animated_sprite.sprite_frames = _make_sprite_frames(
+			visual_data.get("idle", HERO_ROLE_VISUALS["guerrero"]["idle"]),
+			visual_data.get("frame_size", Vector2(128, 128)),
+			0,
+			HERO_IDLE_ANIMATION,
+			HERO_ANIMATION_SPEED,
+			true
+		)
 	animated_sprite.animation = HERO_IDLE_ANIMATION
 	animated_sprite.play(HERO_IDLE_ANIMATION)
+
+
+func _play_hero_attack() -> void:
+	var visual_data: Dictionary = HERO_ROLE_VISUALS.get(_current_hero_role_id, HERO_ROLE_VISUALS["guerrero"])
+	animated_sprite.sprite_frames = _make_sprite_frames(
+		visual_data.get("attack", visual_data.get("idle", HERO_ROLE_VISUALS["guerrero"]["idle"])),
+		visual_data.get("frame_size", Vector2(128, 128)),
+		0,
+		HERO_ATTACK_ANIMATION,
+		HERO_ANIMATION_SPEED,
+		false
+	)
+	animated_sprite.animation = HERO_ATTACK_ANIMATION
+	animated_sprite.play(HERO_ATTACK_ANIMATION)
+
+
+func _apply_hero_role_sprite(role_id: String) -> void:
+	_current_hero_role_id = role_id
+	var visual_data: Dictionary = HERO_ROLE_VISUALS.get(_current_hero_role_id, HERO_ROLE_VISUALS["guerrero"])
+	sprite_rect.visible = false
+	animated_sprite.visible = true
+	animated_sprite.flip_h = false
+	animated_sprite.centered = false
+	animated_sprite.position = visual_data.get("position", Vector2(-7, -8))
+	animated_sprite.scale = visual_data.get("scale", Vector2(0.72, 0.72))
+	shadow_rect.position = visual_data.get("shadow_position", Vector2(11, 86))
+	shadow_rect.size = visual_data.get("shadow_size", Vector2(74, 7))
+	_play_hero_idle()
 
 
 func _play_dark_queen_idle() -> void:
@@ -723,12 +694,43 @@ func _make_sprite_frames(texture: Texture2D, frame_size: Vector2, frame_count: i
 	frames.add_animation(animation_name)
 	frames.set_animation_loop(animation_name, loop)
 	frames.set_animation_speed(animation_name, speed)
+	if frame_count <= 0 and texture != null:
+		frame_count = floori((float(texture.get_width()) - start_offset.x) / maxf(frame_size.x, 1.0))
+		frame_count = max(frame_count, 1)
 	for frame_index in range(frame_count):
 		frames.add_frame(
 			animation_name,
 			_make_atlas_texture(texture, Rect2(start_offset.x + frame_size.x * frame_index, start_offset.y, frame_size.x, frame_size.y))
 		)
 	return frames
+
+
+func _get_scene_role_sprite_frames(role_id: String, animation_name: StringName) -> SpriteFrames:
+	if not HERO_ROLE_SCENE_SPRITES.has(role_id):
+		return null
+
+	var player_instance = PLAYER_SCENE.instantiate()
+	if player_instance == null:
+		return null
+
+	var sprite_name = str(HERO_ROLE_SCENE_SPRITES[role_id])
+	var role_sprite = player_instance.get_node_or_null(sprite_name) as AnimatedSprite2D
+	var sprite_frames: SpriteFrames = null
+	if role_sprite != null and role_sprite.sprite_frames != null and role_sprite.sprite_frames.has_animation(animation_name):
+		sprite_frames = role_sprite.sprite_frames.duplicate(true) as SpriteFrames
+	player_instance.free()
+	return sprite_frames
+
+
+func _normalize_player_role_id(raw_role: String) -> String:
+	var role_text = raw_role.strip_edges().to_lower()
+	if role_text.contains("arqu"):
+		return "arquero"
+	if role_text.contains("mag"):
+		return "mago"
+	if role_text.contains("guer") or role_text.contains("war"):
+		return "guerrero"
+	return role_text
 
 
 func _get_hp_bar_color(hp_ratio: float) -> Color:

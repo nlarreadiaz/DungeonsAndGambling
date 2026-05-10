@@ -6,8 +6,10 @@ const PLAYER_NODE_PATH = NodePath("player")
 const VILLAGE_NODE_PATH = NodePath("aldea")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const HERRERIA_SCENE = "res://Scenes/world/herreria.tscn"
+const DUNGEON_AGUA_SCENE = "res://Scenes/dungeonAgua.tscn"
 const INTERACT_ACTION = "interact"
 const SAVE_SLOT_ID = 1
+const CASTILLO_AGUA_ENTRY_SHAPE_PATH = NodePath("aldea/CastilloAgua/entrar")
 const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
 const DARK_QUEEN_GATE_ENCOUNTER_ID = "dark_queen_gate"
 const DUNGEON_QUEEN_SANCTUM_ENCOUNTER_ID = "dungeon_queen_sanctum"
@@ -71,6 +73,7 @@ var _building_fade_data: Array[Dictionary] = []
 var _player_node: Node2D = null
 var _player_visual: CanvasItem = null
 var _player_can_enter_herreria = false
+var _player_can_enter_dungeon_agua = false
 var _battle_reentry_cooldown_until_msec = 0
 var _muelle_boy_amazed_cooldown_until_msec = 0
 var _muelle_boy_amazed_retry_scheduled = false
@@ -82,6 +85,7 @@ func _ready() -> void:
 		_apply_saved_player_position()
 	_apply_defeated_encounter_state()
 	_configure_player_camera()
+	_setup_castillo_agua_entry_area()
 	_setup_village_buildings()
 
 
@@ -91,6 +95,13 @@ func _input(event: InputEvent) -> void:
 		if viewport != null:
 			viewport.set_input_as_handled()
 		_try_enter_herreria()
+		return
+
+	if _is_interact_event(event) and _player_can_enter_dungeon_agua:
+		var viewport = get_viewport()
+		if viewport != null:
+			viewport.set_input_as_handled()
+		_try_enter_dungeon_agua()
 		return
 
 	if not _is_pause_event(event):
@@ -235,9 +246,58 @@ func _try_enter_herreria() -> bool:
 	return tree.change_scene_to_file(HERRERIA_SCENE) == OK
 
 
+func _try_enter_dungeon_agua() -> bool:
+	if not _player_can_enter_dungeon_agua or is_instance_valid(options_ingame):
+		return false
+
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player != null and player.has_method("is_inventory_open") and bool(player.call("is_inventory_open")):
+		return false
+
+	var tree = get_tree()
+	if tree == null:
+		return false
+
+	_persist_player_inventory_state()
+	return tree.change_scene_to_file(DUNGEON_AGUA_SCENE) == OK
+
+
 func _is_player_body(body: Node2D) -> bool:
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	return body != null and player != null and body == player
+
+
+func _setup_castillo_agua_entry_area() -> void:
+	var entry_shape = get_node_or_null(CASTILLO_AGUA_ENTRY_SHAPE_PATH) as CollisionShape2D
+	if entry_shape == null or entry_shape.shape == null:
+		push_warning("No se encontro la CollisionShape2D entrar del CastilloAgua.")
+		return
+
+	var entry_area = Area2D.new()
+	entry_area.name = "CastilloAguaEntryArea"
+	entry_area.collision_layer = 0
+	entry_area.monitorable = false
+	entry_area.monitoring = true
+	add_child(entry_area)
+	entry_area.global_transform = entry_shape.global_transform
+
+	var area_shape = CollisionShape2D.new()
+	area_shape.name = "CollisionShape2D"
+	area_shape.shape = entry_shape.shape
+	entry_area.add_child(area_shape)
+
+	entry_area.body_entered.connect(_on_castillo_agua_entry_area_body_entered)
+	entry_area.body_exited.connect(_on_castillo_agua_entry_area_body_exited)
+
+
+func _on_castillo_agua_entry_area_body_entered(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_enter_dungeon_agua = true
+
+
+func _on_castillo_agua_entry_area_body_exited(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_enter_dungeon_agua = false
 
 
 func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: String, battle_subtitle: String, status_message: String, _return_offset: Vector2, experience_reward: int, gold_reward: int, enemies: Array = [], battle_background_path: String = "") -> void:

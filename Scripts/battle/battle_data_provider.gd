@@ -205,6 +205,7 @@ func _load_party_from_database(save_slot_id: int) -> Array:
 			"class_id": int(row.get("class_id", 0)),
 			"name": str(row.get("name", "Heroe")),
 			"role": str(row.get("class_name", "Aventurero")),
+			"role_id": _normalize_role_id(str(row.get("class_name", ""))),
 			"level": int(row.get("level", 1)),
 			"current_hp": int(row.get("current_hp", 1)),
 			"max_hp": int(row.get("max_hp", 1)),
@@ -296,6 +297,7 @@ func _merge_role_data_into_actor(actor: Dictionary, role_data: Dictionary) -> Di
 
 	actor_copy["name"] = str(role_data.get("character_name", actor_copy.get("name", "Ariadna")))
 	actor_copy["role"] = role_name
+	actor_copy["role_id"] = _normalize_role_id(str(role_data.get("role_id", role_name)))
 	actor_copy["class_id"] = selected_class_id
 	actor_copy["max_hp"] = selected_max_hp
 	actor_copy["current_hp"] = int(role_data.get("current_hp", selected_max_hp))
@@ -371,6 +373,17 @@ func _skills_for_selected_role(role_name: String) -> Array:
 	if role_name.strip_edges().to_lower().contains("guerrero"):
 		return _ariadna_signature_skills()
 	return _default_skills_for_role(role_name)
+
+
+func _normalize_role_id(raw_role: String) -> String:
+	var role_text = raw_role.strip_edges().to_lower()
+	if role_text.contains("arqu"):
+		return "arquero"
+	if role_text.contains("mag"):
+		return "mago"
+	if role_text.contains("guer") or role_text.contains("war"):
+		return "guerrero"
+	return role_text
 
 
 func _is_party_member_excluded(actor_name: String) -> bool:
