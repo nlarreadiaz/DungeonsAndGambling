@@ -20,7 +20,8 @@ static func configure_window(window: Window) -> void:
 
 
 static func is_fullscreen_enabled() -> bool:
-	return DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	var mode = DisplayServer.window_get_mode()
+	return mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
 
 
 static func set_fullscreen_enabled(window: Window, enabled: bool) -> void:
@@ -32,10 +33,10 @@ static func set_fullscreen_enabled(window: Window, enabled: bool) -> void:
 	if enabled:
 		window.set_meta(WINDOWED_SCALE_META, get_windowed_scale(window))
 		window.content_scale_factor = 1.0
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		window.mode = Window.MODE_FULLSCREEN
 		return
 
-	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	window.mode = Window.MODE_WINDOWED
 	window.content_scale_factor = get_windowed_scale(window)
 	_restore_windowed_size(window)
 	_center_window(window)
