@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bq0deimvsny5a"
-path="res://.godot/imported/Jump.png-73ce03ec8637d9a871cfda7bcc76debc.ctex"
+uid="uid://b0xbl35ptpoe5"
+path="res://.godot/imported/walk.png-c96b2cbaf0532e12185626043126009f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/guerrero/Jump.png"
-dest_files=["res://.godot/imported/Jump.png-73ce03ec8637d9a871cfda7bcc76debc.ctex"]
+source_file="res://assets/player/mago/walk.png"
+dest_files=["res://.godot/imported/walk.png-c96b2cbaf0532e12185626043126009f.ctex"]
 
 [params]
 

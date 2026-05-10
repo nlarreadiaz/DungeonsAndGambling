@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://crg34ne2jyadi"
-path="res://.godot/imported/Hurt.png-49a82294ff7209b03ee8a0c91b09ff31.ctex"
+uid="uid://dgcpo265kj2x2"
+path="res://.godot/imported/idle.png-f448a5ae75be57189568a8b58c2d3638.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/guerrero/Hurt.png"
-dest_files=["res://.godot/imported/Hurt.png-49a82294ff7209b03ee8a0c91b09ff31.ctex"]
+source_file="res://assets/player/arquera/idle.png"
+dest_files=["res://.godot/imported/idle.png-f448a5ae75be57189568a8b58c2d3638.ctex"]
 
 [params]
 

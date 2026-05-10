@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvj6a38swlof"
-path="res://.godot/imported/Run+Attack.png-b6965db33eb9357f72ca9179353f9944.ctex"
+uid="uid://bwvdbhhbrncr5"
+path="res://.godot/imported/walk.png-0c0c61560087eb9bd032f2bd78565a4e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/guerrero/Run+Attack.png"
-dest_files=["res://.godot/imported/Run+Attack.png-b6965db33eb9357f72ca9179353f9944.ctex"]
+source_file="res://assets/player/arquera/walk.png"
+dest_files=["res://.godot/imported/walk.png-0c0c61560087eb9bd032f2bd78565a4e.ctex"]
 
 [params]
 

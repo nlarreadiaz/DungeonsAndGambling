@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ddm7it3iaosy"
-path="res://.godot/imported/Defend.png-ee19a5692f7d66a9032cc0271e900c23.ctex"
+uid="uid://dh77pquerbm6y"
+path="res://.godot/imported/attack.png-123f54769e9ebc6a3ee4b786c9127dcb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/guerrero/Defend.png"
-dest_files=["res://.godot/imported/Defend.png-ee19a5692f7d66a9032cc0271e900c23.ctex"]
+source_file="res://assets/player/arquera/attack.png"
+dest_files=["res://.godot/imported/attack.png-123f54769e9ebc6a3ee4b786c9127dcb.ctex"]
 
 [params]
 

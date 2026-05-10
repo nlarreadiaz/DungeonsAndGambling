@@ -11,12 +11,50 @@ const INVENTORY_SLOT_COUNT = 34
 const SAVE_SLOT_ID = 1
 
 const ANIM_IDLE = "idle"
+const ANIM_WALK = "walk"
 const ANIM_RUN = "run"
 const ANIM_ATTACK = "golpe"
 const ANIM_HURT = "hurt"
 const ANIM_DEATH = "muerte"
 const WALK_ANIMATION_SPEED = 0.82
 const RUN_ANIMATION_SPEED = 1.2
+const DEFAULT_ANIMATION_FPS = 12.0
+const PLAYER_ROLE_VISUALS := {
+	"guerrero": {
+		"idle": preload("res://assets/player/guerrero/Idle.png"),
+		"walk": preload("res://assets/player/guerrero/Walk.png"),
+		"attack": preload("res://assets/player/guerrero/Attack 3.png"),
+
+		"frame_size": Vector2i(128, 128),
+		"region_y": 0,
+		"scale": Vector2(0.5, 0.5),
+		"offset": Vector2.ZERO
+	},
+	"arquero": {
+		"idle": preload("res://assets/player/arquera/idle.png"),
+		"walk": preload("res://assets/player/arquera/walk.png"),
+		"run": preload("res://assets/player/arquera/walk.png"),
+		"attack": preload("res://assets/player/arquera/attack.png"),
+		"hurt": preload("res://assets/player/arquera/idle.png"),
+		"death": preload("res://assets/player/arquera/idle.png"),
+		"frame_size": Vector2i(84, 84),
+		"region_y": 0,
+		"scale": Vector2(0.76, 0.76),
+		"offset": Vector2.ZERO
+	},
+	"mago": {
+		"idle": preload("res://assets/player/mago/idle.png"),
+		"walk": preload("res://assets/player/mago/walk.png"),
+		"run": preload("res://assets/player/mago/walk.png"),
+		"attack": preload("res://assets/player/mago/attack.png"),
+		"hurt": preload("res://assets/player/mago/idle.png"),
+		"death": preload("res://assets/player/mago/idle.png"),
+		"frame_size": Vector2i(128, 128),
+		"region_y": 0,
+		"scale": Vector2(0.5, 0.5),
+		"offset": Vector2.ZERO
+	}
+}
 
 var z_height = 0.0
 var z_velocity = 0.0
@@ -27,26 +65,33 @@ var is_hurt = false
 var is_running = false
 var spawn_position = Vector2.ZERO
 var _base_anim_offset_x = 0.0
+var _active_role_id = "guerrero"
+var _role_sprites: Dictionary = {}
 
 var inventory_data: InventoryData = null
 var inventory_ui: InventoryUI = null
 
-@onready var anim: AnimatedSprite2D = $animaciones
+@onready var anim: AnimatedSprite2D = null
 
 
 func _ready() -> void:
 	is_attacking = false
 	is_hurt = false
 	spawn_position = global_position
+	_role_sprites = _get_role_sprites()
+	var selected_role_id = _get_selected_role_id()
+	anim = _activate_role_sprite(selected_role_id)
+	if anim == null:
+		push_error("La escena del player necesita un AnimatedSprite2D para reproducir animaciones.")
+		set_physics_process(false)
+		_initialize_inventory()
+		return
+
+	_apply_selected_role_visuals(selected_role_id)
 	_base_anim_offset_x = absf(anim.offset.x)
 	_set_facing_left(anim.flip_h)
 	anim.speed_scale = 1.0
-	anim.play(ANIM_IDLE)
-
-	if anim.sprite_frames:
-		anim.sprite_frames.set_animation_loop(ANIM_ATTACK, false)
-		anim.sprite_frames.set_animation_loop(ANIM_HURT, false)
-		anim.sprite_frames.set_animation_loop(ANIM_DEATH, false)
+	_play_animation(ANIM_IDLE)
 
 	_initialize_inventory()
 
@@ -108,6 +153,8 @@ func _get_movement_direction() -> Vector2:
 
 
 func _set_facing_left(is_facing_left: bool) -> void:
+	if anim == null:
+		return
 	anim.flip_h = is_facing_left
 	anim.offset.x = -_base_anim_offset_x if is_facing_left else _base_anim_offset_x
 
@@ -125,14 +172,15 @@ func handle_jump(delta: float) -> void:
 			z_height = 0.0
 			is_jumping = false
 
-	anim.position.y = -z_height
+	if anim != null:
+		anim.position.y = -z_height
 
 
 func handle_attack() -> void:
 	if Input.is_action_just_pressed("click_izquierdo") and not is_attacking and not is_jumping and not is_hurt and not is_inventory_open():
 		is_attacking = true
 		anim.speed_scale = 1.0
-		anim.play(ANIM_ATTACK)
+		_play_animation(ANIM_ATTACK, [StringName("attack")])
 
 		await anim.animation_finished
 		is_attacking = false
@@ -144,10 +192,10 @@ func update_animations() -> void:
 
 	if velocity != Vector2.ZERO:
 		anim.speed_scale = RUN_ANIMATION_SPEED if is_running else WALK_ANIMATION_SPEED
-		anim.play(ANIM_RUN)
+		_play_animation(ANIM_RUN if is_running else ANIM_WALK, [ANIM_WALK, ANIM_RUN])
 	else:
 		anim.speed_scale = 1.0
-		anim.play(ANIM_IDLE)
+		_play_animation(ANIM_IDLE)
 
 
 func recibir_daño() -> void:
@@ -157,9 +205,13 @@ func recibir_daño() -> void:
 	is_hurt = true
 	is_attacking = false
 	anim.speed_scale = 1.0
-	anim.play(ANIM_HURT)
+	var hurt_animation = _get_available_animation(ANIM_HURT, [ANIM_IDLE])
+	_play_animation(hurt_animation)
 
-	await anim.animation_finished
+	if hurt_animation == ANIM_HURT:
+		await anim.animation_finished
+	else:
+		await get_tree().create_timer(0.25).timeout
 	is_hurt = false
 
 
@@ -178,9 +230,13 @@ func morir() -> void:
 	close_inventory()
 	anim.position.y = 0.0
 	anim.speed_scale = 1.0
-	anim.play(ANIM_DEATH)
+	var death_animation = _get_available_animation(ANIM_DEATH, [ANIM_IDLE])
+	_play_animation(death_animation)
 
-	await anim.animation_finished
+	if death_animation == ANIM_DEATH:
+		await anim.animation_finished
+	else:
+		await get_tree().create_timer(0.45).timeout
 	_respawn()
 
 
@@ -497,6 +553,204 @@ func _get_database_manager() -> Node:
 	return get_node_or_null("/root/GameDatabase")
 
 
+func _get_role_sprites() -> Dictionary:
+	return {
+		"guerrero": _find_role_sprite("GuerreroSprite", "AnimatedSprite2D"),
+		"arquero": _find_role_sprite("ArqueraSprite"),
+		"mago": _find_role_sprite("MagoSprite")
+	}
+
+
+func _find_role_sprite(primary_name: String, fallback_name: String = "") -> AnimatedSprite2D:
+	var sprite = get_node_or_null(primary_name) as AnimatedSprite2D
+	if sprite != null:
+		return sprite
+
+	if not fallback_name.is_empty():
+		sprite = get_node_or_null(fallback_name) as AnimatedSprite2D
+		if sprite != null:
+			return sprite
+
+	return null
+
+
+func _activate_role_sprite(role_id: String) -> AnimatedSprite2D:
+	_active_role_id = role_id if _role_sprites.has(role_id) else "guerrero"
+	var active_sprite = _role_sprites.get(_active_role_id, null) as AnimatedSprite2D
+	if active_sprite == null:
+		active_sprite = _role_sprites.get("guerrero", null) as AnimatedSprite2D
+		_active_role_id = "guerrero"
+
+	for current_role_id in _role_sprites.keys():
+		var role_sprite = _role_sprites[current_role_id] as AnimatedSprite2D
+		if role_sprite == null:
+			continue
+		role_sprite.visible = role_sprite == active_sprite
+		if role_sprite != active_sprite:
+			role_sprite.stop()
+
+	return active_sprite
+
+
+func _get_animation_sprite() -> AnimatedSprite2D:
+	var named_sprite = get_node_or_null("animaciones") as AnimatedSprite2D
+	if named_sprite != null:
+		return named_sprite
+
+	for child in get_children():
+		if child is AnimatedSprite2D:
+			return child as AnimatedSprite2D
+
+	return null
+
+
+func _apply_selected_role_visuals(role_id: String) -> void:
+	var visual_data = PLAYER_ROLE_VISUALS.get(role_id, PLAYER_ROLE_VISUALS["guerrero"])
+	if visual_data is not Dictionary:
+		return
+
+	anim.scale = visual_data.get("scale", anim.scale)
+	anim.offset = visual_data.get("offset", anim.offset)
+	if _has_scene_configured_role_frames():
+		_configure_animation_loops()
+		return
+
+	anim.sprite_frames = _build_role_sprite_frames(visual_data)
+	anim.animation = ANIM_IDLE
+	anim.frame = 0
+	_configure_animation_loops()
+
+
+func _get_selected_role_id() -> String:
+	var database_manager = _get_database_manager()
+	var cached_role_id = _get_cached_role_id(database_manager)
+	if not cached_role_id.is_empty():
+		return cached_role_id
+
+	var player_class_name = _get_active_player_class_name(database_manager)
+	return _normalize_role_id(player_class_name)
+
+
+func _has_scene_configured_role_frames() -> bool:
+	if anim == null or anim.sprite_frames == null:
+		return false
+
+	return (
+		anim.sprite_frames.has_animation(ANIM_IDLE)
+		and anim.sprite_frames.has_animation(ANIM_WALK)
+		and (
+			anim.sprite_frames.has_animation(ANIM_ATTACK)
+			or anim.sprite_frames.has_animation(&"attack")
+		)
+	)
+
+
+func _get_cached_role_id(database_manager: Node) -> String:
+	if database_manager == null or not database_manager.has_method("get_selected_player_role_data"):
+		return ""
+
+	var role_data = database_manager.call("get_selected_player_role_data")
+	if role_data is not Dictionary or role_data.is_empty():
+		return ""
+
+	return _normalize_role_id(str(role_data.get("role_id", role_data.get("name", ""))))
+
+
+func _get_active_player_class_name(database_manager: Node) -> String:
+	if database_manager == null or not database_manager.has_method("get_characters"):
+		return "guerrero"
+
+	var characters = database_manager.call("get_characters", SAVE_SLOT_ID)
+	if characters is not Array:
+		return "guerrero"
+
+	for character in characters:
+		if character is not Dictionary:
+			continue
+		if str(character.get("character_type", "")) != "player":
+			continue
+		if int(character.get("is_active", 1)) != 1:
+			continue
+		return str(character.get("class_name", "guerrero"))
+
+	return "guerrero"
+
+
+func _normalize_role_id(raw_role_name: String) -> String:
+	var role_name = raw_role_name.strip_edges().to_lower()
+	if role_name.contains("arqu"):
+		return "arquero"
+	if role_name.contains("mag"):
+		return "mago"
+	return "guerrero"
+
+
+func _build_role_sprite_frames(visual_data: Dictionary) -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	_add_strip_animation(frames, ANIM_IDLE, visual_data.get("idle", null), visual_data, DEFAULT_ANIMATION_FPS, true)
+	_add_strip_animation(frames, ANIM_RUN, visual_data.get("run", visual_data.get("walk", null)), visual_data, 5.0, true)
+	_add_strip_animation(frames, ANIM_WALK, visual_data.get("walk", null), visual_data, DEFAULT_ANIMATION_FPS, true)
+	_add_strip_animation(frames, ANIM_ATTACK, visual_data.get("attack", null), visual_data, DEFAULT_ANIMATION_FPS, false)
+	_add_strip_animation(frames, ANIM_HURT, visual_data.get("hurt", visual_data.get("idle", null)), visual_data, DEFAULT_ANIMATION_FPS, false)
+	_add_strip_animation(frames, ANIM_DEATH, visual_data.get("death", visual_data.get("idle", null)), visual_data, DEFAULT_ANIMATION_FPS, false)
+	return frames
+
+
+func _add_strip_animation(frames: SpriteFrames, animation_name: StringName, sprite_sheet: Texture2D, visual_data: Dictionary, fps: float, loops: bool) -> void:
+	if sprite_sheet == null:
+		return
+
+	if not frames.has_animation(animation_name):
+		frames.add_animation(animation_name)
+	frames.set_animation_speed(animation_name, fps)
+	frames.set_animation_loop(animation_name, loops)
+
+	var frame_size = visual_data.get("frame_size", Vector2i(sprite_sheet.get_height(), sprite_sheet.get_height())) as Vector2i
+	if frame_size.x <= 0 or frame_size.y <= 0:
+		frame_size = Vector2i(sprite_sheet.get_height(), sprite_sheet.get_height())
+
+	var region_y = int(visual_data.get("region_y", 0))
+	var frame_count = max(1, int(floor(sprite_sheet.get_width() / float(frame_size.x))))
+	for frame_index in range(frame_count):
+		var atlas_texture := AtlasTexture.new()
+		atlas_texture.atlas = sprite_sheet
+		atlas_texture.region = Rect2(frame_index * frame_size.x, region_y, frame_size.x, frame_size.y)
+		atlas_texture.filter_clip = true
+		frames.add_frame(animation_name, atlas_texture, 1.0)
+
+
+func _configure_animation_loops() -> void:
+	if anim.sprite_frames == null:
+		return
+	for animation_name in [ANIM_ATTACK, &"attack", ANIM_HURT, ANIM_DEATH]:
+		if anim.sprite_frames.has_animation(animation_name):
+			anim.sprite_frames.set_animation_loop(animation_name, false)
+
+
+func _play_animation(animation_name: StringName, fallback_names: Array[StringName] = []) -> bool:
+	if anim == null or anim.sprite_frames == null:
+		return false
+
+	var resolved_animation = _get_available_animation(animation_name, fallback_names)
+	if resolved_animation == StringName():
+		return false
+
+	if anim.animation != resolved_animation or not anim.is_playing():
+		anim.play(resolved_animation)
+	return true
+
+
+func _get_available_animation(animation_name: StringName, fallback_names: Array[StringName]) -> StringName:
+	if anim.sprite_frames.has_animation(animation_name):
+		return animation_name
+
+	for fallback_name in fallback_names:
+		if anim.sprite_frames.has_animation(fallback_name):
+			return fallback_name
+
+	return StringName()
+
+
 func _respawn() -> void:
 	global_position = spawn_position
 	velocity = Vector2.ZERO
@@ -509,4 +763,4 @@ func _respawn() -> void:
 	is_running = false
 	anim.position.y = 0.0
 	anim.speed_scale = 1.0
-	anim.play(ANIM_IDLE)
+	_play_animation(ANIM_IDLE)

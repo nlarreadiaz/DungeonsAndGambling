@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmfv6hhk1luob"
-path="res://.godot/imported/Attack 2.png-152b3b940c1b5da34fb82cd623986f71.ctex"
+uid="uid://cbwkp8kdhdond"
+path="res://.godot/imported/idle.png-03d9b91823a382aa8b4ebfa4830a26d8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/player/guerrero/Attack 2.png"
-dest_files=["res://.godot/imported/Attack 2.png-152b3b940c1b5da34fb82cd623986f71.ctex"]
+source_file="res://assets/player/mago/idle.png"
+dest_files=["res://.godot/imported/idle.png-03d9b91823a382aa8b4ebfa4830a26d8.ctex"]
 
 [params]
 
