@@ -4514,8 +4514,8 @@ tile_set = SubResource("TileSet_w1h11")
 collision_enabled = false
 
 [node name="player" parent="." unique_id=479730859 instance=ExtResource("14_5c8gf")]
-position = Vector2(-25, 2)
-scale = Vector2(0.6000005, 0.6000005)
+position = Vector2(-3.999999, 1.0000005)
+scale = Vector2(0.23999989, 0.23999989)
 
 [node name="Esbirro1" parent="." unique_id=1862164238 instance=ExtResource("15_j1bcc")]
 position = Vector2(133, 10.999999)

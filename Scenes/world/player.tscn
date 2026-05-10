@@ -956,7 +956,7 @@ position = Vector2(0, 6.000001)
 scale = Vector2(0.87718356, 0.87718356)
 sprite_frames = SubResource("SpriteFrames_4i5vk")
 animation = &"walk"
-frame_progress = 0.75514776
+frame_progress = 0.9765468
 
 [node name="ArqueraSprite" type="AnimatedSprite2D" parent="." unique_id=664000106]
 visible = false
@@ -964,7 +964,7 @@ position = Vector2(4, 11)
 scale = Vector2(1.2799988, 1.2799988)
 sprite_frames = SubResource("SpriteFrames_1eq77")
 animation = &"attack"
-frame_progress = 0.12145718
+frame_progress = 0.41662928
 
 [node name="MagoSprite" type="AnimatedSprite2D" parent="." unique_id=1383961288]
 visible = false
@@ -972,7 +972,7 @@ position = Vector2(7, 10)
 scale = Vector2(0.92, 0.92)
 sprite_frames = SubResource("SpriteFrames_q5qp5")
 animation = &"idle"
-frame_progress = 0.14235966
+frame_progress = 0.31940934
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=709968110]
 position = Vector2(13, 1)
