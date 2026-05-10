@@ -1,14 +1,23 @@
 [remap]
 
-importer="naddys.tiled_tilemap"
+importer="YATI"
 type="PackedScene"
 uid="uid://c6fu26luswlhq"
-path="res://.godot/imported/Blackmith_character.tmx-b2dd699950cb7faa4aa74e39a214a9e4.scn"
+path="res://.godot/imported/Blackmith_character.tmx-b2dd699950cb7faa4aa74e39a214a9e4.tscn"
 
 [deps]
 
 source_file="res://assets/Herreria/Tiled_files/Blackmith_character.tmx"
-dest_files=["res://.godot/imported/Blackmith_character.tmx-b2dd699950cb7faa4aa74e39a214a9e4.scn"]
+dest_files=["res://.godot/imported/Blackmith_character.tmx-b2dd699950cb7faa4aa74e39a214a9e4.tscn"]
 
 [params]
 
+use_default_filter=false
+add_class_as_metadata=false
+add_id_as_metadata=false
+no_alternative_tiles=false
+map_wangset_to_terrain=false
+custom_data_prefix="data_"
+tiled_project_file=""
+post_processor=""
+save_tileset_to=""
