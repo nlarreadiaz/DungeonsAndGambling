@@ -301,13 +301,19 @@ func _calculate_skill_damage(attacker: Dictionary, target: Dictionary, skill: Di
 	var defense_reduction = 0
 
 	if damage_type == "physical":
-		stat_bonus = int(round(float(attacker.get("attack", 0)) * PHYSICAL_ATTACK_BONUS_SCALE))
+		stat_bonus = _calculate_physical_attack_bonus(attacker)
 		defense_reduction = int(round(float(target.get("defense", 0)) * PHYSICAL_DEFENSE_SCALE))
 	else:
 		stat_bonus = int(round(float(attacker.get("level", 1)) * MAGIC_LEVEL_BONUS_SCALE))
 		defense_reduction = int(round(float(target.get("defense", 0)) * MAGIC_DEFENSE_SCALE))
 
 	return _finalize_damage_calculation(base_damage, stat_bonus, defense_reduction, target)
+
+
+func _calculate_physical_attack_bonus(attacker: Dictionary) -> int:
+	var inventory_attack_bonus = max(int(attacker.get("inventory_attack_bonus", 0)), 0)
+	var base_attack = max(int(attacker.get("attack", 0)) - inventory_attack_bonus, 0)
+	return int(round(float(base_attack) * PHYSICAL_ATTACK_BONUS_SCALE)) + inventory_attack_bonus
 
 
 func _finalize_damage_calculation(base_damage: int, stat_bonus: int, defense_reduction: int, target: Dictionary) -> Dictionary:

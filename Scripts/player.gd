@@ -50,7 +50,7 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	if inventory_data != null:
-		_persist_current_inventory_layout()
+		_persist_current_inventory_layout(false)
 
 
 func _input(event: InputEvent) -> void:
@@ -310,10 +310,13 @@ func _save_item_to_database(item_data: ItemData, amount: int) -> bool:
 	if not can_fit_item_in_inventory(item_data, amount):
 		return false
 
-	return bool(database_manager.call("add_item_to_inventory", character_id, database_item_id, amount, SAVE_SLOT_ID))
+	if not bool(database_manager.call("add_item_to_inventory", character_id, database_item_id, amount, SAVE_SLOT_ID)):
+		return false
+
+	return _commit_inventory_autosave(database_manager)
 
 
-func _persist_current_inventory_layout() -> void:
+func _persist_current_inventory_layout(refresh_after_save: bool = true) -> void:
 	if inventory_data == null:
 		return
 
@@ -343,12 +346,22 @@ func _persist_current_inventory_layout() -> void:
 			"quantity": slot.quantity
 		})
 
-	if bool(database_manager.call("replace_inventory", character_id, SAVE_SLOT_ID, slot_entries)):
+	if refresh_after_save and bool(database_manager.call("replace_inventory", character_id, SAVE_SLOT_ID, slot_entries)):
 		sync_inventory_from_database()
+	elif not refresh_after_save:
+		database_manager.call("replace_inventory", character_id, SAVE_SLOT_ID, slot_entries)
 
 
 func _on_inventory_slots_moved(_from_index: int, _to_index: int) -> void:
 	_persist_current_inventory_layout()
+
+
+func _commit_inventory_autosave(database_manager: Node) -> bool:
+	if database_manager == null:
+		return false
+	if not database_manager.has_method("commit_manual_save"):
+		return true
+	return bool(database_manager.call("commit_manual_save", SAVE_SLOT_ID))
 
 
 func _build_item_data_from_database_row(row: Dictionary) -> ItemData:

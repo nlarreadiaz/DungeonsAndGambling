@@ -181,6 +181,12 @@ func get_item_by_name(item_name: String) -> Dictionary:
 	return _queries.get_item_by_name(item_name)
 
 
+func update_item_by_name(item_name: String, values: Dictionary) -> bool:
+	if not _ensure_ready():
+		return _update_fallback_item_by_name(item_name, values)
+	return _queries.update_item_by_name(item_name, values)
+
+
 func get_character_skills(character_id: int, save_slot_id: int = 1) -> Array:
 	if not _ensure_ready():
 		return []
@@ -899,6 +905,33 @@ func _get_fallback_item_by_name(item_name: String) -> Dictionary:
 		if item is Dictionary and str(item.get("name", "")).strip_edges().to_lower() == normalized_name:
 			return item.duplicate(true)
 	return {}
+
+
+func _update_fallback_item_by_name(item_name: String, values: Dictionary) -> bool:
+	_ensure_fallback_state_loaded()
+	var normalized_name = item_name.strip_edges().to_lower()
+	for item_id in _fallback_items.keys():
+		var item = _fallback_items[item_id]
+		if item is not Dictionary:
+			continue
+		if str(item.get("name", "")).strip_edges().to_lower() != normalized_name:
+			continue
+
+		for key in [
+			"description",
+			"item_type",
+			"rarity",
+			"price",
+			"icon",
+			"max_stack",
+			"usable_in_battle",
+			"effect_data"
+		]:
+			if values.has(key):
+				item[key] = values[key]
+		_fallback_items[item_id] = item
+		return _save_fallback_state_file()
+	return false
 
 
 func _get_fallback_item_by_id(item_id: int) -> Dictionary:

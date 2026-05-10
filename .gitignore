@@ -1,4 +1,5 @@
 .godot/
+.codex-godot-user/
 *.tmp
 *.TMP
 *~

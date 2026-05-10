@@ -4,7 +4,10 @@ const PLAYER_NODE_PATH = NodePath("player")
 const ALDEA_SCENE = "res://Scenes/world/aldea_principal.tscn"
 const INTERACT_ACTION = "interact"
 const SAVE_SLOT_ID = 1
+const SHOP_LAYER_PATH = NodePath("ShopLayer")
 const SHOP_ROOT_PATH = NodePath("ShopLayer/ShopRoot")
+const SMITH_INTERACTION_AREA_PATH = NodePath("SmithInteractionArea")
+const SMITH_INTERACTION_RADIUS = 34.0
 const GOLD_LABEL_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/Header/GoldLabel")
 const STATUS_LABEL_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/StatusLabel")
 const CONFIRMATION_PANEL_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel")
@@ -12,35 +15,48 @@ const CONFIRMATION_LABEL_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Ma
 const CLOSE_BUTTON_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/Header/CloseButton")
 const BUY_BUTTON_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel/Margin/Row/BuyButton")
 const CANCEL_BUTTON_PATH = NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ConfirmationPanel/Margin/Row/CancelButton")
-const SHOP_ARMORS = [
+const SHOP_ITEMS = [
 	{
 		"name": "Armadura de Cuero",
 		"description": "Ligera y fiable.",
+		"item_type": "armor",
 		"cost": 90,
 		"defense_bonus": 6,
-		"icon_path": "res://assets/items/generated_pixel_equipment/armor_01.png",
+		"icon_path": "res://assets/items/generated_pixel_equipment/leather_helmet.png",
 		"card_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard"),
 		"button_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/LeatherCard/Margin/Layout/IconButton")
 	},
 	{
 		"name": "Armadura de Malla",
 		"description": "Anillas reforzadas.",
+		"item_type": "armor",
 		"rarity": "uncommon",
 		"cost": 145,
 		"defense_bonus": 10,
-		"icon_path": "res://assets/items/generated_pixel_equipment/armor_06.png",
+		"icon_path": "res://assets/items/generated_pixel_equipment/mail_chestplate.png",
 		"card_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard"),
 		"button_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/MailCard/Margin/Layout/IconButton")
 	},
 	{
 		"name": "Coraza de Guardia",
 		"description": "Placas resistentes.",
+		"item_type": "armor",
 		"rarity": "rare",
 		"cost": 220,
 		"defense_bonus": 15,
-		"icon_path": "res://assets/items/generated_pixel_equipment/armor_14.png",
+		"icon_path": "res://assets/items/generated_pixel_equipment/guard_boots.png",
 		"card_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard"),
 		"button_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/GuardCard/Margin/Layout/IconButton")
+	},
+	{
+		"name": "Espada de Hierro",
+		"description": "Hoja gris recien templada.",
+		"item_type": "weapon",
+		"cost": 120,
+		"attack_bonus": 8,
+		"icon_path": "res://assets/items/generated_pixel_equipment/iron_sword.png",
+		"card_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/IronSwordCard"),
+		"button_path": NodePath("ShopLayer/ShopRoot/Center/ShopPanel/Margin/Layout/ShopGrid/IronSwordCard/Margin/Layout/IconButton")
 	}
 ]
 
@@ -48,6 +64,7 @@ var _player_can_exit = false
 var _player_can_talk_to_smith = false
 var _selected_shop_item_index = -1
 var _cached_gold = 0
+var _shop_layer: CanvasLayer = null
 var _shop_root: Control = null
 var _gold_label: Label = null
 var _status_label: Label = null
@@ -59,6 +76,10 @@ var _shop_item_cards: Array = []
 func _ready() -> void:
 	_bind_shop_nodes()
 	_connect_shop_signals()
+	if _shop_layer != null:
+		_shop_layer.visible = true
+	if _shop_root != null:
+		_shop_root.visible = false
 	_hide_purchase_confirmation()
 	_refresh_shop_gold()
 
@@ -77,7 +98,7 @@ func _input(event: InputEvent) -> void:
 		_close_blacksmith_shop()
 		return
 
-	if _player_can_talk_to_smith and not _is_player_inventory_open():
+	if _is_player_near_smith() and not _is_player_inventory_open():
 		_mark_input_handled()
 		_open_blacksmith_shop()
 		return
@@ -126,12 +147,14 @@ func _open_blacksmith_shop() -> void:
 	if _shop_root == null:
 		return
 
+	if _shop_layer != null:
+		_shop_layer.visible = true
 	_selected_shop_item_index = -1
 	_hide_purchase_confirmation()
 	_refresh_shop_items()
 	_refresh_shop_gold()
 	if _status_label != null:
-		_status_label.text = "Elige una armadura para verla en el mostrador."
+		_status_label.text = "Elige una pieza para verla en el mostrador."
 	_shop_root.visible = true
 	_lock_player_controls(true)
 
@@ -143,6 +166,7 @@ func _close_blacksmith_shop() -> void:
 
 
 func _bind_shop_nodes() -> void:
+	_shop_layer = get_node_or_null(SHOP_LAYER_PATH) as CanvasLayer
 	_shop_root = get_node_or_null(SHOP_ROOT_PATH) as Control
 	_gold_label = get_node_or_null(GOLD_LABEL_PATH) as Label
 	_status_label = get_node_or_null(STATUS_LABEL_PATH) as Label
@@ -150,7 +174,7 @@ func _bind_shop_nodes() -> void:
 	_confirmation_label = get_node_or_null(CONFIRMATION_LABEL_PATH) as Label
 
 	_shop_item_cards.clear()
-	for item in SHOP_ARMORS:
+	for item in SHOP_ITEMS:
 		var card = get_node_or_null(item.get("card_path", NodePath(""))) as Control
 		_shop_item_cards.append(card)
 
@@ -160,8 +184,8 @@ func _connect_shop_signals() -> void:
 	_connect_pressed(BUY_BUTTON_PATH, _on_confirm_purchase_pressed)
 	_connect_pressed(CANCEL_BUTTON_PATH, _hide_purchase_confirmation)
 
-	for index in range(SHOP_ARMORS.size()):
-		var button_path = SHOP_ARMORS[index].get("button_path", NodePath(""))
+	for index in range(SHOP_ITEMS.size()):
+		var button_path = SHOP_ITEMS[index].get("button_path", NodePath(""))
 		_connect_pressed(button_path, _on_shop_item_pressed.bind(index))
 
 
@@ -174,14 +198,14 @@ func _connect_pressed(button_path: NodePath, target_callable: Callable) -> void:
 
 
 func _on_shop_item_pressed(index: int) -> void:
-	if index < 0 or index >= SHOP_ARMORS.size():
+	if index < 0 or index >= SHOP_ITEMS.size():
 		return
 
 	_selected_shop_item_index = index
-	var item = SHOP_ARMORS[index]
+	var item = SHOP_ITEMS[index]
 	if _confirmation_label != null:
 		_confirmation_label.text = "Comprar %s por %d oro?" % [
-			str(item.get("name", "Armadura")),
+			str(item.get("name", "Pieza")),
 			int(item.get("cost", 0))
 		]
 	if _confirmation_panel != null:
@@ -192,12 +216,12 @@ func _on_shop_item_pressed(index: int) -> void:
 
 
 func _on_confirm_purchase_pressed() -> void:
-	if _selected_shop_item_index < 0 or _selected_shop_item_index >= SHOP_ARMORS.size():
+	if _selected_shop_item_index < 0 or _selected_shop_item_index >= SHOP_ITEMS.size():
 		if _status_label != null:
-			_status_label.text = "Elige primero una armadura."
+			_status_label.text = "Elige primero una pieza."
 		return
 
-	var item = SHOP_ARMORS[_selected_shop_item_index]
+	var item = SHOP_ITEMS[_selected_shop_item_index]
 	var cost = int(item.get("cost", 0))
 	var current_gold = _get_player_gold()
 	if current_gold < cost:
@@ -221,7 +245,7 @@ func _on_confirm_purchase_pressed() -> void:
 	var purchased_item = _build_local_shop_item(item, item_id)
 	if purchased_item == null:
 		if _status_label != null:
-			_status_label.text = "No se pudo preparar la armadura."
+			_status_label.text = "No se pudo preparar la pieza."
 		return
 
 	if player.has_method("can_fit_item_in_inventory"):
@@ -240,14 +264,14 @@ func _on_confirm_purchase_pressed() -> void:
 		database_manager.call("add_gold", SAVE_SLOT_ID, cost)
 		_refresh_shop_gold()
 		if _status_label != null:
-			_status_label.text = "No se pudo añadir la armadura al inventario."
+			_status_label.text = "No se pudo anadir la pieza al inventario."
 		return
 
 	_refresh_shop_gold()
 	_hide_purchase_confirmation()
 	if _status_label != null:
 		_status_label.text = "%s comprada. Oro restante: %d" % [
-			str(item.get("name", "Armadura")),
+			str(item.get("name", "Pieza")),
 			_cached_gold
 		]
 
@@ -299,6 +323,8 @@ func _ensure_shop_item_database_id(item: Dictionary) -> int:
 	if database_manager.has_method("get_item_by_name"):
 		var existing_item = database_manager.call("get_item_by_name", item_name)
 		if existing_item is Dictionary and not existing_item.is_empty():
+			if database_manager.has_method("update_item_by_name"):
+				database_manager.call("update_item_by_name", item_name, _build_database_item_values(item))
 			return int(existing_item.get("id", 0))
 
 	if database_manager.has_method("insert_data"):
@@ -316,32 +342,43 @@ func _ensure_shop_item_database_id(item: Dictionary) -> int:
 
 func _build_database_item_values(item: Dictionary) -> Dictionary:
 	return {
-		"name": str(item.get("name", "Armadura")),
-		"description": str(item.get("description", "Armadura de herreria.")),
-		"item_type": "armor",
+		"name": str(item.get("name", "Pieza")),
+		"description": str(item.get("description", "Pieza de herreria.")),
+		"item_type": str(item.get("item_type", "misc")),
 		"rarity": str(item.get("rarity", "common")),
 		"price": int(item.get("cost", 0)),
 		"icon": str(item.get("icon_path", "")),
 		"max_stack": 1,
 		"usable_in_battle": 0,
-		"effect_data": JSON.stringify({"defense_bonus": int(item.get("defense_bonus", 0))})
+		"effect_data": JSON.stringify(_build_item_effect_data(item))
 	}
 
 
 func _build_local_shop_item(item: Dictionary, database_item_id: int = 0) -> ItemData:
 	var local_item = ItemData.new()
-	local_item.item_id = StringName(str(item.get("name", "armadura")).to_lower().replace(" ", "_"))
+	local_item.item_id = StringName(str(item.get("name", "pieza")).to_lower().replace(" ", "_"))
 	local_item.database_item_id = max(database_item_id, 0)
-	local_item.display_name = str(item.get("name", "Armadura"))
+	local_item.display_name = str(item.get("name", "Pieza"))
 	local_item.description = str(item.get("description", ""))
-	local_item.item_type = "armor"
+	local_item.item_type = str(item.get("item_type", "misc"))
 	local_item.rarity = str(item.get("rarity", "common"))
 	local_item.price = int(item.get("cost", 0))
 	local_item.icon_texture = load(str(item.get("icon_path", ""))) as Texture2D
 	local_item.max_stack = 1
 	local_item.usable_in_battle = false
-	local_item.effect_data = {"defense_bonus": int(item.get("defense_bonus", 0))}
+	local_item.effect_data = _build_item_effect_data(item)
 	return local_item
+
+
+func _build_item_effect_data(item: Dictionary) -> Dictionary:
+	var effect_data: Dictionary = {}
+	if item.has("attack_bonus"):
+		effect_data["attack_bonus"] = int(item.get("attack_bonus", 0))
+	if item.has("defense_bonus"):
+		effect_data["defense_bonus"] = int(item.get("defense_bonus", 0))
+	if item.has("speed_bonus"):
+		effect_data["speed_bonus"] = int(item.get("speed_bonus", 0))
+	return effect_data
 
 
 func _lock_player_controls(is_locked: bool) -> void:
@@ -364,7 +401,7 @@ func _persist_player_inventory_state() -> void:
 
 
 func _is_shop_open() -> bool:
-	return _shop_root != null and _shop_root.visible
+	return _shop_root != null and _shop_root.visible and (_shop_layer == null or _shop_layer.visible)
 
 
 func _is_player_inventory_open() -> bool:
@@ -379,6 +416,22 @@ func _get_database_manager() -> Node:
 func _is_player_body(body: Node2D) -> bool:
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	return body != null and player != null and body == player
+
+
+func _is_player_near_smith() -> bool:
+	if _player_can_talk_to_smith:
+		return true
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var area = get_node_or_null(SMITH_INTERACTION_AREA_PATH) as Area2D
+	if player == null or area == null:
+		return false
+
+	for body in area.get_overlapping_bodies():
+		if body == player:
+			return true
+
+	return player.global_position.distance_to(area.global_position) <= SMITH_INTERACTION_RADIUS
 
 
 func _is_interact_event(event: InputEvent) -> bool:

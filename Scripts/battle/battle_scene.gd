@@ -549,6 +549,10 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 			"playtime_seconds": _to_int(game_state.get("playtime_seconds", 0))
 		})
 
+	if str(result.get("outcome", "")) == "victory" and database_manager.has_method("commit_manual_save"):
+		if not bool(database_manager.call("commit_manual_save", save_slot_id)):
+			push_warning("No se pudo autoguardar la victoria del combate.")
+
 
 func _persist_action(result: Dictionary) -> void:
 	var database_manager = get_node_or_null("/root/GameDatabase")

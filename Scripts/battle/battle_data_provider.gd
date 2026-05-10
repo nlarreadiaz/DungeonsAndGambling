@@ -129,11 +129,11 @@ func _build_party(encounter_data: Dictionary) -> Array:
 	var save_slot_id = int(encounter_data.get("save_slot_id", 1))
 	var database_party = _load_party_from_database(save_slot_id)
 	if not database_party.is_empty():
-		return _apply_selected_role_to_party(database_party)
+		return _apply_inventory_stat_bonuses_to_party(_apply_selected_role_to_party(database_party))
 	var selected_role_party = _build_party_from_selected_role()
 	if not selected_role_party.is_empty():
-		return selected_role_party
-	return _normalize_actor_list(DEFAULT_PARTY, "party")
+		return _apply_inventory_stat_bonuses_to_party(selected_role_party)
+	return _apply_inventory_stat_bonuses_to_party(_normalize_actor_list(DEFAULT_PARTY, "party"))
 
 
 func _build_enemies(encounter_data: Dictionary) -> Array:
@@ -290,6 +290,57 @@ func _merge_role_data_into_actor(actor: Dictionary, role_data: Dictionary) -> Di
 		actor_copy["inventory"] = _default_inventory_for_role(role_name)
 
 	return actor_copy
+
+
+func _apply_inventory_stat_bonuses_to_party(party: Array) -> Array:
+	var updated_party: Array = []
+	for actor in party:
+		if actor is not Dictionary:
+			continue
+		updated_party.append(_apply_inventory_stat_bonuses(actor))
+	return updated_party
+
+
+func _apply_inventory_stat_bonuses(actor: Dictionary) -> Dictionary:
+	var actor_copy = actor.duplicate(true)
+	var inventory = _normalize_inventory(actor_copy.get("inventory", []))
+	var bonuses = _calculate_inventory_stat_bonuses(inventory)
+
+	actor_copy["inventory"] = inventory
+	actor_copy["attack"] = max(int(actor_copy.get("attack", 0)) + int(bonuses.get("attack", 0)), 0)
+	actor_copy["defense"] = max(int(actor_copy.get("defense", 0)) + int(bonuses.get("defense", 0)), 0)
+	actor_copy["speed"] = max(int(actor_copy.get("speed", 0)) + int(bonuses.get("speed", 0)), 0)
+	actor_copy["inventory_attack_bonus"] = int(bonuses.get("attack", 0))
+	actor_copy["inventory_defense_bonus"] = int(bonuses.get("defense", 0))
+	actor_copy["inventory_speed_bonus"] = int(bonuses.get("speed", 0))
+	return actor_copy
+
+
+func _calculate_inventory_stat_bonuses(inventory: Array) -> Dictionary:
+	var bonuses = {
+		"attack": 0,
+		"defense": 0,
+		"speed": 0
+	}
+
+	for item in inventory:
+		if item is not Dictionary:
+			continue
+		var quantity = max(int(item.get("quantity", 1)), 0)
+		if quantity <= 0:
+			continue
+
+		var effect_data = item.get("effect_data", {})
+		if effect_data is String:
+			effect_data = JSON.parse_string(effect_data)
+		if effect_data == null or effect_data is not Dictionary:
+			continue
+
+		bonuses["attack"] += int(effect_data.get("attack_bonus", 0)) * quantity
+		bonuses["defense"] += int(effect_data.get("defense_bonus", 0)) * quantity
+		bonuses["speed"] += int(effect_data.get("speed_bonus", 0)) * quantity
+
+	return bonuses
 
 
 func _skills_for_selected_role(role_name: String) -> Array:

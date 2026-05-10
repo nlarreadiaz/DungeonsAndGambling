@@ -11,13 +11,13 @@ config_version=5
 [application]
 
 config/name="Dungeon & Gambling"
-run/main_scene="uid://ec5ps46o5myx"
+run/main_scene="res://Scenes/ui/menu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [audio]
 
-buses/default_bus_layout="uid://cum6pwp8uox18"
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [autoload]
 
@@ -33,9 +33,13 @@ window/size/window_width_override=1600
 window/size/window_height_override=900
 window/stretch/mode="canvas_items"
 
+[debug]
+
+file_logging/enable_file_logging=false
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/TileMapDual/plugin.cfg")
+enabled=PackedStringArray("res://addons/TileMapDual/plugin.cfg", "res://addons/addons/godot-sqlite/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg")
 
 [input]
 

@@ -187,6 +187,35 @@ func get_item_by_name(item_name: String) -> Dictionary:
 	return rows[0].duplicate(true)
 
 
+func update_item_by_name(item_name: String, values: Dictionary) -> bool:
+	var allowed_columns = [
+		"description",
+		"item_type",
+		"rarity",
+		"price",
+		"icon",
+		"max_stack",
+		"usable_in_battle",
+		"effect_data"
+	]
+	var assignments: Array = []
+	var bindings: Array = []
+	for column_name in allowed_columns:
+		if not values.has(column_name):
+			continue
+		assignments.append("%s = ?" % _quote_identifier(column_name))
+		bindings.append(values[column_name])
+
+	if assignments.is_empty():
+		return false
+
+	bindings.append(item_name)
+	return execute(
+		"UPDATE items SET %s WHERE name = ?;" % ", ".join(assignments),
+		bindings
+	)
+
+
 func get_character_skills(character_id: int, save_slot_id: int = 1) -> Array:
 	var sql = """
 		SELECT

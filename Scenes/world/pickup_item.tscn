@@ -1,31 +1,32 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://c2rgixy46xjvd"]
 
-[ext_resource type="Script" path="res://Scripts/world/pickup_item.gd" id="1_i0x6h"]
-[ext_resource type="Resource" path="res://assets/items/item_estrella.tres" id="2_j4x80"]
+[ext_resource type="Script" uid="uid://b4fdcdyl03mgd" path="res://Scripts/world/pickup_item.gd" id="1_i0x6h"]
+[ext_resource type="Resource" uid="uid://boufauqh357b2" path="res://assets/items/item_estrella.tres" id="2_j4x80"]
 [ext_resource type="Texture2D" uid="uid://de66oddbd6osl" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Icons.png" id="3_l4d7k"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d4a1d"]
-radius = 12.0
+radius = 8.062258
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xk2xq"]
 atlas = ExtResource("3_l4d7k")
 region = Rect2(48, 0, 16, 16)
 
-[node name="PickupItem" type="Area2D"]
+[node name="PickupItem" type="Area2D" unique_id=1005559505]
 z_index = 10
 script = ExtResource("1_i0x6h")
 item_data = ExtResource("2_j4x80")
 amount = 12
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=559732107]
 shape = SubResource("CircleShape2D_d4a1d")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=406308086]
 texture_filter = 1
-scale = Vector2(2, 2)
+position = Vector2(-9.536743e-07, -0.99999857)
+scale = Vector2(0.9375, 1.0625)
 texture = SubResource("AtlasTexture_xk2xq")
 
-[node name="AmountLabel" type="Label" parent="."]
+[node name="AmountLabel" type="Label" parent="." unique_id=1300225247]
 texture_filter = 1
 offset_left = -10.0
 offset_top = -27.0
