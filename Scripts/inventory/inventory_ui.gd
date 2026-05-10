@@ -1,7 +1,10 @@
 class_name InventoryUI
 extends CanvasLayer
 
+signal inventory_slots_moved(from_index: int, to_index: int)
+
 const SLOT_SCENE: PackedScene = preload("res://Scenes/ui/inventory_slot.tscn")
+const SAVE_SLOT_ID = 1
 const SLOT_POSITIONS = [
 	Vector2(77, 5),
 	Vector2(100, 5),
@@ -44,11 +47,13 @@ var slot_widgets: Array[InventorySlot] = []
 
 @onready var root: Control = $Root
 @onready var slots_layer: Control = $Root/CenterContainer/InventoryPanel/SlotsLayer
+@onready var gold_label: Label = $Root/CenterContainer/InventoryPanel/GoldLabel
 
 
 func _ready() -> void:
 	layer = 8
 	root.visible = false
+	_refresh_gold_amount()
 
 
 func bind_inventory(data: InventoryData) -> void:
@@ -76,6 +81,7 @@ func set_inventory_visible(is_visible: bool) -> void:
 	root.visible = is_visible
 	if is_visible:
 		_refresh_slots()
+		_refresh_gold_amount()
 
 
 func get_slot_data(index: int) -> InventorySlotData:
@@ -95,7 +101,8 @@ func can_move_between_slots(from_index: int, to_index: int) -> bool:
 func request_move(from_index: int, to_index: int) -> void:
 	if inventory_data == null:
 		return
-	inventory_data.move_slot(from_index, to_index)
+	if inventory_data.move_slot(from_index, to_index):
+		inventory_slots_moved.emit(from_index, to_index)
 
 
 func create_drag_data(from_index: int) -> Dictionary:
@@ -166,3 +173,21 @@ func _refresh_slots() -> void:
 
 func _on_inventory_changed() -> void:
 	_refresh_slots()
+	_refresh_gold_amount()
+
+
+func _refresh_gold_amount() -> void:
+	if gold_label == null:
+		return
+
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("get_game_state"):
+		gold_label.text = "0"
+		return
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		gold_label.text = "0"
+		return
+
+	gold_label.text = str(max(int(game_state.get("gold", 0)), 0))

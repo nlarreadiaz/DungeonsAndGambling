@@ -1,18 +1,19 @@
 @tool
 extends Control
 
-const HERO_TEXTURE: Texture2D = preload("res://assets/NightBorne.png")
+const HERO_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Idle.png")
+const HERO_ATTACK_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 3.png")
 const MAGE_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_3/Idle.png")
 const SUPPORT_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_4/Idle.png")
 const DARK_QUEEN_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")
 const DARK_QUEEN_ATTACK_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Attack_1.png")
 
-const HERO_FRAME = Rect2(0, 0, 80, 80)
-const HERO_FRAME_SIZE = Vector2(80, 80)
-const HERO_IDLE_FRAME_COUNT = 9
-const HERO_ATTACK_FRAME_COUNT = 12
-const HERO_IDLE_OFFSET = Vector2(0, 0)
-const HERO_ATTACK_OFFSET = Vector2(0, 160)
+const HERO_FRAME = Rect2(0, 56, 128, 72)
+const HERO_FRAME_SIZE = Vector2(128, 72)
+const HERO_IDLE_FRAME_COUNT = 4
+const HERO_ATTACK_FRAME_COUNT = 4
+const HERO_IDLE_OFFSET = Vector2(0, 56)
+const HERO_ATTACK_OFFSET = Vector2(0, 56)
 const HERO_IDLE_ANIMATION = &"idle"
 const HERO_ATTACK_ANIMATION = &"attack"
 const NPC_FRAME = Rect2(0, 0, 128, 128)
@@ -24,12 +25,15 @@ const DARK_QUEEN_ANIMATION = &"idle"
 const DARK_QUEEN_ATTACK_ANIMATION = &"attack"
 const HP_BAR_WIDTH = 42.0
 const HP_BAR_HEIGHT = 2.0
+const MINI_HP_BAR_WIDTH = 52.0
+const MINI_HP_BAR_HEIGHT = 3.0
 const HP_COLOR_HIGH = Color(0.34509805, 0.8627451, 0.3137255, 1.0)
 const HP_COLOR_MID = Color(0.972549, 0.7921569, 0.19607843, 1.0)
 const HP_COLOR_LOW = Color(0.92156863, 0.27450982, 0.23921569, 1.0)
 
 var _is_ariadna = false
 var _is_dark_queen = false
+var _is_hovered = false
 
 @export var editor_preview_enabled = false:
 	set(value):
@@ -56,6 +60,9 @@ var _is_dark_queen = false
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite
 @onready var shadow_rect: ColorRect = $Shadow
 @onready var turn_marker: Label = $TurnMarker
+@onready var level_label: Label = $LevelLabel
+@onready var mini_hp_bar_bg: ColorRect = $MiniHpBarBg
+@onready var mini_hp_bar_fill: ColorRect = $MiniHpBarBg/MiniHpBarFill
 @onready var status_panel: PanelContainer = $StatusPanel
 @onready var name_label: Label = $StatusPanel/MarginContainer/Layout/NameLabel
 @onready var role_label: Label = $StatusPanel/MarginContainer/Layout/RoleLabel
@@ -67,6 +74,9 @@ var _is_dark_queen = false
 
 
 func _ready() -> void:
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
+	_update_hover_panel_visibility()
 	_refresh_editor_preview()
 
 
@@ -84,7 +94,7 @@ func apply_actor_data(actor_data: Dictionary) -> void:
 
 
 func _has_required_nodes() -> bool:
-	return sprite_rect != null and animated_sprite != null and shadow_rect != null and turn_marker != null and status_panel != null and name_label != null and role_label != null and hp_bar_bg != null and hp_bar_fill != null and hp_label != null and mp_label != null and state_label != null
+	return sprite_rect != null and animated_sprite != null and shadow_rect != null and turn_marker != null and level_label != null and mini_hp_bar_bg != null and mini_hp_bar_fill != null and status_panel != null and name_label != null and role_label != null and hp_bar_bg != null and hp_bar_fill != null and hp_label != null and mp_label != null and state_label != null
 
 
 func _apply_stage_position(side: String, slot_index: int, slot_position: Variant = null) -> void:
@@ -121,6 +131,7 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	_is_dark_queen = false
 	animated_sprite.visible = false
 	animated_sprite.stop()
+	animated_sprite.flip_h = false
 	sprite_rect.texture = _make_atlas_texture(HERO_TEXTURE, HERO_FRAME)
 	sprite_rect.visible = true
 	sprite_rect.flip_h = false
@@ -128,27 +139,30 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	sprite_rect.size = Vector2(76, 76)
 	shadow_rect.position = Vector2(9, 66)
 	shadow_rect.size = Vector2(66, 6)
+	_apply_minimal_status_layout(Vector2(24, 9), Vector2(18, 73))
 
 	if side == "enemy":
+		if _try_apply_custom_enemy_sprite(actor_data):
+			return
 		_is_dark_queen = true
 		sprite_rect.visible = false
 		animated_sprite.visible = true
+		animated_sprite.flip_h = bool(actor_data.get("sprite_flip_h", false))
 		animated_sprite.position = Vector2(12, 0)
 		animated_sprite.scale = Vector2(0.6875, 0.6875)
 		_play_dark_queen_idle()
 		shadow_rect.position = Vector2(23, 75)
 		shadow_rect.size = Vector2(72, 7)
-		status_panel.position = Vector2(-48, 60)
-		status_panel.size = Vector2(84, 38)
-		turn_marker.position = Vector2(-62, 67)
+		_apply_enemy_status_layout()
+		_apply_minimal_status_layout(Vector2(30, 4), Vector2(28, 82))
 		return
 
 	if actor_name.contains("ariadna"):
 		_is_ariadna = true
 		sprite_rect.visible = false
 		animated_sprite.visible = true
-		animated_sprite.position = Vector2(2, 8)
-		animated_sprite.scale = Vector2(0.95, 0.95)
+		animated_sprite.position = Vector2(-7, 16)
+		animated_sprite.scale = Vector2(0.72, 0.72)
 		_play_hero_idle()
 	elif actor_name.contains("selene") or role_name.contains("mago"):
 		sprite_rect.texture = _make_atlas_texture(MAGE_TEXTURE, NPC_FRAME)
@@ -162,11 +176,62 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	status_panel.position = Vector2(55, 5)
 	status_panel.size = Vector2(80, 38)
 	turn_marker.position = Vector2(43, 15)
+	_apply_minimal_status_layout(Vector2(24, 9), Vector2(18, 73))
 
 	if actor_name.contains("ariadna"):
 		status_panel.position.x = status_panel.position.x + 10.0
 		status_panel.size.x = 96.0
 		turn_marker.position.x = turn_marker.position.x + 10.0
+		_apply_minimal_status_layout(Vector2(26, 9), Vector2(20, 80))
+
+
+func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
+	var texture_path = str(actor_data.get("sprite_texture_path", "")).strip_edges()
+	if texture_path.is_empty():
+		return false
+
+	var texture = load(texture_path) as Texture2D
+	if texture == null:
+		push_warning("No se pudo cargar el sprite de enemigo: %s" % texture_path)
+		return false
+
+	var frame_x = int(actor_data.get("sprite_frame_x", 0))
+	var frame_y = int(actor_data.get("sprite_frame_y", 0))
+	var frame_width = int(actor_data.get("sprite_frame_width", 0))
+	var frame_height = int(actor_data.get("sprite_frame_height", 0))
+	if frame_width <= 0:
+		frame_width = texture.get_width()
+	if frame_height <= 0:
+		frame_height = texture.get_height()
+
+	var display_width = float(actor_data.get("sprite_display_width", 0.0))
+	var display_height = float(actor_data.get("sprite_display_height", 0.0))
+	if display_width <= 0.0:
+		display_width = float(frame_width)
+	if display_height <= 0.0:
+		display_height = float(frame_height)
+
+	sprite_rect.texture = _make_atlas_texture(texture, Rect2(frame_x, frame_y, frame_width, frame_height))
+	sprite_rect.visible = true
+	sprite_rect.flip_h = bool(actor_data.get("sprite_flip_h", false))
+	sprite_rect.position = Vector2(
+		float(actor_data.get("sprite_position_x", 0.0)),
+		float(actor_data.get("sprite_position_y", 0.0))
+	)
+	sprite_rect.size = Vector2(display_width, display_height)
+	animated_sprite.visible = false
+	animated_sprite.stop()
+	shadow_rect.position = Vector2(19, 75)
+	shadow_rect.size = Vector2(60, 7)
+	_apply_enemy_status_layout()
+	_apply_minimal_status_layout(Vector2(25, 6), Vector2(21, 82))
+	return true
+
+
+func _apply_enemy_status_layout() -> void:
+	status_panel.position = Vector2(-48, 60)
+	status_panel.size = Vector2(84, 38)
+	turn_marker.position = Vector2(-62, 67)
 
 
 func _apply_status(actor_data: Dictionary) -> void:
@@ -177,6 +242,7 @@ func _apply_status(actor_data: Dictionary) -> void:
 	var max_mp = max(int(actor_data.get("max_mana", 0)), 0)
 	var hp_ratio = clampf(float(current_hp) / float(max_hp), 0.0, 1.0)
 
+	level_label.text = "lvl.%d" % int(actor_data.get("level", 1))
 	name_label.text = "%s Lv.%d" % [actor_name, int(actor_data.get("level", 1))]
 	role_label.text = str(actor_data.get("role", "Unidad"))
 	hp_label.text = "HP %d/%d" % [current_hp, max_hp]
@@ -199,6 +265,13 @@ func _apply_status(actor_data: Dictionary) -> void:
 		hp_fill_width = max(hp_fill_width, 1)
 	hp_bar_fill.size = Vector2(hp_fill_width, HP_BAR_HEIGHT)
 	hp_bar_fill.color = _get_hp_bar_color(hp_ratio)
+	mini_hp_bar_bg.clip_contents = true
+	mini_hp_bar_fill.position = Vector2(1.0, 1.0)
+	var mini_hp_fill_width = roundi(MINI_HP_BAR_WIDTH * hp_ratio)
+	if current_hp > 0:
+		mini_hp_fill_width = max(mini_hp_fill_width, 1)
+	mini_hp_bar_fill.size = Vector2(mini_hp_fill_width, MINI_HP_BAR_HEIGHT)
+	mini_hp_bar_fill.color = _get_hp_bar_color(hp_ratio)
 
 
 func _apply_turn_state(actor_data: Dictionary) -> void:
@@ -213,6 +286,28 @@ func _apply_turn_state(actor_data: Dictionary) -> void:
 		modulate = Color(1.0, 0.98, 0.78, 1.0)
 
 
+func _apply_minimal_status_layout(level_position: Vector2, hp_bar_position: Vector2) -> void:
+	level_label.position = level_position
+	level_label.size = Vector2(42, 12)
+	mini_hp_bar_bg.position = hp_bar_position
+	mini_hp_bar_bg.size = Vector2(MINI_HP_BAR_WIDTH + 2.0, MINI_HP_BAR_HEIGHT + 2.0)
+
+
+func _on_mouse_entered() -> void:
+	_is_hovered = true
+	_update_hover_panel_visibility()
+
+
+func _on_mouse_exited() -> void:
+	_is_hovered = false
+	_update_hover_panel_visibility()
+
+
+func _update_hover_panel_visibility() -> void:
+	if status_panel != null:
+		status_panel.visible = _is_hovered
+
+
 func play_action_animation(action_type: String = "attack") -> void:
 	if not animated_sprite.visible:
 		return
@@ -223,7 +318,7 @@ func play_action_animation(action_type: String = "attack") -> void:
 		if action_type != "attack" and action_type != "skill":
 			return
 		animated_sprite.sprite_frames = _make_sprite_frames(
-			HERO_TEXTURE,
+			HERO_ATTACK_TEXTURE,
 			HERO_FRAME_SIZE,
 			HERO_ATTACK_FRAME_COUNT,
 			HERO_ATTACK_ANIMATION,

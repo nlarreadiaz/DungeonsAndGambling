@@ -100,6 +100,21 @@
         "category":  "armor"
     },
     {
+        "file":  "leather_helmet.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "mail_chestplate.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
+        "file":  "guard_boots.png",
+        "size":  "48x48",
+        "category":  "armor"
+    },
+    {
         "file":  "bow_01.png",
         "size":  "48x48",
         "category":  "bow"
@@ -198,6 +213,11 @@
         "file":  "staff_10.png",
         "size":  "48x48",
         "category":  "staff"
+    },
+    {
+        "file":  "iron_sword.png",
+        "size":  "48x48",
+        "category":  "sword"
     },
     {
         "file":  "sword_01.png",

@@ -33,11 +33,11 @@ func _ready() -> void:
 
 
 func _on_quit_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/menu.tscn")
+	get_tree().change_scene_to_file("res://Scenes/ui/menu.tscn")
 
 
 func _on_atras_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/menu.tscn")
+	get_tree().change_scene_to_file("res://Scenes/ui/menu.tscn")
 
 
 func _on_volume_slider_value_changed(value: float) -> void:

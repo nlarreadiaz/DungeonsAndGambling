@@ -23,15 +23,19 @@ var _state = "boot"
 var _current_action: Dictionary = {}
 var _pending_result: Dictionary = {}
 var _turn_queue_preview: Array = []
+var _battle_music_player: AudioStreamPlayer = null
 
 
 func _ready() -> void:
 	DisplaySettings.configure_window(get_window())
 	_connect_ui_signals()
 	_encounter_data = _get_encounter_data()
+	_play_encounter_music()
 	var snapshot = _data_provider.build_snapshot(_encounter_data)
 	_context.setup(_encounter_data, snapshot)
 	battle_ui.call("hide_outcome_banner")
+	if battle_ui.has_method("set_background_texture_path"):
+		battle_ui.call("set_background_texture_path", str(_encounter_data.get("battle_background_path", "")))
 	battle_ui.call("set_titles", _context.battle_title, _context.battle_subtitle)
 	battle_ui.call("set_hint", "Elige comando y objetivo para resolver el turno.")
 	_refresh_battlefield()
@@ -57,6 +61,23 @@ func _begin_battle() -> void:
 	_context.add_log("La iniciativa se resuelve por velocidad en cada ronda.")
 	_refresh_battlefield()
 	await _start_next_turn()
+
+
+func _play_encounter_music() -> void:
+	var music_path = str(_encounter_data.get("battle_music_path", "")).strip_edges()
+	if music_path.is_empty():
+		return
+
+	var music_stream = load(music_path) as AudioStream
+	if music_stream == null:
+		push_warning("No se pudo cargar la musica de batalla: %s" % music_path)
+		return
+
+	_battle_music_player = AudioStreamPlayer.new()
+	_battle_music_player.name = "BattleMusic"
+	_battle_music_player.stream = music_stream
+	add_child(_battle_music_player)
+	_battle_music_player.play()
 
 
 func _start_next_turn() -> void:
@@ -291,7 +312,7 @@ func _open_target_selection(title: String, raw_targets: Array) -> void:
 
 func _build_enemy_action(actor: Dictionary) -> Dictionary:
 	var available_skills = _context.get_available_skills(int(actor.get("battle_id", -1)))
-	if not available_skills.is_empty() and randf() <= 0.55:
+	if not available_skills.is_empty() and (bool(actor.get("always_use_first_skill", false)) or randf() <= 0.55):
 		var chosen_skill: Dictionary = available_skills[0]
 		var skill_targets = _resolve_targets_for_target_type(str(chosen_skill.get("target_type", "single_enemy")), str(actor.get("side", "enemy")))
 		if not skill_targets.is_empty():
@@ -417,7 +438,8 @@ func _finish_battle(outcome: String) -> void:
 		_return_to_map_after_defeat()
 	else:
 		battle_ui.call("show_outcome_banner", "VICTORIA", "Combate completado.")
-		battle_ui.call("set_hint", "Pulsa Enter o Esc para volver al mapa.")
+		battle_ui.call("set_hint", "Volviendo a la aldea...")
+		_return_to_map_after_victory()
 
 
 func _return_to_previous_scene_after_escape() -> void:
@@ -430,6 +452,13 @@ func _return_to_previous_scene_after_escape() -> void:
 func _return_to_map_after_defeat() -> void:
 	await get_tree().create_timer(2.0).timeout
 	if _state != "ended" or _context.outcome != "defeat":
+		return
+	_leave_battle()
+
+
+func _return_to_map_after_victory() -> void:
+	await get_tree().create_timer(1.6).timeout
+	if _state != "ended" or _context.outcome != "victory":
 		return
 	_leave_battle()
 
@@ -456,9 +485,9 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 		if database_manager.has_method("update_character_battle_state"):
 			database_manager.call(
 				"update_character_battle_state",
-				int(database_id),
-				int(actor.get("current_hp", 0)),
-				int(actor.get("current_mana", 0)),
+				_to_int(database_id),
+				_to_int(actor.get("current_hp", 0)),
+				_to_int(actor.get("current_mana", 0)),
 				str(actor.get("state", "normal")),
 				save_slot_id
 			)
@@ -469,7 +498,7 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 	if game_state == null or game_state is not Dictionary:
 		game_state = {}
 
-	var current_gold = int(game_state.get("gold", 0))
+	var current_gold = _to_int(game_state.get("gold", 0))
 	var important_flags = game_state.get("important_flags", {})
 	if important_flags is String:
 		important_flags = JSON.parse_string(important_flags)
@@ -478,8 +507,8 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 
 	if str(result.get("outcome", "")) == "victory":
 		var rewards: Dictionary = result.get("rewards", {})
-		var experience_reward = int(rewards.get("experience", 0))
-		var gold_reward = int(rewards.get("gold", 0))
+		var experience_reward = _to_int(rewards.get("experience", 0))
+		var gold_reward = _to_int(rewards.get("gold", 0))
 		current_gold += gold_reward
 		if database_manager.has_method("add_gold"):
 			database_manager.call("add_gold", save_slot_id, gold_reward)
@@ -491,7 +520,7 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 			if database_id == null:
 				continue
 			if database_manager.has_method("add_character_experience"):
-				database_manager.call("add_character_experience", int(database_id), experience_reward, save_slot_id)
+				database_manager.call("add_character_experience", _to_int(database_id), experience_reward, save_slot_id)
 
 		var loot_entries = rewards.get("loot", [])
 		var party_leader = _context.get_party_leader()
@@ -503,11 +532,21 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 				if database_manager.has_method("add_item_to_inventory"):
 					database_manager.call(
 						"add_item_to_inventory",
-						int(leader_database_id),
-						int(loot_entry.get("item_id", 0)),
-						int(loot_entry.get("quantity", 1)),
+						_to_int(leader_database_id),
+						_to_int(loot_entry.get("item_id", 0)),
+						_to_int(loot_entry.get("quantity", 1)),
 						save_slot_id
 					)
+
+		var encounter_id = str(_context.encounter_id)
+		if not encounter_id.is_empty():
+			var defeated_encounters = important_flags.get("defeated_encounters", {})
+			if defeated_encounters is String:
+				defeated_encounters = JSON.parse_string(defeated_encounters)
+			if defeated_encounters == null or defeated_encounters is not Dictionary:
+				defeated_encounters = {}
+			defeated_encounters[encounter_id] = true
+			important_flags["defeated_encounters"] = defeated_encounters
 
 	if str(result.get("outcome", "")) == "defeat":
 		result["return_player_position"] = null
@@ -524,10 +563,14 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 			"save_name": str(game_state.get("save_name", "Partida %d" % save_slot_id)),
 			"current_location": location_name,
 			"gold": current_gold,
-			"main_progress": int(game_state.get("main_progress", 0)),
+			"main_progress": _to_int(game_state.get("main_progress", 0)),
 			"important_flags": important_flags,
-			"playtime_seconds": int(game_state.get("playtime_seconds", 0))
+			"playtime_seconds": _to_int(game_state.get("playtime_seconds", 0))
 		})
+
+	if str(result.get("outcome", "")) == "victory" and database_manager.has_method("commit_manual_save"):
+		if not bool(database_manager.call("commit_manual_save", save_slot_id)):
+			push_warning("No se pudo autoguardar la victoria del combate.")
 
 
 func _persist_action(result: Dictionary) -> void:
@@ -538,7 +581,7 @@ func _persist_action(result: Dictionary) -> void:
 	if result.get("item_consumed", false):
 		var inventory_id = result.get("consumed_inventory_id", null)
 		if inventory_id != null and database_manager.has_method("set_inventory_quantity"):
-			database_manager.call("set_inventory_quantity", int(inventory_id), int(result.get("remaining_quantity", 0)))
+			database_manager.call("set_inventory_quantity", _to_int(inventory_id), _to_int(result.get("remaining_quantity", 0)))
 
 	if database_manager.has_method("log_battle_action"):
 		var action_log = " | ".join(result.get("log_lines", []))
@@ -549,9 +592,29 @@ func _persist_action(result: Dictionary) -> void:
 			result.get("attacker_database_id", null),
 			result.get("target_database_id", null),
 			result.get("skill_id", null),
-			int(result.get("damage_done", 0)),
+			_to_int(result.get("damage_done", 0)),
 			action_log
 		)
+
+
+func _to_int(value: Variant, default_value: int = 0) -> int:
+	if value == null:
+		return default_value
+	if value is int:
+		return value
+	if value is float:
+		return int(value)
+	if value is bool:
+		return 1 if value else 0
+	if value is String:
+		var text = value.strip_edges()
+		if text.is_empty():
+			return default_value
+		if text.is_valid_int():
+			return text.to_int()
+		if text.is_valid_float():
+			return int(text.to_float())
+	return default_value
 
 
 func _refresh_battlefield() -> void:

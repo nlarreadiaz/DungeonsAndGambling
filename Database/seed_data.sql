@@ -14,10 +14,12 @@ INSERT OR IGNORE INTO classes (id, name, description, role, base_max_hp, base_ma
 INSERT OR IGNORE INTO items (id, name, description, item_type, rarity, price, icon, max_stack, usable_in_battle, effect_data) VALUES
     (1, 'Pocion', 'Recupera 50 puntos de vida.', 'consumable', 'common', 25, 'res://assets/items/item_estrella.tres', 20, 1, '{"heal_hp":50}'),
     (2, 'Eter', 'Recupera 30 puntos de mana.', 'consumable', 'common', 40, 'res://assets/items/item_moneda.tres', 20, 1, '{"heal_mp":30}'),
-    (3, 'Espada de Hierro', 'Arma basica para combatientes.', 'weapon', 'common', 120, 'res://assets/items/item_estrella.tres', 1, 0, '{"attack_bonus":8}'),
-    (4, 'Armadura de Cuero', 'Proteccion ligera para aventureros.', 'armor', 'common', 90, 'res://assets/items/item_moneda.tres', 1, 0, '{"defense_bonus":6}'),
+    (3, 'Espada de Hierro', 'Arma basica para combatientes.', 'weapon', 'common', 120, 'res://assets/items/generated_pixel_equipment/iron_sword.png', 1, 0, '{"attack_bonus":8}'),
+    (4, 'Armadura de Cuero', 'Proteccion ligera para aventureros.', 'armor', 'common', 90, 'res://assets/items/generated_pixel_equipment/leather_helmet.png', 1, 0, '{"defense_bonus":6}'),
     (5, 'Amuleto de la Suerte', 'Accesorio con un ligero bono general.', 'accessory', 'rare', 160, 'res://assets/items/item_estrella.tres', 1, 0, '{"speed_bonus":2,"defense_bonus":1}'),
-    (6, 'Hierba Antidoto', 'Elimina estados alterados leves.', 'consumable', 'common', 18, 'res://assets/items/item_moneda.tres', 10, 1, '{"cure_status":"poison"}');
+    (6, 'Hierba Antidoto', 'Elimina estados alterados leves.', 'consumable', 'common', 18, 'res://assets/items/item_moneda.tres', 10, 1, '{"cure_status":"poison"}'),
+    (7, 'Armadura de Malla', 'Anillas reforzadas para resistir golpes directos.', 'armor', 'uncommon', 145, 'res://assets/items/generated_pixel_equipment/mail_chestplate.png', 1, 0, '{"defense_bonus":10}'),
+    (8, 'Coraza de Guardia', 'Placas firmes con buen equilibrio de peso.', 'armor', 'rare', 220, 'res://assets/items/generated_pixel_equipment/guard_boots.png', 1, 0, '{"defense_bonus":15}');
 
 INSERT OR IGNORE INTO skills (id, name, description, mana_cost, damage, damage_type, target_type, cooldown_turns) VALUES
     (1, 'Golpe Fuerte', 'Ataque fisico de alto impacto.', 0, 24, 'physical', 'single_enemy', 0),

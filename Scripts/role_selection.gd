@@ -2,8 +2,8 @@ extends Control
 
 const DisplaySettings = preload("res://Scripts/display_settings.gd")
 
-const MAIN_MENU_SCENE = "res://Scenes/menu.tscn"
-const WORLD_SCENE = "res://Scenes/aldea_principal.tscn"
+const MAIN_MENU_SCENE = "res://Scenes/ui/menu.tscn"
+const WORLD_SCENE = "res://Scenes/world/aldea_principal.tscn"
 const SAVE_SLOT_ID = 1
 const GUERRERO_TEXTURE: Texture2D = preload("res://images/guerrero.png")
 const ARQUERO_TEXTURE: Texture2D = preload("res://images/Sprite-0001.png")

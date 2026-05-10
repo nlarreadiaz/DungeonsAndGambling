@@ -10,6 +10,7 @@ const SELECTION_ENTRY_SCENE: PackedScene = preload("res://Scenes/battle/battle_s
 @onready var subtitle_label: Label = $TopHud/TitleBox/SubtitleLabel
 @onready var current_turn_label: Label = $TopHud/TurnBox/CurrentTurnLabel
 @onready var queue_label: Label = $TopHud/TurnBox/QueueLabel
+@onready var background_image: TextureRect = $StagePanel/Stage/BackgroundImage
 @onready var party_container: Control = $StagePanel/Stage/PartyActors
 @onready var enemy_container: Control = $StagePanel/Stage/EnemyActors
 @onready var battle_slots: Control = $StagePanel/Stage/BattleSlots
@@ -68,6 +69,22 @@ func set_status(status_text: String) -> void:
 
 func set_hint(hint_text: String) -> void:
 	hint_label.text = hint_text
+
+
+func set_background_texture_path(texture_path: String) -> void:
+	if background_image == null:
+		return
+
+	var clean_path = texture_path.strip_edges()
+	if clean_path.is_empty():
+		return
+
+	var texture = load(clean_path) as Texture2D
+	if texture == null:
+		push_warning("No se pudo cargar el fondo de batalla: %s" % clean_path)
+		return
+
+	background_image.texture = texture
 
 
 func set_party_header(_text: String) -> void:
