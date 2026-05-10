@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4_label"]
 [ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="5_ribbons"]
 [ext_resource type="Texture2D" uid="uid://cnhbojama6yi2" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Back_White.png" id="6_back_white"]
+[ext_resource type="Texture2D" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Save_White.png" id="7_save_white"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_panel"]
 bg_color = Color(0.07058824, 0.12156863, 0.14901961, 0.95)
@@ -109,6 +110,18 @@ region = Rect2(1728, 80, 48, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_menu_hover"]
 atlas = ExtResource("3_buttons")
 region = Rect2(1680, 80, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_save_normal"]
+atlas = ExtResource("7_save_white")
+region = Rect2(0, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_save_pressed"]
+atlas = ExtResource("7_save_white")
+region = Rect2(96, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_save_hover"]
+atlas = ExtResource("7_save_white")
+region = Rect2(48, 0, 48, 16)
 
 [node name="OptionsInGame" type="CanvasLayer" unique_id=487358577]
 layer = 12
@@ -291,12 +304,13 @@ offset_bottom = 53.0
 scale = Vector2(2, 2.15)
 focus_neighbor_top = NodePath("../BackButton")
 focus_neighbor_bottom = NodePath("../MenuButton")
-texture_normal = SubResource("AtlasTexture_menu_normal")
-texture_pressed = SubResource("AtlasTexture_menu_pressed")
-texture_hover = SubResource("AtlasTexture_menu_hover")
+texture_normal = SubResource("AtlasTexture_save_normal")
+texture_pressed = SubResource("AtlasTexture_save_pressed")
+texture_hover = SubResource("AtlasTexture_save_hover")
 ignore_texture_size = true
 
 [node name="SaveLabel" type="Label" parent="Root/ContentCenter/Layout/SettingsPanel/MarginContainer/VBoxContainer/ButtonsArea/SaveButton"]
+visible = false
 texture_filter = 1
 layout_mode = 0
 offset_left = 2.7

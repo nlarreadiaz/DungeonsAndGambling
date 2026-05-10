@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" uid="uid://d3fljtivmwded" path="res://Scripts/role_selection.gd" id="1_role_selection"]
 [ext_resource type="Texture2D" uid="uid://vix1l5ysbxdt" path="res://assets/role_selection/role_selection_background.png" id="2_background"]
-[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_buttons"]
-[ext_resource type="Script" path="res://Scripts/menu_button_label.gd" id="4_label"]
+[ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4_label"]
+[ext_resource type="Texture2D" uid="uid://cqark1m8twymx" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Volver_White.png" id="5_volver_white"]
+[ext_resource type="Texture2D" uid="uid://digr84rmg4xta" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Jugar_Yellow.png" id="6_jugar_yellow"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_selection_highlight"]
 bg_color = Color(0.86, 0.36, 1, 0.25)
@@ -164,16 +165,16 @@ outline_size = 1
 outline_color = Color(0.03, 0.05, 0.07, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_normal"]
-atlas = ExtResource("3_buttons")
-region = Rect2(0, 192, 32, 16)
+atlas = ExtResource("5_volver_white")
+region = Rect2(0, 0, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_pressed"]
-atlas = ExtResource("3_buttons")
-region = Rect2(64, 192, 32, 16)
+atlas = ExtResource("5_volver_white")
+region = Rect2(96, 0, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_back_hover"]
-atlas = ExtResource("3_buttons")
-region = Rect2(32, 192, 32, 16)
+atlas = ExtResource("5_volver_white")
+region = Rect2(48, 0, 48, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_button"]
 font_size = 8
@@ -182,16 +183,16 @@ outline_size = 1
 outline_color = Color(0.09, 0.06, 0.04, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_choose_normal"]
-atlas = ExtResource("3_buttons")
-region = Rect2(0, 64, 32, 16)
+atlas = ExtResource("6_jugar_yellow")
+region = Rect2(0, 0, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_choose_pressed"]
-atlas = ExtResource("3_buttons")
-region = Rect2(64, 64, 32, 16)
+atlas = ExtResource("6_jugar_yellow")
+region = Rect2(96, 0, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_choose_hover"]
-atlas = ExtResource("3_buttons")
-region = Rect2(32, 64, 32, 16)
+atlas = ExtResource("6_jugar_yellow")
+region = Rect2(48, 0, 48, 16)
 
 [node name="RoleSelection" type="Control" unique_id=1305282270]
 layout_mode = 3
@@ -516,21 +517,24 @@ label_settings = SubResource("LabelSettings_status")
 horizontal_alignment = 1
 
 [node name="ActionBar" type="HBoxContainer" parent="HUD" unique_id=386223106]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -212.0
-offset_top = -28.0
+offset_top = -39.0
 offset_right = 212.0
-offset_bottom = -2.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_constants/separation = 16
 alignment = 1
 
 [node name="BackButton" type="TextureButton" parent="HUD/ActionBar" unique_id=1994539684]
 texture_filter = 1
-custom_minimum_size = Vector2(168, 28)
+custom_minimum_size = Vector2(96, 34)
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_back_normal")
 texture_pressed = SubResource("AtlasTexture_back_pressed")
@@ -539,6 +543,7 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="HUD/ActionBar/BackButton" unique_id=1842650360]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -553,7 +558,7 @@ script = ExtResource("4_label")
 
 [node name="PlayButton" type="TextureButton" parent="HUD/ActionBar" unique_id=99715927]
 texture_filter = 1
-custom_minimum_size = Vector2(220, 28)
+custom_minimum_size = Vector2(96, 34)
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_choose_normal")
 texture_pressed = SubResource("AtlasTexture_choose_pressed")
@@ -562,6 +567,7 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="HUD/ActionBar/PlayButton" unique_id=1201367077]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
