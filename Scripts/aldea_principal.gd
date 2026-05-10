@@ -503,7 +503,7 @@ func _apply_defeated_encounter_state() -> void:
 
 
 func _should_hide_defeated_encounter(encounter_id: String) -> bool:
-	return not encounter_id.strip_edges().is_empty()
+	return false
 
 
 func _apply_defeated_encounter(encounter_id: String) -> void:

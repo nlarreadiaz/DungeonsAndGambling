@@ -33,7 +33,6 @@ const HP_COLOR_LOW = Color(0.92156863, 0.27450982, 0.23921569, 1.0)
 
 var _is_ariadna = false
 var _is_dark_queen = false
-var _is_hovered = false
 
 @export var editor_preview_enabled = false:
 	set(value):
@@ -74,9 +73,8 @@ var _is_hovered = false
 
 
 func _ready() -> void:
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
-	_update_hover_panel_visibility()
+	_set_status_panel_visible()
+	_hide_mini_hp_bar()
 	_refresh_editor_preview()
 
 
@@ -265,13 +263,7 @@ func _apply_status(actor_data: Dictionary) -> void:
 		hp_fill_width = max(hp_fill_width, 1)
 	hp_bar_fill.size = Vector2(hp_fill_width, HP_BAR_HEIGHT)
 	hp_bar_fill.color = _get_hp_bar_color(hp_ratio)
-	mini_hp_bar_bg.clip_contents = true
-	mini_hp_bar_fill.position = Vector2(1.0, 1.0)
-	var mini_hp_fill_width = roundi(MINI_HP_BAR_WIDTH * hp_ratio)
-	if current_hp > 0:
-		mini_hp_fill_width = max(mini_hp_fill_width, 1)
-	mini_hp_bar_fill.size = Vector2(mini_hp_fill_width, MINI_HP_BAR_HEIGHT)
-	mini_hp_bar_fill.color = _get_hp_bar_color(hp_ratio)
+	_hide_mini_hp_bar()
 
 
 func _apply_turn_state(actor_data: Dictionary) -> void:
@@ -291,21 +283,17 @@ func _apply_minimal_status_layout(level_position: Vector2, hp_bar_position: Vect
 	level_label.size = Vector2(42, 12)
 	mini_hp_bar_bg.position = hp_bar_position
 	mini_hp_bar_bg.size = Vector2(MINI_HP_BAR_WIDTH + 2.0, MINI_HP_BAR_HEIGHT + 2.0)
+	_hide_mini_hp_bar()
 
 
-func _on_mouse_entered() -> void:
-	_is_hovered = true
-	_update_hover_panel_visibility()
-
-
-func _on_mouse_exited() -> void:
-	_is_hovered = false
-	_update_hover_panel_visibility()
-
-
-func _update_hover_panel_visibility() -> void:
+func _set_status_panel_visible() -> void:
 	if status_panel != null:
-		status_panel.visible = _is_hovered
+		status_panel.visible = true
+
+
+func _hide_mini_hp_bar() -> void:
+	if mini_hp_bar_bg != null:
+		mini_hp_bar_bg.visible = false
 
 
 func play_action_animation(action_type: String = "attack") -> void:

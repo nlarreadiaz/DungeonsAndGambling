@@ -1,5 +1,7 @@
 extends Node2D
 
+const OPTIONS_INGAME_SCENE: PackedScene = preload("res://Scenes/ui/options_ingame.tscn")
+
 const PLAYER_NODE_PATH = NodePath("player")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const SAVE_SLOT_ID = 1
@@ -12,16 +14,67 @@ const ESBIRRO2_NODE_PATH = NodePath("Esbirro2")
 const ESBIRRO3_NODE_PATH = NodePath("Esbirro3")
 const DARK_QUEEN_NODE_PATH = NodePath("ReinaOscura")
 const ESBIRRO_IDLE_TEXTURE_PATH = "res://assets/Boss-DarkQueen/2/Idle.png"
+const ESBIRRO_FIGHT_MUSIC_PATH = "res://assets/Music/DungeonFight.mp3"
 const BOSS_FIGHT_MUSIC_PATH = "res://assets/Music/BossFight.mp3"
+const DUNGEON_AMBIENT_MUSIC_PATH = "res://assets/Music/DungeonAmbient.mp3"
 const DUNGEON_AGUA_BATTLE_BACKGROUND_PATH = "res://assets/battle/dungeon_Agua_Combat.png"
 const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
 
 var _esbirro_battle_cooldown_until_msec = 0
+var options_ingame: CanvasLayer = null
+var _ambient_music_player: AudioStreamPlayer = null
+var _ambient_music_resume_position := 0.0
 
 
 func _ready() -> void:
 	_apply_battle_return_position()
 	_apply_defeated_encounter_state()
+	_play_dungeon_ambient_music(_ambient_music_resume_position)
+
+
+func _input(event: InputEvent) -> void:
+	if not _is_pause_event(event):
+		return
+
+	if _close_player_inventory_if_open():
+		get_viewport().set_input_as_handled()
+		return
+
+	if is_instance_valid(options_ingame):
+		return
+
+	get_viewport().set_input_as_handled()
+	_open_options_ingame()
+
+
+func _open_options_ingame() -> void:
+	options_ingame = OPTIONS_INGAME_SCENE.instantiate() as CanvasLayer
+	if options_ingame == null:
+		push_warning("No se pudo cargar el menu de opciones in-game.")
+		return
+
+	options_ingame.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	add_child(options_ingame)
+	options_ingame.tree_exited.connect(_on_options_ingame_closed)
+	_set_tree_paused(true)
+
+
+func _on_options_ingame_closed() -> void:
+	options_ingame = null
+	if not is_inside_tree():
+		return
+	_set_tree_paused(false)
+
+
+func _set_tree_paused(is_paused: bool) -> void:
+	if not is_inside_tree():
+		return
+
+	var tree = get_tree()
+	if tree == null:
+		return
+
+	tree.paused = is_paused
 
 
 func _on_esbirro1_battle_area_body_entered(body: Node2D) -> void:
@@ -35,7 +88,8 @@ func _on_esbirro1_battle_area_body_entered(body: Node2D) -> void:
 		"Un guardia menor bloquea el paso entre las aguas.",
 		"El esbirro se lanza al combate.",
 		Vector2(-48.0, 0.0),
-		[_build_esbirro_enemy("Esbirro", "Esbirro menor", 2, 42, 5, 2, 4, 30, 1000, "Golpe torpe", 6)]
+		[_build_esbirro_enemy("Esbirro", "Esbirro menor", 2, 42, 5, 2, 4, 30, 1000, "Golpe torpe", 6)],
+		ESBIRRO_FIGHT_MUSIC_PATH
 	)
 
 
@@ -50,7 +104,8 @@ func _on_esbirro2_battle_area_body_entered(body: Node2D) -> void:
 		"Un esbirro algo mas fuerte guarda la mazmorra.",
 		"El esbirro curtido prepara su arma.",
 		Vector2(-48.0, 0.0),
-		[_build_esbirro_enemy("Esbirro Curtido", "Esbirro", 3, 58, 7, 3, 5, 45, 150, "Golpe de guardia", 8)]
+		[_build_esbirro_enemy("Esbirro Curtido", "Esbirro", 3, 58, 7, 3, 5, 45, 150, "Golpe de guardia", 8)],
+		ESBIRRO_FIGHT_MUSIC_PATH
 	)
 
 
@@ -65,7 +120,8 @@ func _on_esbirro3_battle_area_body_entered(body: Node2D) -> void:
 		"Un esbirro veterano bloquea otro tramo de la mazmorra.",
 		"El esbirro veterano te corta el paso.",
 		Vector2(-48.0, 0.0),
-		[_build_esbirro_enemy("Esbirro Veterano", "Esbirro", 4, 72, 9, 4, 6, 60, 220, "Tajo simple", 10)]
+		[_build_esbirro_enemy("Esbirro Veterano", "Esbirro", 4, 72, 9, 4, 6, 60, 220, "Tajo simple", 10)],
+		ESBIRRO_FIGHT_MUSIC_PATH
 	)
 
 
@@ -113,6 +169,7 @@ func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: S
 		"world_scene_path": world_scene_path,
 		"return_player_position": player.global_position,
 		"battle_background_path": DUNGEON_AGUA_BATTLE_BACKGROUND_PATH,
+		"world_music_resume_position": _pause_dungeon_ambient_music(),
 		"enemies": enemies
 	}
 	if not battle_music_path.strip_edges().is_empty():
@@ -120,8 +177,23 @@ func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: S
 
 	_persist_player_inventory_state()
 	var encounter_started = bool(battle_manager.call("start_battle", encounter_data))
-	if not encounter_started and player.has_method("morir"):
-		player.call("morir")
+	if not encounter_started:
+		_resume_dungeon_ambient_music()
+		if player.has_method("morir"):
+			player.call("morir")
+
+
+func _close_player_inventory_if_open() -> bool:
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player == null:
+		return false
+
+	if player.has_method("is_inventory_open") and bool(player.call("is_inventory_open")):
+		if player.has_method("close_inventory"):
+			player.call("close_inventory")
+		return true
+
+	return false
 
 
 func _build_dark_queen_final_enemy() -> Dictionary:
@@ -208,6 +280,33 @@ func _persist_player_inventory_state() -> void:
 		player.call("save_inventory_layout")
 
 
+func _play_dungeon_ambient_music(from_position := 0.0) -> void:
+	var music_stream = load(DUNGEON_AMBIENT_MUSIC_PATH) as AudioStream
+	if music_stream == null:
+		push_warning("No se pudo cargar la musica ambiental de dungeon agua: %s" % DUNGEON_AMBIENT_MUSIC_PATH)
+		return
+
+	_ambient_music_player = AudioStreamPlayer.new()
+	_ambient_music_player.name = "DungeonAmbientMusic"
+	_ambient_music_player.stream = music_stream
+	add_child(_ambient_music_player)
+	_ambient_music_player.play(max(from_position, 0.0))
+
+
+func _pause_dungeon_ambient_music() -> float:
+	if _ambient_music_player == null:
+		return 0.0
+
+	var playback_position = _ambient_music_player.get_playback_position()
+	_ambient_music_player.stream_paused = true
+	return playback_position
+
+
+func _resume_dungeon_ambient_music() -> void:
+	if _ambient_music_player != null:
+		_ambient_music_player.stream_paused = false
+
+
 func _apply_battle_return_position() -> bool:
 	var battle_manager = get_node_or_null(BATTLE_MANAGER_ROOT_PATH)
 	if battle_manager == null:
@@ -220,6 +319,8 @@ func _apply_battle_return_position() -> bool:
 	var return_data = battle_manager.call("consume_return_data", tree.current_scene.scene_file_path)
 	if return_data is not Dictionary:
 		return false
+
+	_ambient_music_resume_position = max(float(return_data.get("world_music_resume_position", 0.0)), 0.0)
 
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	if player == null:
@@ -271,12 +372,7 @@ func _apply_defeated_encounter_state() -> void:
 
 
 func _should_hide_defeated_encounter(encounter_id: String) -> bool:
-	return [
-		ESBIRRO1_ENCOUNTER_ID,
-		ESBIRRO2_ENCOUNTER_ID,
-		ESBIRRO3_ENCOUNTER_ID,
-		DARK_QUEEN_FINAL_ENCOUNTER_ID
-	].has(encounter_id)
+	return false
 
 
 func _apply_defeated_encounter(encounter_id: String) -> void:
@@ -324,3 +420,16 @@ func _get_encounter_npc_path(encounter_id: String) -> NodePath:
 			return DARK_QUEEN_NODE_PATH
 		_:
 			return NodePath("")
+
+
+func _is_pause_event(event: InputEvent) -> bool:
+	if event.is_action_pressed("ui_cancel"):
+		return true
+
+	if event is InputEventKey:
+		var key_event = event as InputEventKey
+		return key_event.pressed and not key_event.echo and (
+			key_event.keycode == KEY_ESCAPE or key_event.physical_keycode == KEY_ESCAPE
+		)
+
+	return false

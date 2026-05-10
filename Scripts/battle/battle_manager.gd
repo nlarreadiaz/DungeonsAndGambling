@@ -43,6 +43,8 @@ func finish_battle(result: Dictionary) -> bool:
 		"encounter_id": _active_encounter.get("encounter_id", ""),
 		"battle_result": result.duplicate(true)
 	}
+	if _active_encounter.has("world_music_resume_position"):
+		_pending_return_data["world_music_resume_position"] = _active_encounter.get("world_music_resume_position", 0.0)
 
 	_active_encounter.clear()
 	var tree = get_tree()
