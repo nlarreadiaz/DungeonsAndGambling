@@ -13,8 +13,8 @@ const DARK_QUEEN_GATE_ENCOUNTER_ID = "dark_queen_gate"
 const DUNGEON_QUEEN_SANCTUM_ENCOUNTER_ID = "dungeon_queen_sanctum"
 const DARK_QUEEN_NODE_PATH = NodePath("npcs/ReinaOscura")
 const MUELLE_BOY_AMAZED_ENCOUNTER_ID = "muelle_boy_amazed_lighthouse"
-const MUELLE_BOY_AMAZED_NODE_PATH = NodePath("npcs/MuelleBoyAmazedNpc")
-const MUELLE_BOY_AMAZED_BATTLE_AREA_PATH = NodePath("npcs/MuelleBoyAmazedNpc/BattleArea")
+const MUELLE_BOY_AMAZED_NODE_PATH = NodePath("npcs/Niño Millonario")
+const MUELLE_BOY_AMAZED_BATTLE_AREA_PATH = NodePath("npcs/Niño Millonario/BattleArea")
 const FARO_BATTLE_BACKGROUND_PATH = "res://assets/battle/batalla_faro.png"
 const MUELLE_BOY_AMAZED_SPRITE_PATH = "res://assets/muelle/Characters/Boy_amazed.png"
 const CAMERA_LIMIT_LEFT = -560
@@ -191,7 +191,7 @@ func _on_muelle_boy_amazed_battle_area_body_entered(body: Node2D) -> void:
 		MUELLE_BOY_AMAZED_ENCOUNTER_ID,
 		"Duelo junto al Faro",
 		"El muelle se convierte en un combate rapido.",
-		"MuelleBoyAmazedNpc te desafia junto al faro.",
+		"Niño Millonario te desafia junto al faro.",
 		Vector2.ZERO,
 		1000,
 		1000,
@@ -205,8 +205,8 @@ func _on_dungeon_trap_body_entered(body: Node2D) -> void:
 	if body == null or player == null or body != player:
 		return
 
-	if player.has_method("recibir_daÃ±o"):
-		player.call("recibir_daÃ±o")
+	if player.has_method("recibir_dano"):
+		player.call("recibir_dano")
 
 
 func _on_smith_entry_area_body_entered(body: Node2D) -> void:
@@ -303,12 +303,36 @@ func _build_dark_queen_enemy(experience_reward: int, gold_reward: int) -> Dictio
 		"gold_reward": gold_reward,
 		"skills": [
 			{
+				"skill_id": 2001,
 				"name": "Tajo Sombrio",
 				"description": "Un golpe oscuro directo y feroz.",
 				"mana_cost": 10,
 				"damage": 34,
 				"damage_type": "shadow",
 				"target_type": "single_enemy",
+				"hit_effect": "shadow_slash",
+				"cooldown_turns": 1
+			},
+			{
+				"skill_id": 2002,
+				"name": "Corona de Tinieblas",
+				"description": "La Reina Oscura concentra su poder final.",
+				"mana_cost": 16,
+				"damage": 40,
+				"damage_type": "shadow",
+				"target_type": "single_enemy",
+				"hit_effect": "dark_crown",
+				"cooldown_turns": 2
+			},
+			{
+				"skill_id": 2003,
+				"name": "Golpe del Vacio",
+				"description": "Una grieta oscura atraviesa al objetivo.",
+				"mana_cost": 13,
+				"damage": 37,
+				"damage_type": "shadow",
+				"target_type": "single_enemy",
+				"hit_effect": "void_hit",
 				"cooldown_turns": 1
 			}
 		],
@@ -333,7 +357,7 @@ func _build_dark_queen_enemy(experience_reward: int, gold_reward: int) -> Dictio
 
 func _build_muelle_boy_amazed_enemy() -> Dictionary:
 	return {
-		"name": "MuelleBoyAmazedNpc",
+		"name": "Niño Millonario",
 		"role": "Enemigo",
 		"level": 1,
 		"current_hp": 50,
@@ -503,7 +527,7 @@ func _apply_defeated_encounter_state() -> void:
 
 
 func _should_hide_defeated_encounter(encounter_id: String) -> bool:
-	return false
+	return not str(_get_encounter_npc_path(encounter_id)).is_empty()
 
 
 func _apply_defeated_encounter(encounter_id: String) -> void:

@@ -464,7 +464,7 @@ func add_character_experience(character_id: int, amount: int, save_slot_id: int 
 	)
 
 
-func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skill_ids: Array) -> bool:
+func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skill_ids: Array, character_name: String = "") -> bool:
 	var class_rows = select_rows(
 		"""
 			SELECT
@@ -485,10 +485,12 @@ func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skil
 		return false
 
 	var class_data: Dictionary = class_rows[0]
+	var normalized_character_name = character_name.strip_edges()
 	var updated = execute(
 		"""
 			UPDATE characters
 			SET class_id = ?,
+				name = CASE WHEN ? = '' THEN name ELSE ? END,
 				max_hp = ?,
 				current_hp = ?,
 				max_mana = ?,
@@ -502,6 +504,8 @@ func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skil
 		""",
 		[
 			class_id,
+			normalized_character_name,
+			normalized_character_name,
 			int(class_data.get("base_max_hp", 1)),
 			int(class_data.get("base_max_hp", 1)),
 			int(class_data.get("base_max_mana", 0)),

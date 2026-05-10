@@ -41,7 +41,6 @@ import/use_multiple_threads=false
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/GDScript/addons/YATI/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg")
-<<<<<<<HEADenabled=PackedStringArray("res://addons/GDScript/addons/YATI/plugin.cfg")
 
 [input]
 

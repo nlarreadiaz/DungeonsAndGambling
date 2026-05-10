@@ -611,7 +611,7 @@ func _cache_selected_role(role_id: String) -> void:
 
 	var role_data: Dictionary = _roles[role_id].duplicate(true)
 	role_data["role_id"] = role_id
-	role_data["character_name"] = "Ariadna"
+	role_data["character_name"] = _get_combat_character_name(role_id)
 	role_data["current_hp"] = int(role_data.get("max_hp", 1))
 	role_data["current_mana"] = int(role_data.get("max_mana", 0))
 	database_manager.call("cache_selected_player_role", role_data)
@@ -636,8 +636,24 @@ func _persist_selected_role(role_id: String) -> bool:
 		SAVE_SLOT_ID,
 		character_id,
 		int(role_data.get("class_id", 0)),
-		skill_ids
+		skill_ids,
+		_get_combat_character_name(role_id)
 	))
+
+
+func _get_combat_character_name(role_id: String) -> String:
+	match role_id:
+		"guerrero":
+			return "Guerrero"
+		"arquero":
+			return "Arquero"
+		"mago":
+			return "Mago"
+		_:
+			var role_data = _roles.get(role_id, {})
+			if role_data is Dictionary:
+				return str(role_data.get("name", "Aventurero"))
+			return "Aventurero"
 
 
 func _get_active_player_character_id(database_manager: Node) -> int:

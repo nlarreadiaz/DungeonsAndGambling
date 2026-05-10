@@ -314,6 +314,8 @@ func _build_enemy_action(actor: Dictionary) -> Dictionary:
 	var available_skills = _context.get_available_skills(int(actor.get("battle_id", -1)))
 	if not available_skills.is_empty() and (bool(actor.get("always_use_first_skill", false)) or randf() <= 0.55):
 		var chosen_skill: Dictionary = available_skills[0]
+		if not bool(actor.get("always_use_first_skill", false)):
+			chosen_skill = available_skills[randi() % available_skills.size()]
 		var skill_targets = _resolve_targets_for_target_type(str(chosen_skill.get("target_type", "single_enemy")), str(actor.get("side", "enemy")))
 		if not skill_targets.is_empty():
 			return {
@@ -383,6 +385,7 @@ func _execute_action(action: Dictionary) -> void:
 		int(action.get("attacker_id", -1)),
 		str(action.get("type", "attack"))
 	)
+	await _play_action_hit_effect(action)
 
 	var result = _action_resolver.resolve_action(_context, action)
 	for line in result.get("log_lines", []):
@@ -630,6 +633,8 @@ func _refresh_battlefield() -> void:
 		_add_actor_card(party_container, actor, party_index)
 		party_index += 1
 	for actor in _context.enemies:
+		if int(actor.get("current_hp", 0)) <= 0:
+			continue
 		_add_actor_card(enemy_container, actor, enemy_index)
 		enemy_index += 1
 
@@ -674,6 +679,34 @@ func _play_actor_action_animation(attacker_id: int, action_type: String) -> void
 		return
 
 	await actor_card.call("play_action_animation", action_type)
+
+
+func _play_action_hit_effect(action: Dictionary) -> void:
+	var hit_effect = _get_action_hit_effect(action)
+	if hit_effect.is_empty():
+		return
+
+	var target_ids = action.get("target_ids", [])
+	if target_ids is not Array:
+		target_ids = [action.get("target_id", -1)]
+	if target_ids.is_empty():
+		target_ids = [action.get("target_id", -1)]
+
+	for target_id in target_ids:
+		var target_card = _find_actor_card(int(target_id))
+		if target_card == null or not target_card.has_method("play_hit_effect"):
+			continue
+		await target_card.call("play_hit_effect", hit_effect)
+
+
+func _get_action_hit_effect(action: Dictionary) -> String:
+	if str(action.get("type", "attack")) != "skill":
+		return ""
+
+	var skill = action.get("skill", {})
+	if skill is not Dictionary:
+		return ""
+	return str(skill.get("hit_effect", "")).strip_edges()
 
 
 func _find_actor_card(actor_id: int) -> Node:

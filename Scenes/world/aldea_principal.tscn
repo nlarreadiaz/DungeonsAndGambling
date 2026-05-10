@@ -10554,15 +10554,15 @@ speed = 6.0
 [node name="pescador" parent="npcs" unique_id=1351483465 instance=ExtResource("57_h8wt0")]
 position = Vector2(47, 801)
 
-[node name="MuelleBoyAmazedNpc" parent="npcs" unique_id=1574355486 instance=ExtResource("67_muelle_boy_amazed")]
+[node name="Niño Millonario" parent="npcs" unique_id=1574355486 instance=ExtResource("67_muelle_boy_amazed")]
 z_index = 12
 position = Vector2(-314, 617)
 
-[node name="BattleArea" type="Area2D" parent="npcs/MuelleBoyAmazedNpc" unique_id=509616399]
+[node name="BattleArea" type="Area2D" parent="npcs/Niño Millonario" unique_id=509616399]
 collision_layer = 0
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="npcs/MuelleBoyAmazedNpc/BattleArea" unique_id=105237519]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="npcs/Niño Millonario/BattleArea" unique_id=105237519]
 shape = SubResource("CircleShape2D_muelle_boy_amazed_battle_area")
 
 [node name="player" parent="." unique_id=479730859 instance=ExtResource("4_bax37")]
@@ -10615,4 +10615,4 @@ texture = ExtResource("34_pjt85")
 
 [connection signal="body_entered" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_entered"]
 [connection signal="body_exited" from="aldea/SmithEntryArea" to="." method="_on_smith_entry_area_body_exited"]
-[connection signal="body_entered" from="npcs/MuelleBoyAmazedNpc/BattleArea" to="." method="_on_muelle_boy_amazed_battle_area_body_entered"]
+[connection signal="body_entered" from="npcs/Niño Millonario/BattleArea" to="." method="_on_muelle_boy_amazed_battle_area_body_entered"]

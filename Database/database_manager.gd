@@ -283,10 +283,10 @@ func add_character_experience(character_id: int, amount: int, save_slot_id: int 
 	return true
 
 
-func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skill_ids: Array) -> bool:
+func apply_player_role(save_slot_id: int, character_id: int, class_id: int, skill_ids: Array, character_name: String = "") -> bool:
 	if not _ensure_ready():
 		return false
-	return _queries.apply_player_role(save_slot_id, character_id, class_id, skill_ids)
+	return _queries.apply_player_role(save_slot_id, character_id, class_id, skill_ids, character_name)
 
 
 func add_gold(save_slot_id: int, amount: int) -> bool:

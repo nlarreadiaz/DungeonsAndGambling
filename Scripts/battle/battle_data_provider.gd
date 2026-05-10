@@ -102,12 +102,36 @@ const DEFAULT_ENEMIES = [
 		"gold_reward": 150,
 		"skills": [
 			{
+				"skill_id": 2001,
 				"name": "Tajo Sombrio",
 				"description": "Ataque oscuro directo.",
 				"mana_cost": 10,
 				"damage": 34,
 				"damage_type": "shadow",
 				"target_type": "single_enemy",
+				"hit_effect": "shadow_slash",
+				"cooldown_turns": 1
+			},
+			{
+				"skill_id": 2002,
+				"name": "Corona de Tinieblas",
+				"description": "La Reina Oscura concentra su poder final.",
+				"mana_cost": 16,
+				"damage": 40,
+				"damage_type": "shadow",
+				"target_type": "single_enemy",
+				"hit_effect": "dark_crown",
+				"cooldown_turns": 2
+			},
+			{
+				"skill_id": 2003,
+				"name": "Golpe del Vacio",
+				"description": "Una grieta oscura atraviesa al objetivo.",
+				"mana_cost": 13,
+				"damage": 37,
+				"damage_type": "shadow",
+				"target_type": "single_enemy",
+				"hit_effect": "void_hit",
 				"cooldown_turns": 1
 			}
 		]
@@ -459,6 +483,7 @@ func _normalize_skills(raw_skills: Variant) -> Array:
 			"damage": int(raw_skill.get("damage", 0)),
 			"damage_type": str(raw_skill.get("damage_type", "physical")),
 			"target_type": str(raw_skill.get("target_type", "single_enemy")),
+			"hit_effect": str(raw_skill.get("hit_effect", "")),
 			"cooldown_turns": int(raw_skill.get("cooldown_turns", 0)),
 			"cooldown_remaining": int(raw_skill.get("cooldown_remaining", 0))
 		})

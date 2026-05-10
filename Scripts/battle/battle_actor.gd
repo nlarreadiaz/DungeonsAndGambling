@@ -2,7 +2,10 @@
 extends Control
 
 const HERO_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Idle.png")
-const HERO_ATTACK_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 3.png")
+const HERO_ATTACK_1_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 1.png")
+const HERO_ATTACK_2_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 2.png")
+const HERO_ATTACK_3_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 3.png")
+const HERO_SWORD_ATTACK_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Run+Attack.png")
 const MAGE_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_3/Idle.png")
 const SUPPORT_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_4/Idle.png")
 const DARK_QUEEN_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")
@@ -13,9 +16,13 @@ const ESBIRRO_ATTACK_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/2
 const HERO_FRAME = Rect2(0, 56, 128, 72)
 const HERO_FRAME_SIZE = Vector2(128, 72)
 const HERO_IDLE_FRAME_COUNT = 4
-const HERO_ATTACK_FRAME_COUNT = 4
+const HERO_ATTACK_1_FRAME_COUNT = 5
+const HERO_ATTACK_2_FRAME_COUNT = 4
+const HERO_ATTACK_3_FRAME_COUNT = 4
+const HERO_SWORD_ATTACK_FRAME_COUNT = 6
 const HERO_IDLE_OFFSET = Vector2(0, 56)
 const HERO_ATTACK_OFFSET = Vector2(0, 56)
+const HERO_SWORD_ATTACK_OFFSET = Vector2(0, 56)
 const HERO_IDLE_ANIMATION = &"idle"
 const HERO_ATTACK_ANIMATION = &"attack"
 const NPC_FRAME = Rect2(0, 0, 128, 128)
@@ -37,10 +44,20 @@ const MINI_HP_BAR_HEIGHT = 3.0
 const HP_COLOR_HIGH = Color(0.34509805, 0.8627451, 0.3137255, 1.0)
 const HP_COLOR_MID = Color(0.972549, 0.7921569, 0.19607843, 1.0)
 const HP_COLOR_LOW = Color(0.92156863, 0.27450982, 0.23921569, 1.0)
+const WATER_SLASH_COLOR = Color(0.32, 0.86, 1.0, 0.92)
+const WATER_SLASH_HIGHLIGHT_COLOR = Color(0.82, 0.98, 1.0, 0.9)
+const WATER_DROPLET_COLOR = Color(0.58, 0.9, 1.0, 0.82)
+const SHADOW_SLASH_COLOR = Color(0.35, 0.08, 0.48, 0.95)
+const SHADOW_SLASH_HIGHLIGHT_COLOR = Color(0.86, 0.44, 1.0, 0.88)
+const DARK_CROWN_COLOR = Color(0.48, 0.12, 0.76, 0.9)
+const DARK_CROWN_HIGHLIGHT_COLOR = Color(0.95, 0.65, 1.0, 0.86)
+const VOID_FLASH_COLOR = Color(0.04, 0.0, 0.09, 0.72)
+const VOID_RIFT_COLOR = Color(0.72, 0.16, 1.0, 0.9)
 
-var _is_ariadna = false
+var _is_warrior = false
 var _is_dark_queen = false
 var _is_esbirro = false
+var _attack_lunge_direction = 1.0
 
 @export var editor_preview_enabled = false:
 	set(value):
@@ -134,9 +151,10 @@ func _apply_stage_position(side: String, slot_index: int, slot_position: Variant
 func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	var actor_name = str(actor_data.get("name", "")).to_lower()
 	var role_name = str(actor_data.get("role", "")).to_lower()
-	_is_ariadna = false
+	_is_warrior = false
 	_is_dark_queen = false
 	_is_esbirro = false
+	_attack_lunge_direction = -1.0 if side == "enemy" else 1.0
 	animated_sprite.visible = false
 	animated_sprite.stop()
 	animated_sprite.flip_h = false
@@ -165,8 +183,8 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 		_apply_minimal_status_layout(Vector2(30, 4), Vector2(28, 82))
 		return
 
-	if actor_name.contains("ariadna"):
-		_is_ariadna = true
+	if _uses_hero_attack_sprite(actor_name, role_name):
+		_is_warrior = true
 		sprite_rect.visible = false
 		animated_sprite.visible = true
 		animated_sprite.position = Vector2(-7, 16)
@@ -186,11 +204,15 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	turn_marker.position = Vector2(43, 15)
 	_apply_minimal_status_layout(Vector2(24, 9), Vector2(18, 73))
 
-	if actor_name.contains("ariadna"):
+	if _is_warrior:
 		status_panel.position.x = status_panel.position.x + 10.0
 		status_panel.size.x = 96.0
 		turn_marker.position.x = turn_marker.position.x + 10.0
 		_apply_minimal_status_layout(Vector2(26, 9), Vector2(20, 80))
+
+
+func _uses_hero_attack_sprite(actor_name: String, role_name: String) -> bool:
+	return actor_name.contains("ariadna") or actor_name.contains("guerrero") or role_name.contains("guerrero")
 
 
 func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
@@ -337,23 +359,17 @@ func _hide_outer_level_label() -> void:
 
 
 func play_action_animation(action_type: String = "attack") -> void:
-	if not animated_sprite.visible:
-		return
 	if action_type == "defend" or action_type == "flee":
 		return
+	if action_type != "attack" and action_type != "skill":
+		return
 
-	if _is_ariadna:
-		if action_type != "attack" and action_type != "skill":
-			return
-		animated_sprite.sprite_frames = _make_sprite_frames(
-			HERO_ATTACK_TEXTURE,
-			HERO_FRAME_SIZE,
-			HERO_ATTACK_FRAME_COUNT,
-			HERO_ATTACK_ANIMATION,
-			12.0,
-			false,
-			HERO_ATTACK_OFFSET
-		)
+	if not animated_sprite.visible:
+		await _play_static_attack_animation()
+		return
+
+	if _is_warrior:
+		animated_sprite.sprite_frames = _make_hero_attack_sprite_frames(action_type)
 		animated_sprite.animation = HERO_ATTACK_ANIMATION
 		animated_sprite.play(HERO_ATTACK_ANIMATION)
 		await animated_sprite.animation_finished
@@ -392,6 +408,215 @@ func play_action_animation(action_type: String = "attack") -> void:
 	animated_sprite.play(DARK_QUEEN_ATTACK_ANIMATION)
 	await animated_sprite.animation_finished
 	_play_dark_queen_idle()
+
+
+func _play_static_attack_animation() -> void:
+	if not is_inside_tree():
+		return
+
+	var original_position = position
+	var attack_offset = Vector2(10.0 * _attack_lunge_direction, -2.0)
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "position", original_position + attack_offset, 0.08)
+	tween.tween_property(self, "position", original_position, 0.12)
+	await tween.finished
+	position = original_position
+
+
+func play_hit_effect(effect_name: String) -> void:
+	match effect_name:
+		"water_slash":
+			await _play_water_slash_impact()
+		"shadow_slash":
+			await _play_shadow_slash_impact()
+		"dark_crown":
+			await _play_dark_crown_impact()
+		"void_hit":
+			await _play_void_hit_impact()
+
+
+func _play_water_slash_impact() -> void:
+	if not is_inside_tree():
+		return
+
+	var original_position = position
+	var overlay = Node2D.new()
+	overlay.name = "WaterSlashImpact"
+	overlay.z_index = 120
+	overlay.position = Vector2(4.0, 6.0)
+	overlay.scale = Vector2(0.82, 0.82)
+	overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	add_child(overlay)
+
+	overlay.add_child(_make_hit_line(
+		[Vector2(15.0, 18.0), Vector2(76.0, 57.0)],
+		7.0,
+		WATER_SLASH_COLOR
+	))
+	overlay.add_child(_make_hit_line(
+		[Vector2(18.0, 18.0), Vector2(74.0, 54.0)],
+		2.0,
+		WATER_SLASH_HIGHLIGHT_COLOR
+	))
+
+	var droplet_specs = [
+		[Vector2(21.0, 50.0), Vector2(10.0, 58.0), 2.0],
+		[Vector2(34.0, 24.0), Vector2(26.0, 16.0), 1.6],
+		[Vector2(62.0, 42.0), Vector2(77.0, 37.0), 1.8],
+		[Vector2(69.0, 60.0), Vector2(83.0, 68.0), 1.5]
+	]
+	for droplet_spec in droplet_specs:
+		overlay.add_child(_make_hit_line(
+			[droplet_spec[0], droplet_spec[1]],
+			float(droplet_spec[2]),
+			WATER_DROPLET_COLOR
+		))
+
+	var shake_tween = create_tween()
+	shake_tween.tween_property(self, "position", original_position + Vector2(-4.0, 1.0), 0.04)
+	shake_tween.tween_property(self, "position", original_position + Vector2(3.0, -1.0), 0.05)
+	shake_tween.tween_property(self, "position", original_position, 0.06)
+
+	var effect_tween = create_tween()
+	effect_tween.set_parallel(true)
+	effect_tween.tween_property(overlay, "scale", Vector2(1.12, 1.12), 0.28)
+	effect_tween.tween_property(overlay, "modulate:a", 1.0, 0.06)
+	effect_tween.tween_property(overlay, "modulate:a", 0.0, 0.22).set_delay(0.12)
+	await effect_tween.finished
+
+	if is_instance_valid(overlay):
+		overlay.queue_free()
+	position = original_position
+
+
+func _play_shadow_slash_impact() -> void:
+	if not is_inside_tree():
+		return
+
+	var original_position = position
+	var overlay = _make_hit_overlay("ShadowSlashImpact", Vector2(2.0, 2.0), Vector2(0.88, 0.88))
+	add_child(overlay)
+	overlay.add_child(_make_hit_line([Vector2(12.0, 64.0), Vector2(78.0, 17.0)], 9.0, SHADOW_SLASH_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(15.0, 61.0), Vector2(76.0, 19.0)], 2.4, SHADOW_SLASH_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(32.0, 69.0), Vector2(47.0, 55.0)], 2.0, SHADOW_SLASH_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(58.0, 24.0), Vector2(75.0, 8.0)], 2.0, SHADOW_SLASH_COLOR))
+
+	_play_position_shake(original_position, Vector2(-5.0, -1.0), Vector2(4.0, 1.0))
+	await _fade_and_expand_overlay(overlay, Vector2(1.18, 1.18), 0.28)
+	position = original_position
+
+
+func _play_dark_crown_impact() -> void:
+	if not is_inside_tree():
+		return
+
+	var original_position = position
+	var overlay = _make_hit_overlay("DarkCrownImpact", Vector2(4.0, 0.0), Vector2(0.78, 0.78))
+	add_child(overlay)
+	overlay.add_child(_make_circle_line(Vector2(46.0, 42.0), 30.0, 28, 4.5, DARK_CROWN_COLOR))
+	overlay.add_child(_make_circle_line(Vector2(46.0, 42.0), 19.0, 22, 2.0, DARK_CROWN_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(26.0, 24.0), Vector2(34.0, 8.0), Vector2(43.0, 24.0)], 3.0, DARK_CROWN_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(43.0, 22.0), Vector2(48.0, 3.0), Vector2(55.0, 22.0)], 3.0, DARK_CROWN_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(55.0, 24.0), Vector2(64.0, 8.0), Vector2(70.0, 24.0)], 3.0, DARK_CROWN_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(19.0, 43.0), Vector2(74.0, 43.0)], 2.0, DARK_CROWN_COLOR))
+
+	_play_position_shake(original_position, Vector2(0.0, -4.0), Vector2(0.0, 3.0))
+	await _fade_and_expand_overlay(overlay, Vector2(1.24, 1.24), 0.34)
+	position = original_position
+
+
+func _play_void_hit_impact() -> void:
+	if not is_inside_tree():
+		return
+
+	var original_position = position
+	var overlay = _make_hit_overlay("VoidHitImpact", Vector2(-8.0, -4.0), Vector2.ONE)
+	add_child(overlay)
+
+	var flash = ColorRect.new()
+	flash.position = Vector2(0.0, 0.0)
+	flash.size = Vector2(98.0, 92.0)
+	flash.color = VOID_FLASH_COLOR
+	overlay.add_child(flash)
+	overlay.add_child(_make_hit_line([Vector2(52.0, 6.0), Vector2(45.0, 27.0), Vector2(56.0, 45.0), Vector2(47.0, 78.0)], 4.0, VOID_RIFT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(38.0, 20.0), Vector2(47.0, 30.0)], 2.0, DARK_CROWN_HIGHLIGHT_COLOR))
+	overlay.add_child(_make_hit_line([Vector2(59.0, 50.0), Vector2(73.0, 62.0)], 2.0, DARK_CROWN_HIGHLIGHT_COLOR))
+
+	_play_position_shake(original_position, Vector2(-3.0, 3.0), Vector2(4.0, -3.0))
+	await _fade_and_expand_overlay(overlay, Vector2(1.08, 1.08), 0.3)
+	position = original_position
+
+
+func _make_hit_overlay(overlay_name: String, overlay_position: Vector2, overlay_scale: Vector2) -> Node2D:
+	var overlay = Node2D.new()
+	overlay.name = overlay_name
+	overlay.z_index = 120
+	overlay.position = overlay_position
+	overlay.scale = overlay_scale
+	overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	return overlay
+
+
+func _play_position_shake(original_position: Vector2, first_offset: Vector2, second_offset: Vector2) -> void:
+	var shake_tween = create_tween()
+	shake_tween.tween_property(self, "position", original_position + first_offset, 0.04)
+	shake_tween.tween_property(self, "position", original_position + second_offset, 0.05)
+	shake_tween.tween_property(self, "position", original_position, 0.06)
+
+
+func _fade_and_expand_overlay(overlay: Node2D, target_scale: Vector2, duration: float) -> void:
+	var effect_tween = create_tween()
+	effect_tween.set_parallel(true)
+	effect_tween.tween_property(overlay, "scale", target_scale, duration)
+	effect_tween.tween_property(overlay, "modulate:a", 1.0, 0.06)
+	effect_tween.tween_property(overlay, "modulate:a", 0.0, max(duration - 0.08, 0.1)).set_delay(0.12)
+	await effect_tween.finished
+
+	if is_instance_valid(overlay):
+		overlay.queue_free()
+
+
+func _make_hit_line(points: Array, width: float, color: Color) -> Line2D:
+	var line = Line2D.new()
+	line.points = PackedVector2Array(points)
+	line.width = width
+	line.default_color = color
+	return line
+
+
+func _make_circle_line(center: Vector2, radius: float, segments: int, width: float, color: Color) -> Line2D:
+	var points: Array = []
+	var safe_segments = max(segments, 8)
+	for point_index in range(safe_segments + 1):
+		var angle = TAU * float(point_index) / float(safe_segments)
+		points.append(center + Vector2(cos(angle), sin(angle)) * radius)
+	return _make_hit_line(points, width, color)
+
+
+func _make_hero_attack_sprite_frames(action_type: String = "attack") -> SpriteFrames:
+	var frames = SpriteFrames.new()
+	frames.remove_animation(&"default")
+	frames.add_animation(HERO_ATTACK_ANIMATION)
+	frames.set_animation_loop(HERO_ATTACK_ANIMATION, false)
+	frames.set_animation_speed(HERO_ATTACK_ANIMATION, 14.0)
+	if action_type == "attack":
+		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_1_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_1_FRAME_COUNT, HERO_ATTACK_OFFSET)
+		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_2_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_2_FRAME_COUNT, HERO_ATTACK_OFFSET)
+		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_3_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_3_FRAME_COUNT, HERO_ATTACK_OFFSET)
+	else:
+		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_ATTACK_3_TEXTURE, HERO_FRAME_SIZE, HERO_ATTACK_3_FRAME_COUNT, HERO_ATTACK_OFFSET)
+		_add_sprite_sheet_frames(frames, HERO_ATTACK_ANIMATION, HERO_SWORD_ATTACK_TEXTURE, HERO_FRAME_SIZE, HERO_SWORD_ATTACK_FRAME_COUNT, HERO_SWORD_ATTACK_OFFSET)
+	return frames
+
+
+func _add_sprite_sheet_frames(frames: SpriteFrames, animation_name: StringName, texture: Texture2D, frame_size: Vector2, frame_count: int, start_offset: Vector2 = Vector2.ZERO) -> void:
+	for frame_index in range(frame_count):
+		frames.add_frame(
+			animation_name,
+			_make_atlas_texture(texture, Rect2(start_offset.x + frame_size.x * frame_index, start_offset.y, frame_size.x, frame_size.y))
+		)
 
 
 func _play_hero_idle() -> void:

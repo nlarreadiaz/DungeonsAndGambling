@@ -150,7 +150,7 @@ func update_animations() -> void:
 		anim.play(ANIM_IDLE)
 
 
-func recibir_daño() -> void:
+func recibir_dano() -> void:
 	if is_dead or is_hurt:
 		return
 
@@ -161,6 +161,10 @@ func recibir_daño() -> void:
 
 	await anim.animation_finished
 	is_hurt = false
+
+
+func recibir_daño() -> void:
+	recibir_dano()
 
 
 func morir() -> void:

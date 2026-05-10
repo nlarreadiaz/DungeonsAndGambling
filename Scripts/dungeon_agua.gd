@@ -214,22 +214,37 @@ func _build_dark_queen_final_enemy() -> Dictionary:
 		"sprite_flip_h": true,
 		"skills": [
 			{
+				"skill_id": 2001,
 				"name": "Tajo Sombrio",
 				"description": "Un golpe oscuro directo y feroz.",
 				"mana_cost": 10,
 				"damage": 38,
 				"damage_type": "shadow",
 				"target_type": "single_enemy",
+				"hit_effect": "shadow_slash",
 				"cooldown_turns": 1
 			},
 			{
+				"skill_id": 2002,
 				"name": "Corona de Tinieblas",
 				"description": "La Reina Oscura concentra su poder final.",
 				"mana_cost": 18,
 				"damage": 46,
 				"damage_type": "shadow",
 				"target_type": "single_enemy",
+				"hit_effect": "dark_crown",
 				"cooldown_turns": 2
+			},
+			{
+				"skill_id": 2003,
+				"name": "Golpe del Vacio",
+				"description": "Una grieta oscura atraviesa al objetivo.",
+				"mana_cost": 14,
+				"damage": 42,
+				"damage_type": "shadow",
+				"target_type": "single_enemy",
+				"hit_effect": "void_hit",
+				"cooldown_turns": 1
 			}
 		],
 		"loot_table": []
@@ -267,6 +282,7 @@ func _build_esbirro_enemy(enemy_name: String, enemy_role: String, level: int, hp
 				"damage": skill_damage,
 				"damage_type": "physical",
 				"target_type": "single_enemy",
+				"hit_effect": "water_slash",
 				"cooldown_turns": 0
 			}
 		],
@@ -372,7 +388,7 @@ func _apply_defeated_encounter_state() -> void:
 
 
 func _should_hide_defeated_encounter(encounter_id: String) -> bool:
-	return false
+	return not str(_get_encounter_npc_path(encounter_id)).is_empty()
 
 
 func _apply_defeated_encounter(encounter_id: String) -> void:

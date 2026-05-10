@@ -10,7 +10,7 @@ height = 20.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_wander"]
 radius = 28.0
 
-[node name="MuelleBoyAmazedNpc" type="CharacterBody2D" unique_id=1960607151]
+[node name="Niño Millonario" type="CharacterBody2D" unique_id=1960607151]
 script = ExtResource("2_script")
 speed = 20.0
 frame_count = 12
