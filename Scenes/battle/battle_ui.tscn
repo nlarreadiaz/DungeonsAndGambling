@@ -360,10 +360,10 @@ label_settings = SubResource("LabelSettings_small")
 [node name="RealActor" parent="StagePanel/Stage/BattleSlots/PartySlot0" unique_id=121085144 instance=ExtResource("10_battle_actor")]
 z_index = 40
 layout_mode = 0
-offset_left = -8.0
-offset_top = -11.0
-offset_right = 102.0
-offset_bottom = 81.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 110.0
+offset_bottom = 92.0
 editor_preview_enabled = true
 
 [node name="EnemySlot0" type="Control" parent="StagePanel/Stage/BattleSlots" unique_id=1810916203]
@@ -399,10 +399,10 @@ label_settings = SubResource("LabelSettings_small")
 [node name="RealActor" parent="StagePanel/Stage/BattleSlots/EnemySlot0" unique_id=748951866 instance=ExtResource("10_battle_actor")]
 z_index = 20
 layout_mode = 0
-offset_left = 5.0
-offset_top = 2.0
-offset_right = 115.0
-offset_bottom = 94.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 110.0
+offset_bottom = 92.0
 editor_preview_enabled = true
 editor_preview_side = "enemy"
 editor_preview_name = "Reina Oscura"

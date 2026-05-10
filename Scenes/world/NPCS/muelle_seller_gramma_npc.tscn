@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://c1h2ggb30208o"]
 
-[ext_resource type="Texture2D" path="res://assets/muelle/Characters/Seller_gramma.png" id="1_texture"]
-[ext_resource type="Script" path="res://Scripts/world/muelle_wandering_npc.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://w02epqrf2sjt" path="res://assets/muelle/Characters/Seller_gramma.png" id="1_texture"]
+[ext_resource type="Script" uid="uid://crqwcrokclwj3" path="res://Scripts/world/muelle_wandering_npc.gd" id="2_script"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 7.0
@@ -10,7 +10,7 @@ height = 22.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_wander"]
 radius = 38.0
 
-[node name="MuelleSellerGrammaNpc" type="CharacterBody2D"]
+[node name="MuelleSellerGrammaNpc" type="CharacterBody2D" unique_id=307756917]
 script = ExtResource("2_script")
 speed = 12.0
 idle_min_seconds = 2.0
@@ -18,20 +18,20 @@ idle_max_seconds = 4.6
 animation_fps = 5.0
 frame_count = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=651418977]
 position = Vector2(0, 16)
 shape = SubResource("CapsuleShape2D_body")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1490108690]
 texture_filter = 1
 texture = ExtResource("1_texture")
-hframes = 6
 offset = Vector2(0, -16)
+hframes = 6
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=975034668]
 one_shot = true
 
-[node name="WanderArea" type="Area2D" parent="."]
+[node name="WanderArea" type="Area2D" parent="." unique_id=1768985419]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WanderArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WanderArea" unique_id=332236047]
 shape = SubResource("CircleShape2D_wander")

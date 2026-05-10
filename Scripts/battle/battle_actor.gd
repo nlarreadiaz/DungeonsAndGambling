@@ -6,6 +6,8 @@ const HERO_ATTACK_1_TEXTURE: Texture2D = preload("res://assets/player/guerrero/A
 const HERO_ATTACK_2_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 2.png")
 const HERO_ATTACK_3_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Attack 3.png")
 const HERO_SWORD_ATTACK_TEXTURE: Texture2D = preload("res://assets/player/guerrero/Run+Attack.png")
+const ARCHER_ROLE_TEXTURE: Texture2D = preload("res://images/Sprite-0001.png")
+const MAGE_ROLE_TEXTURE: Texture2D = preload("res://images/mago.png")
 const MAGE_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_3/Idle.png")
 const SUPPORT_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_4/Idle.png")
 const DARK_QUEEN_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")
@@ -25,6 +27,7 @@ const HERO_ATTACK_OFFSET = Vector2(0, 56)
 const HERO_SWORD_ATTACK_OFFSET = Vector2(0, 56)
 const HERO_IDLE_ANIMATION = &"idle"
 const HERO_ATTACK_ANIMATION = &"attack"
+const ROLE_IDLE_ANIMATION = &"role_idle"
 const NPC_FRAME = Rect2(0, 0, 128, 128)
 const DARK_QUEEN_FRAME = Rect2(0, 0, 128, 128)
 const DARK_QUEEN_FRAME_SIZE = Vector2(128, 128)
@@ -190,7 +193,11 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 		animated_sprite.position = Vector2(-7, 16)
 		animated_sprite.scale = Vector2(0.72, 0.72)
 		_play_hero_idle()
-	elif actor_name.contains("selene") or role_name.contains("mago"):
+	elif _uses_mage_role_sprite(actor_name, role_name):
+		_apply_party_role_sprite(MAGE_ROLE_TEXTURE)
+	elif _uses_archer_role_sprite(actor_name, role_name):
+		_apply_party_role_sprite(ARCHER_ROLE_TEXTURE)
+	elif actor_name.contains("selene"):
 		sprite_rect.texture = _make_atlas_texture(MAGE_TEXTURE, NPC_FRAME)
 		sprite_rect.position = Vector2(7, 15)
 		sprite_rect.size = Vector2(72, 72)
@@ -213,6 +220,27 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 
 func _uses_hero_attack_sprite(actor_name: String, role_name: String) -> bool:
 	return actor_name.contains("ariadna") or actor_name.contains("guerrero") or role_name.contains("guerrero")
+
+
+func _uses_mage_role_sprite(actor_name: String, role_name: String) -> bool:
+	return actor_name.contains("mago") or role_name.contains("mago")
+
+
+func _uses_archer_role_sprite(actor_name: String, role_name: String) -> bool:
+	return actor_name.contains("arquero") or actor_name.contains("arquera") or role_name.contains("arquero") or role_name.contains("arquera")
+
+
+func _apply_party_role_sprite(texture: Texture2D) -> void:
+	sprite_rect.visible = false
+	animated_sprite.visible = true
+	animated_sprite.position = Vector2(3, 1)
+	animated_sprite.scale = Vector2(0.62, 0.62)
+	animated_sprite.sprite_frames = _make_role_strip_sprite_frames(texture)
+	animated_sprite.animation = ROLE_IDLE_ANIMATION
+	animated_sprite.play(ROLE_IDLE_ANIMATION)
+	shadow_rect.position = Vector2(14, 74)
+	shadow_rect.size = Vector2(58, 6)
+	_apply_minimal_status_layout(Vector2(24, 9), Vector2(18, 81))
 
 
 func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
@@ -394,6 +422,7 @@ func play_action_animation(action_type: String = "attack") -> void:
 		return
 
 	if not _is_dark_queen:
+		await _play_static_attack_animation()
 		return
 
 	animated_sprite.sprite_frames = _make_sprite_frames(
@@ -617,6 +646,28 @@ func _add_sprite_sheet_frames(frames: SpriteFrames, animation_name: StringName, 
 			animation_name,
 			_make_atlas_texture(texture, Rect2(start_offset.x + frame_size.x * frame_index, start_offset.y, frame_size.x, frame_size.y))
 		)
+
+
+func _make_role_strip_sprite_frames(texture: Texture2D) -> SpriteFrames:
+	var frames = SpriteFrames.new()
+	frames.remove_animation(&"default")
+	frames.add_animation(ROLE_IDLE_ANIMATION)
+	frames.set_animation_loop(ROLE_IDLE_ANIMATION, true)
+	frames.set_animation_speed(ROLE_IDLE_ANIMATION, 8.5)
+
+	if texture == null:
+		return frames
+
+	var frame_size = int(texture.get_height())
+	if frame_size <= 0:
+		frame_size = 128
+	var frame_count = max(int(floor(float(texture.get_width()) / float(frame_size))), 1)
+	for frame_index in range(frame_count):
+		frames.add_frame(
+			ROLE_IDLE_ANIMATION,
+			_make_atlas_texture(texture, Rect2(frame_size * frame_index, 0, frame_size, frame_size))
+		)
+	return frames
 
 
 func _play_hero_idle() -> void:

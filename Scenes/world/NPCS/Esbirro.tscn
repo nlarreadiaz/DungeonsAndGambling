@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bcmtd4o1l23e8" path="res://assets/Boss-DarkQueen/2/Idle.png" id="3_hlgxy"]
 [ext_resource type="Texture2D" uid="uid://7a5uul38fmps" path="res://assets/Boss-DarkQueen/2/Dead.png" id="4_6lc1h"]
 [ext_resource type="Texture2D" uid="uid://doweft87ppmbk" path="res://assets/Boss-DarkQueen/2/Walk.png" id="5_7uqk5"]
-[ext_resource type="Script" path="res://Scripts/world/esbirro_patrol.gd" id="6_esbirro_patrol"]
+[ext_resource type="Script" uid="uid://bo68olvvntwv3" path="res://Scripts/world/esbirro_patrol.gd" id="6_esbirro_patrol"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hq31p"]
 radius = 35.014282

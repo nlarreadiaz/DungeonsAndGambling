@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://c2rgixy46xjvd"]
+[gd_scene format=3 uid="uid://dqo3oys5y1kr2"]
 
 [ext_resource type="Script" uid="uid://b4fdcdyl03mgd" path="res://Scripts/world/pickup_item.gd" id="1_i0x6h"]
 [ext_resource type="Resource" uid="uid://boufauqh357b2" path="res://assets/items/item_estrella.tres" id="2_j4x80"]
