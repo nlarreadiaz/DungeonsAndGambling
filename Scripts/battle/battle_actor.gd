@@ -7,6 +7,8 @@ const MAGE_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_3/Idle.png")
 const SUPPORT_TEXTURE: Texture2D = preload("res://assets/npcs/Peasants_4/Idle.png")
 const DARK_QUEEN_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Idle.png")
 const DARK_QUEEN_ATTACK_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/1/Attack_1.png")
+const ESBIRRO_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/2/Idle.png")
+const ESBIRRO_ATTACK_TEXTURE: Texture2D = preload("res://assets/Boss-DarkQueen/2/Attack.png")
 
 const HERO_FRAME = Rect2(0, 56, 128, 72)
 const HERO_FRAME_SIZE = Vector2(128, 72)
@@ -23,6 +25,11 @@ const DARK_QUEEN_FRAME_COUNT = 7
 const DARK_QUEEN_ATTACK_FRAME_COUNT = 6
 const DARK_QUEEN_ANIMATION = &"idle"
 const DARK_QUEEN_ATTACK_ANIMATION = &"attack"
+const ESBIRRO_FRAME_SIZE = Vector2(128, 128)
+const ESBIRRO_FRAME_COUNT = 6
+const ESBIRRO_ATTACK_FRAME_COUNT = 6
+const ESBIRRO_ANIMATION = &"idle"
+const ESBIRRO_ATTACK_ANIMATION = &"attack"
 const HP_BAR_WIDTH = 42.0
 const HP_BAR_HEIGHT = 2.0
 const MINI_HP_BAR_WIDTH = 52.0
@@ -33,6 +40,7 @@ const HP_COLOR_LOW = Color(0.92156863, 0.27450982, 0.23921569, 1.0)
 
 var _is_ariadna = false
 var _is_dark_queen = false
+var _is_esbirro = false
 
 @export var editor_preview_enabled = false:
 	set(value):
@@ -75,6 +83,7 @@ var _is_dark_queen = false
 func _ready() -> void:
 	_set_status_panel_visible()
 	_hide_mini_hp_bar()
+	_hide_outer_level_label()
 	_refresh_editor_preview()
 
 
@@ -127,6 +136,7 @@ func _apply_sprite(actor_data: Dictionary, side: String) -> void:
 	var role_name = str(actor_data.get("role", "")).to_lower()
 	_is_ariadna = false
 	_is_dark_queen = false
+	_is_esbirro = false
 	animated_sprite.visible = false
 	animated_sprite.stop()
 	animated_sprite.flip_h = false
@@ -188,6 +198,10 @@ func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
 	if texture_path.is_empty():
 		return false
 
+	if texture_path == "res://assets/Boss-DarkQueen/2/Idle.png":
+		_apply_esbirro_sprite(actor_data)
+		return true
+
 	var texture = load(texture_path) as Texture2D
 	if texture == null:
 		push_warning("No se pudo cargar el sprite de enemigo: %s" % texture_path)
@@ -226,6 +240,25 @@ func _try_apply_custom_enemy_sprite(actor_data: Dictionary) -> bool:
 	return true
 
 
+func _apply_esbirro_sprite(actor_data: Dictionary) -> void:
+	_is_esbirro = true
+	sprite_rect.visible = false
+	animated_sprite.visible = true
+	animated_sprite.flip_h = bool(actor_data.get("sprite_flip_h", false))
+	animated_sprite.position = Vector2(
+		float(actor_data.get("sprite_position_x", 4.0)),
+		float(actor_data.get("sprite_position_y", 2.0))
+	)
+	var display_width = max(float(actor_data.get("sprite_display_width", 76.0)), 1.0)
+	var display_height = max(float(actor_data.get("sprite_display_height", 76.0)), 1.0)
+	animated_sprite.scale = Vector2(display_width / ESBIRRO_FRAME_SIZE.x, display_height / ESBIRRO_FRAME_SIZE.y)
+	_play_esbirro_idle()
+	shadow_rect.position = Vector2(19, 75)
+	shadow_rect.size = Vector2(60, 7)
+	_apply_enemy_status_layout()
+	_apply_minimal_status_layout(Vector2(25, 6), Vector2(21, 82))
+
+
 func _apply_enemy_status_layout() -> void:
 	status_panel.position = Vector2(-48, 60)
 	status_panel.size = Vector2(84, 38)
@@ -241,6 +274,7 @@ func _apply_status(actor_data: Dictionary) -> void:
 	var hp_ratio = clampf(float(current_hp) / float(max_hp), 0.0, 1.0)
 
 	level_label.text = "lvl.%d" % int(actor_data.get("level", 1))
+	_hide_outer_level_label()
 	name_label.text = "%s Lv.%d" % [actor_name, int(actor_data.get("level", 1))]
 	role_label.text = str(actor_data.get("role", "Unidad"))
 	hp_label.text = "HP %d/%d" % [current_hp, max_hp]
@@ -281,6 +315,7 @@ func _apply_turn_state(actor_data: Dictionary) -> void:
 func _apply_minimal_status_layout(level_position: Vector2, hp_bar_position: Vector2) -> void:
 	level_label.position = level_position
 	level_label.size = Vector2(42, 12)
+	_hide_outer_level_label()
 	mini_hp_bar_bg.position = hp_bar_position
 	mini_hp_bar_bg.size = Vector2(MINI_HP_BAR_WIDTH + 2.0, MINI_HP_BAR_HEIGHT + 2.0)
 	_hide_mini_hp_bar()
@@ -294,6 +329,11 @@ func _set_status_panel_visible() -> void:
 func _hide_mini_hp_bar() -> void:
 	if mini_hp_bar_bg != null:
 		mini_hp_bar_bg.visible = false
+
+
+func _hide_outer_level_label() -> void:
+	if level_label != null:
+		level_label.visible = false
 
 
 func play_action_animation(action_type: String = "attack") -> void:
@@ -318,6 +358,23 @@ func play_action_animation(action_type: String = "attack") -> void:
 		animated_sprite.play(HERO_ATTACK_ANIMATION)
 		await animated_sprite.animation_finished
 		_play_hero_idle()
+		return
+
+	if _is_esbirro:
+		if action_type != "attack" and action_type != "skill":
+			return
+		animated_sprite.sprite_frames = _make_sprite_frames(
+			ESBIRRO_ATTACK_TEXTURE,
+			ESBIRRO_FRAME_SIZE,
+			ESBIRRO_ATTACK_FRAME_COUNT,
+			ESBIRRO_ATTACK_ANIMATION,
+			10.0,
+			false
+		)
+		animated_sprite.animation = ESBIRRO_ATTACK_ANIMATION
+		animated_sprite.play(ESBIRRO_ATTACK_ANIMATION)
+		await animated_sprite.animation_finished
+		_play_esbirro_idle()
 		return
 
 	if not _is_dark_queen:
@@ -362,6 +419,19 @@ func _play_dark_queen_idle() -> void:
 	)
 	animated_sprite.animation = DARK_QUEEN_ANIMATION
 	animated_sprite.play(DARK_QUEEN_ANIMATION)
+
+
+func _play_esbirro_idle() -> void:
+	animated_sprite.sprite_frames = _make_sprite_frames(
+		ESBIRRO_TEXTURE,
+		ESBIRRO_FRAME_SIZE,
+		ESBIRRO_FRAME_COUNT,
+		ESBIRRO_ANIMATION,
+		7.0,
+		true
+	)
+	animated_sprite.animation = ESBIRRO_ANIMATION
+	animated_sprite.play(ESBIRRO_ANIMATION)
 
 
 func _make_atlas_texture(texture: Texture2D, region: Rect2) -> AtlasTexture:

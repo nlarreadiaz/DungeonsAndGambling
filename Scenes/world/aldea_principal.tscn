@@ -9992,7 +9992,7 @@ collision_layer = 0
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="aldea/SmithEntryArea" unique_id=39482889]
-position = Vector2(-5, -61)
+position = Vector2(7, -62)
 shape = SubResource("CircleShape2D_smith_entry_area")
 
 [node name="LighthouseBody" type="StaticBody2D" parent="aldea" unique_id=1103461650]

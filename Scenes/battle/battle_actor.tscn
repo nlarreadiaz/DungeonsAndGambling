@@ -86,6 +86,7 @@ text = ">"
 label_settings = SubResource("LabelSettings_turn")
 
 [node name="LevelLabel" type="Label" parent="." unique_id=1096923467]
+visible = false
 layout_mode = 0
 offset_left = 38.0
 offset_top = 8.0
