@@ -4649,6 +4649,7 @@ position = Vector2(396, 15)
 shape = SubResource("RectangleShape2D_jueoy")
 
 [node name="CollisionShape2D42" type="CollisionShape2D" parent="StaticBody2D5" unique_id=1533794657]
+visible = false
 position = Vector2(355.4375, 15.5)
 shape = SubResource("RectangleShape2D_s5xlp")
 
@@ -4741,6 +4742,7 @@ position = Vector2(436, 78)
 shape = SubResource("RectangleShape2D_fhhcr")
 
 [node name="CollisionShape2D32" type="CollisionShape2D" parent="StaticBody2D5" unique_id=1064816846]
+visible = false
 position = Vector2(355.84375, -11.1875)
 shape = SubResource("RectangleShape2D_grpna")
 

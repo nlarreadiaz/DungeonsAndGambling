@@ -13,6 +13,7 @@ const ESBIRRO3_NODE_PATH = NodePath("Esbirro3")
 const DARK_QUEEN_NODE_PATH = NodePath("ReinaOscura")
 const ESBIRRO_IDLE_TEXTURE_PATH = "res://assets/Boss-DarkQueen/2/Idle.png"
 const BOSS_FIGHT_MUSIC_PATH = "res://assets/Music/BossFight.mp3"
+const DUNGEON_AGUA_BATTLE_BACKGROUND_PATH = "res://assets/battle/dungeon_Agua_Combat.png"
 const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
 
 var _esbirro_battle_cooldown_until_msec = 0
@@ -111,6 +112,7 @@ func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: S
 		"status_message": status_message,
 		"world_scene_path": world_scene_path,
 		"return_player_position": player.global_position,
+		"battle_background_path": DUNGEON_AGUA_BATTLE_BACKGROUND_PATH,
 		"enemies": enemies
 	}
 	if not battle_music_path.strip_edges().is_empty():
