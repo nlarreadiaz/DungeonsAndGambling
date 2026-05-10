@@ -10603,13 +10603,6 @@ texture = ExtResource("40_o5cy0")
 position = Vector2(132, 87)
 texture = ExtResource("47_ncvew")
 
-[node name="player" parent="." unique_id=479730859 instance=ExtResource("4_bax37")]
-z_index = 35
-position = Vector2(360, 132)
-scale = Vector2(0.5361837, 0.5361837)
-collision_layer = 0
-SPEED = 75.0
-
 [node name="npcs" type="Node2D" parent="." unique_id=757760745]
 
 [node name="CampesinoSuperior" parent="npcs" unique_id=784577671 instance=ExtResource("64_animated_npc")]
@@ -10688,6 +10681,13 @@ speed = 6.0
 
 [node name="pescador" parent="npcs" unique_id=1351483465 instance=ExtResource("57_h8wt0")]
 position = Vector2(47, 801)
+
+[node name="player" parent="." unique_id=479730859 instance=ExtResource("4_bax37")]
+z_index = 35
+position = Vector2(360, 132)
+scale = Vector2(0.5361837, 0.5361837)
+collision_layer = 0
+SPEED = 75.0
 
 [node name="animaciones" type="Node2D" parent="." unique_id=1700834298]
 
