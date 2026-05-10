@@ -1,7 +1,6 @@
+Node2D
 AnimatedSprite2D
 TileMapLayer
-TileMapDual
-Node2D
 CollisionShape2D
 StaticBody2D
 CharacterBody2D
