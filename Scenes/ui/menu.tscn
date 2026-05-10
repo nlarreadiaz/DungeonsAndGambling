@@ -1,0 +1,392 @@
+[gd_scene format=3 uid="uid://bc37rfnuux1fm"]
+
+[ext_resource type="Script" uid="uid://b4gifkcfc5s73" path="res://Scripts/menu.gd" id="1_pdlxy"]
+[ext_resource type="Texture2D" uid="uid://by436d5kuhica" path="res://images/1.png" id="2_jateb"]
+[ext_resource type="Texture2D" uid="uid://jwai3bkh6pmu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Ribbons.png" id="3_itu7i"]
+[ext_resource type="Texture2D" uid="uid://bdb5kaf81tdxp" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Button_Play_Blue.png" id="4_6revv"]
+[ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="5_ukdyq"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="7_te4rr"]
+[ext_resource type="Texture2D" uid="uid://c8xby4lhbpgn2" path="res://assets/Herreria/PNG/House_exterior.png" id="8_jsy82"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_panel"]
+bg_color = Color(0.047058824, 0.09019608, 0.105882354, 0.88)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7058824, 0.85490197, 0.7882353, 0.96)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 10
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_large"]
+atlas = ExtResource("3_itu7i")
+region = Rect2(202, 32, 92, 26)
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_color = Color(0.972549, 0.9607843, 0.8392157, 1)
+outline_size = 5
+outline_color = Color(0.18039216, 0.1254902, 0.08235294, 0.96)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="LabelSettings" id="LabelSettings_subtitle"]
+font_size = 9
+font_color = Color(0.84705883, 0.9490196, 0.91764706, 1)
+outline_size = 2
+outline_color = Color(0.06666667, 0.10980392, 0.1254902, 0.92)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_play_text_normal"]
+atlas = ExtResource("4_6revv")
+region = Rect2(0, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_play_text_pressed"]
+atlas = ExtResource("4_6revv")
+region = Rect2(96, 0, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_play_text_hover"]
+atlas = ExtResource("4_6revv")
+region = Rect2(48, 0, 48, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_button"]
+stacked_outline_count = 1
+stacked_shadow_count = 1
+stacked_shadow_0/offset = Vector2(1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_options_text_normal"]
+atlas = ExtResource("7_te4rr")
+region = Rect2(1632, 176, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_options_text_pressed"]
+atlas = ExtResource("7_te4rr")
+region = Rect2(1728, 176, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_options_text_hover"]
+atlas = ExtResource("7_te4rr")
+region = Rect2(1680, 176, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quit_text_normal"]
+atlas = ExtResource("7_te4rr")
+region = Rect2(1632, 144, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quit_text_pressed"]
+atlas = ExtResource("7_te4rr")
+region = Rect2(1728, 144, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_quit_text_hover"]
+atlas = ExtResource("7_te4rr")
+region = Rect2(1680, 144, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ribbon_small"]
+atlas = ExtResource("3_itu7i")
+region = Rect2(8, 1, 93, 20)
+
+[sub_resource type="LabelSettings" id="LabelSettings_badge"]
+font_size = 9
+font_color = Color(0.4117647, 0.19607843, 0.06666667, 1)
+outline_size = 1
+outline_color = Color(0.9647059, 0.8627451, 0.67058825, 0.55)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preview"]
+bg_color = Color(0.10980392, 0.16862746, 0.1882353, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62352943, 0.7764706, 0.7176471, 0.94)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_house_preview"]
+atlas = ExtResource("8_jsy82")
+region = Rect2(0, 0, 176, 120)
+
+[sub_resource type="LabelSettings" id="LabelSettings_feature"]
+font_size = 9
+font_color = Color(0.92941177, 0.9843137, 0.92941177, 1)
+outline_size = 2
+outline_color = Color(0.07450981, 0.10980392, 0.13333334, 0.95)
+
+[node name="Menu" type="Control" unique_id=1459374609]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pdlxy")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1702618812]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_jateb")
+expand_mode = 1
+
+[node name="Shade" type="ColorRect" parent="." unique_id=1729810991]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.019607844, 0.050980393, 0.05882353, 0.44)
+
+[node name="ContentCenter" type="CenterContainer" parent="." unique_id=1383951536]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="HBoxContainer" parent="ContentCenter" unique_id=1036068553]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MenuPanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=1492320183]
+custom_minimum_size = Vector2(228, 260)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_menu_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/MenuPanel" unique_id=973507545]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentCenter/Layout/MenuPanel/MarginContainer" unique_id=179124893]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Control" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer" unique_id=2001616741]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+
+[node name="TitleRibbon" type="TextureRect" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=183208811]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -67.0
+offset_top = -12.0
+offset_right = 73.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_ribbon_large")
+expand_mode = 1
+
+[node name="Title" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=1609652966]
+layout_mode = 0
+offset_left = -34.0
+offset_top = 9.0
+offset_right = 242.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 8
+text = "DUNGEON AND GAMBLING"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/Header" unique_id=837869924]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 43.0
+offset_right = 207.0
+offset_bottom = 58.0
+text = "Aventura, fortuna y decisiones arriesgadas"
+label_settings = SubResource("LabelSettings_subtitle")
+horizontal_alignment = 1
+
+[node name="ButtonsArea" type="Control" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer" unique_id=1385549035]
+custom_minimum_size = Vector2(0, 178)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=1925068666]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 8.0
+offset_right = 54.0
+offset_bottom = 24.0
+scale = Vector2(4, 3.4)
+focus_neighbor_bottom = NodePath("../OptionsButton")
+texture_normal = SubResource("AtlasTexture_play_text_normal")
+texture_pressed = SubResource("AtlasTexture_play_text_pressed")
+texture_hover = SubResource("AtlasTexture_play_text_hover")
+ignore_texture_size = true
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" unique_id=1079242902]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_left = 0.49999985
+offset_top = 2.0588238
+offset_right = 112.5
+offset_bottom = 42.058823
+scale = Vector2(0.28, 0.24)
+text = "PLAY"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_ukdyq")
+
+[node name="OptionsButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=956974074]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 62.0
+offset_right = 54.0
+offset_bottom = 78.0
+scale = Vector2(4, 3.4)
+focus_neighbor_top = NodePath("../PlayButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
+texture_normal = SubResource("AtlasTexture_options_text_normal")
+texture_pressed = SubResource("AtlasTexture_options_text_pressed")
+texture_hover = SubResource("AtlasTexture_options_text_hover")
+ignore_texture_size = true
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/OptionsButton" unique_id=153742705]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_left = 0.16666651
+offset_top = 2.325581
+offset_right = 112.166664
+offset_bottom = 42.32558
+scale = Vector2(0.28, 0.24)
+text = "OPCIONES"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_ukdyq")
+
+[node name="ExitButton" type="TextureButton" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea" unique_id=2075711668]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 116.0
+offset_right = 54.0
+offset_bottom = 132.0
+scale = Vector2(4, 3.4)
+focus_neighbor_top = NodePath("../OptionsButton")
+texture_normal = SubResource("AtlasTexture_quit_text_normal")
+texture_pressed = SubResource("AtlasTexture_quit_text_pressed")
+texture_hover = SubResource("AtlasTexture_quit_text_hover")
+ignore_texture_size = true
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/ExitButton" unique_id=1571701515]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_left = 0.16666651
+offset_top = 2.325581
+offset_right = 112.166664
+offset_bottom = 42.32558
+scale = Vector2(0.28, 0.24)
+text = "SALIR"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_ukdyq")
+
+[node name="FeaturePanel" type="PanelContainer" parent="ContentCenter/Layout" unique_id=294045681]
+custom_minimum_size = Vector2(150, 260)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_menu_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/FeaturePanel" unique_id=470325066]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentCenter/Layout/FeaturePanel/MarginContainer" unique_id=1946672377]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Badge" type="Control" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1707829207]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+
+[node name="Ribbon" type="TextureRect" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/Badge" unique_id=1671682285]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.0
+offset_right = 77.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_ribbon_small")
+expand_mode = 1
+
+[node name="Label" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/Badge" unique_id=750531013]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 130.0
+offset_bottom = 30.0
+text = "LA ALDEA"
+label_settings = SubResource("LabelSettings_badge")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PreviewFrame" type="PanelContainer" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=252283244]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_preview")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/PreviewFrame" unique_id=277145403]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Preview" type="TextureRect" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer/PreviewFrame/MarginContainer" unique_id=693887374]
+texture_filter = 1
+custom_minimum_size = Vector2(120, 86)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = SubResource("AtlasTexture_house_preview")
+expand_mode = 1
+
+[node name="FeatureLine1" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1673424083]
+layout_mode = 2
+text = "Explora la aldea"
+label_settings = SubResource("LabelSettings_feature")
+horizontal_alignment = 1
+
+[node name="FeatureLine2" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1605348055]
+layout_mode = 2
+text = "Organiza tu equipo"
+label_settings = SubResource("LabelSettings_feature")
+horizontal_alignment = 1
+
+[node name="FeatureLine3" type="Label" parent="ContentCenter/Layout/FeaturePanel/MarginContainer/VBoxContainer" unique_id=1274525907]
+layout_mode = 2
+text = "Pon a prueba tu suerte"
+label_settings = SubResource("LabelSettings_feature")
+horizontal_alignment = 1
+
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/PlayButton" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/OptionsButton" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="ContentCenter/Layout/MenuPanel/MarginContainer/VBoxContainer/ButtonsArea/ExitButton" to="." method="_on_quit_pressed"]

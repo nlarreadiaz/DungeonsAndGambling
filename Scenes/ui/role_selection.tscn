@@ -1,0 +1,906 @@
+[gd_scene format=3 uid="uid://dpaotw64qjo0d"]
+
+[ext_resource type="Script" uid="uid://d3fljtivmwded" path="res://Scripts/role_selection.gd" id="1_role_selection"]
+[ext_resource type="Texture2D" uid="uid://vix1l5ysbxdt" path="res://assets/role_selection/role_selection_background.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://c538g7ggf2acu" path="res://assets/GUI/Cute_Fantasy_UI/UI/UI_Buttons.png" id="3_buttons"]
+[ext_resource type="Script" uid="uid://djl80s4f4iskm" path="res://Scripts/menu_button_label.gd" id="4_label"]
+[ext_resource type="Texture2D" uid="uid://btr1im17ast60" path="res://assets/role_selection/role_guerrero.png" id="5_guerrero"]
+[ext_resource type="Texture2D" uid="uid://c1ney5b2hem77" path="res://assets/role_selection/role_arquero.png" id="6_arquero"]
+[ext_resource type="Texture2D" uid="uid://b0ttryq5iu5p6" path="res://assets/role_selection/role_mago.png" id="7_mago"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main_panel"]
+bg_color = Color(0.045, 0.075, 0.105, 0.94)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.74, 0.84, 0.88, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 13
+font_color = Color(1, 0.82, 0.48, 1)
+outline_size = 2
+outline_color = Color(0.12, 0.07, 0.04, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.05, 0.09, 0.12, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62, 0.75, 0.82, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_card_name"]
+font_size = 8
+font_color = Color(0.94, 0.97, 1, 1)
+outline_size = 1
+outline_color = Color(0.03, 0.05, 0.08, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="LabelSettings" id="LabelSettings_stat"]
+font_size = 6
+font_color = Color(0.86, 0.95, 1, 1)
+outline_size = 1
+outline_color = Color(0.03, 0.05, 0.07, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
+bg_color = Color(0.025, 0.04, 0.055, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_hp"]
+bg_color = Color(0.9, 0.22, 0.22, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_stat_value"]
+font_size = 6
+font_color = Color(0.98, 0.98, 0.9, 1)
+outline_size = 1
+outline_color = Color(0.03, 0.05, 0.07, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_mp"]
+bg_color = Color(0.38, 0.58, 1, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_attack"]
+bg_color = Color(0.95, 0.62, 0.18, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_defense"]
+bg_color = Color(0.45, 0.78, 0.96, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_speed"]
+bg_color = Color(0.58, 0.86, 0.35, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_choose_normal"]
+atlas = ExtResource("3_buttons")
+region = Rect2(0, 64, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_choose_pressed"]
+atlas = ExtResource("3_buttons")
+region = Rect2(64, 64, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_choose_hover"]
+atlas = ExtResource("3_buttons")
+region = Rect2(32, 64, 32, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_button"]
+font_size = 8
+font_color = Color(0.96, 0.72, 0.34, 1)
+outline_size = 1
+outline_color = Color(0.09, 0.06, 0.04, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_detail"]
+bg_color = Color(0.065, 0.115, 0.15, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.84, 0.63, 0.32, 0.95)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_detail_name"]
+font_size = 8
+font_color = Color(1, 0.92, 0.66, 1)
+outline_size = 1
+outline_color = Color(0.08, 0.05, 0.03, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="LabelSettings" id="LabelSettings_detail_description"]
+font_size = 6
+font_color = Color(0.92, 0.96, 0.91, 1)
+outline_size = 1
+outline_color = Color(0.03, 0.05, 0.07, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="LabelSettings" id="LabelSettings_detail_stats"]
+font_size = 7
+font_color = Color(0.73, 0.9, 1, 1)
+outline_size = 1
+outline_color = Color(0.03, 0.05, 0.07, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="LabelSettings" id="LabelSettings_status"]
+font_size = 7
+font_color = Color(0.92, 0.95, 0.9, 1)
+outline_size = 1
+outline_color = Color(0.03, 0.05, 0.06, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_back_normal"]
+atlas = ExtResource("3_buttons")
+region = Rect2(0, 192, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_back_pressed"]
+atlas = ExtResource("3_buttons")
+region = Rect2(64, 192, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_back_hover"]
+atlas = ExtResource("3_buttons")
+region = Rect2(32, 192, 32, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_back_button"]
+font_size = 8
+font_color = Color(0.92, 0.7, 0.42, 1)
+outline_size = 1
+outline_color = Color(0.09, 0.06, 0.04, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+
+[node name="RoleSelection" type="Control" unique_id=1305282270]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_role_selection")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1851236022]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_background")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Shade" type="ColorRect" parent="." unique_id=294617765]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.04, 0.07, 0.34)
+
+[node name="ContentCenter" type="CenterContainer" parent="." unique_id=1866457402]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="PanelContainer" parent="ContentCenter" unique_id=224228320]
+custom_minimum_size = Vector2(410, 238)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_main_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/MainPanel" unique_id=626110043]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="Layout" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer" unique_id=1130544217]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout" unique_id=349485808]
+layout_mode = 2
+text = "SELECCIONA TU ROL"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+
+[node name="Cards" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout" unique_id=819318567]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="GuerreroCard" type="PanelContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards" unique_id=1122191041]
+custom_minimum_size = Vector2(118, 130)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard" unique_id=1375956377]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Layout" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer" unique_id=1029143941]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Name" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout" unique_id=1611419370]
+layout_mode = 2
+text = "GUERRERO"
+label_settings = SubResource("LabelSettings_card_name")
+horizontal_alignment = 1
+
+[node name="Portrait" type="TextureRect" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout" unique_id=4425812]
+texture_filter = 1
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+texture = ExtResource("5_guerrero")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Stats" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout" unique_id=200744176]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="HpRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats" unique_id=948284323]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/HpRow" unique_id=1507155945]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "HP"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/HpRow" unique_id=1453905486]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_hp")
+max_value = 180.0
+value = 160.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/HpRow" unique_id=937164221]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "160"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="MpRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats" unique_id=1253592897]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/MpRow" unique_id=45301722]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "MP"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/MpRow" unique_id=1538997821]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_mp")
+max_value = 180.0
+value = 20.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/MpRow" unique_id=745439298]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "20"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="AttackRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats" unique_id=2120016145]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1440800689]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "ATQ"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/AttackRow" unique_id=864800607]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_attack")
+max_value = 180.0
+value = 18.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1749624847]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "18"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="DefenseRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats" unique_id=1004335091]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=517553934]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "DEF"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=1864332986]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_defense")
+max_value = 180.0
+value = 14.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=1384539377]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "14"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="SpeedRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats" unique_id=1312165713]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=592747505]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "VEL"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=1152586536]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_speed")
+max_value = 180.0
+value = 8.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=343328079]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "8"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="ChooseButton" type="TextureButton" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout" unique_id=2121705901]
+texture_filter = 1
+custom_minimum_size = Vector2(72, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_choose_normal")
+texture_pressed = SubResource("AtlasTexture_choose_pressed")
+texture_hover = SubResource("AtlasTexture_choose_hover")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/GuerreroCard/MarginContainer/Layout/ChooseButton" unique_id=1061089137]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "ELEGIR"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("4_label")
+
+[node name="ArqueroCard" type="PanelContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards" unique_id=1459044984]
+custom_minimum_size = Vector2(118, 130)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard" unique_id=1675320284]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Layout" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer" unique_id=1727688393]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Name" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout" unique_id=508707443]
+layout_mode = 2
+text = "ARQUERO"
+label_settings = SubResource("LabelSettings_card_name")
+horizontal_alignment = 1
+
+[node name="Portrait" type="TextureRect" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout" unique_id=1808243130]
+texture_filter = 1
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+texture = ExtResource("6_arquero")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Stats" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout" unique_id=1096959429]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="HpRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats" unique_id=1947281874]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/HpRow" unique_id=1628758598]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "HP"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/HpRow" unique_id=1837365588]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_hp")
+max_value = 180.0
+value = 110.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/HpRow" unique_id=1285443355]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "110"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="MpRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats" unique_id=722412458]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/MpRow" unique_id=402568620]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "MP"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/MpRow" unique_id=755926575]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_mp")
+max_value = 180.0
+value = 35.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/MpRow" unique_id=347833214]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "35"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="AttackRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats" unique_id=1614081764]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1474553471]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "ATQ"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1736463248]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_attack")
+max_value = 180.0
+value = 14.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1303477991]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "14"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="DefenseRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats" unique_id=218519099]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=1165666984]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "DEF"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=110916147]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_defense")
+max_value = 180.0
+value = 9.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=916779137]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "9"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="SpeedRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats" unique_id=1190787059]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=1664073343]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "VEL"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=366527921]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_speed")
+max_value = 180.0
+value = 14.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=151022819]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "14"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="ChooseButton" type="TextureButton" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout" unique_id=1836975072]
+texture_filter = 1
+custom_minimum_size = Vector2(72, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_choose_normal")
+texture_pressed = SubResource("AtlasTexture_choose_pressed")
+texture_hover = SubResource("AtlasTexture_choose_hover")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/ArqueroCard/MarginContainer/Layout/ChooseButton" unique_id=1906729588]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "ELEGIR"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("4_label")
+
+[node name="MagoCard" type="PanelContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards" unique_id=226204798]
+custom_minimum_size = Vector2(118, 130)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard" unique_id=436619625]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Layout" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer" unique_id=1352631505]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Name" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout" unique_id=537847232]
+layout_mode = 2
+text = "MAGO"
+label_settings = SubResource("LabelSettings_card_name")
+horizontal_alignment = 1
+
+[node name="Portrait" type="TextureRect" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout" unique_id=1990014357]
+texture_filter = 1
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+texture = ExtResource("7_mago")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Stats" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout" unique_id=182552653]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="HpRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats" unique_id=424262425]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/HpRow" unique_id=497279987]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "HP"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/HpRow" unique_id=1908287944]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_hp")
+max_value = 180.0
+value = 95.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/HpRow" unique_id=1877349033]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "95"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="MpRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats" unique_id=1901348015]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/MpRow" unique_id=688108932]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "MP"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/MpRow" unique_id=1393342466]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_mp")
+max_value = 180.0
+value = 120.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/MpRow" unique_id=1902983917]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "120"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="AttackRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats" unique_id=295246105]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/AttackRow" unique_id=174850042]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "ATQ"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1836279922]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_attack")
+max_value = 180.0
+value = 9.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/AttackRow" unique_id=1329637185]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "9"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="DefenseRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats" unique_id=738547555]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=1361945084]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "DEF"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=469940725]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_defense")
+max_value = 180.0
+value = 7.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/DefenseRow" unique_id=90542136]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "7"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="SpeedRow" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats" unique_id=72486697]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=1658792949]
+custom_minimum_size = Vector2(19, 6)
+layout_mode = 2
+text = "VEL"
+label_settings = SubResource("LabelSettings_stat")
+
+[node name="Bar" type="ProgressBar" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=1134298798]
+custom_minimum_size = Vector2(52, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_bar_speed")
+max_value = 180.0
+value = 10.0
+show_percentage = false
+
+[node name="Value" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/Stats/SpeedRow" unique_id=535234664]
+custom_minimum_size = Vector2(18, 6)
+layout_mode = 2
+text = "10"
+label_settings = SubResource("LabelSettings_stat_value")
+horizontal_alignment = 2
+
+[node name="ChooseButton" type="TextureButton" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout" unique_id=1672277286]
+texture_filter = 1
+custom_minimum_size = Vector2(72, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = SubResource("AtlasTexture_choose_normal")
+texture_pressed = SubResource("AtlasTexture_choose_pressed")
+texture_hover = SubResource("AtlasTexture_choose_hover")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Cards/MagoCard/MarginContainer/Layout/ChooseButton" unique_id=1990687551]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "ELEGIR"
+label_settings = SubResource("LabelSettings_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("4_label")
+
+[node name="DetailPanel" type="PanelContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout" unique_id=1662093727]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_detail")
+
+[node name="MarginContainer" type="MarginContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/DetailPanel" unique_id=794196105]
+layout_mode = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 2
+
+[node name="DetailLayout" type="VBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout/DetailPanel/MarginContainer" unique_id=1504235043]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="DetailName" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/DetailPanel/MarginContainer/DetailLayout" unique_id=1409181060]
+layout_mode = 2
+text = "GUERRERO | Habilidad inicial: Golpe Fuerte"
+label_settings = SubResource("LabelSettings_detail_name")
+
+[node name="DetailDescription" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/DetailPanel/MarginContainer/DetailLayout" unique_id=435448629]
+layout_mode = 2
+text = "Primera linea resistente. Aguanta golpes y pega fuerte cuerpo a cuerpo."
+label_settings = SubResource("LabelSettings_detail_description")
+clip_text = true
+
+[node name="DetailStats" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/DetailPanel/MarginContainer/DetailLayout" unique_id=1302723774]
+layout_mode = 2
+text = "HP 160  MP 20  ATQ 18  DEF 14  VEL 8"
+label_settings = SubResource("LabelSettings_detail_stats")
+
+[node name="Footer" type="HBoxContainer" parent="ContentCenter/MainPanel/MarginContainer/Layout" unique_id=527128821]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Footer" unique_id=1274782596]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Elige una clase para comenzar"
+label_settings = SubResource("LabelSettings_status")
+clip_text = true
+
+[node name="BackButton" type="TextureButton" parent="ContentCenter/MainPanel/MarginContainer/Layout/Footer" unique_id=1415291383]
+texture_filter = 1
+custom_minimum_size = Vector2(62, 17)
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_back_normal")
+texture_pressed = SubResource("AtlasTexture_back_pressed")
+texture_hover = SubResource("AtlasTexture_back_hover")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="ContentCenter/MainPanel/MarginContainer/Layout/Footer/BackButton" unique_id=270332124]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "ATRAS"
+label_settings = SubResource("LabelSettings_back_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("4_label")
