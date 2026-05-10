@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://d2cdb8imrbjmq"]
+
+[ext_resource type="Script" uid="uid://dqmnnrtqbve7" path="res://Scripts/credits.gd" id="1_credits"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 30
+font_color = Color(0.78, 0.95, 1, 1)
+outline_size = 4
+outline_color = Color(0.02, 0.04, 0.09, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_body"]
+font_size = 12
+font_color = Color(0.9, 0.95, 1, 1)
+outline_size = 2
+outline_color = Color(0.02, 0.04, 0.09, 0.95)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.18, 0.29, 0.38, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.58, 0.85, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_focus"]
+bg_color = Color(0.28, 0.43, 0.56, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.98, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="Credits" type="Control" unique_id=919372825]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_credits")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1854328202]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.05, 0.085, 1)
+
+[node name="WaterGlow" type="ColorRect" parent="." unique_id=503858202]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = 28.0
+offset_right = -36.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.21, 0.28, 0.48)
+
+[node name="Content" type="VBoxContainer" parent="." unique_id=950943163]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -118.0
+offset_right = 220.0
+offset_bottom = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Content" unique_id=1901781208]
+layout_mode = 2
+text = "Dungeon & Gambling"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Content" unique_id=108687247]
+layout_mode = 2
+text = "La Reina Oscura ha caido."
+label_settings = SubResource("LabelSettings_body")
+horizontal_alignment = 1
+
+[node name="CreditsText" type="Label" parent="Content" unique_id=1139509545]
+layout_mode = 2
+text = "Gracias por jugar esta aventura."
+label_settings = SubResource("LabelSettings_body")
+horizontal_alignment = 1
+
+[node name="ReturnButton" type="Button" parent="Content" unique_id=1891718734]
+custom_minimum_size = Vector2(140, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_focus")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_focus")
+text = "Volver al menu"

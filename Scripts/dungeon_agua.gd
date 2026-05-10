@@ -19,20 +19,38 @@ const BOSS_FIGHT_MUSIC_PATH = "res://assets/Music/BossFight.mp3"
 const DUNGEON_AMBIENT_MUSIC_PATH = "res://assets/Music/DungeonAmbient.mp3"
 const DUNGEON_AGUA_BATTLE_BACKGROUND_PATH = "res://assets/battle/dungeon_Agua_Combat.png"
 const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
+const INTERACT_ACTION = "interact"
+const EXIT_DOOR_NODE_PATH = NodePath("puerta")
+const CREDITS_SCENE = "res://Scenes/ui/credits.tscn"
+const EXIT_DOOR_OPEN_ANIMATION = &"abrir"
+const EXIT_DOOR_FALLBACK_ANIMATION = &"cerrar abrir"
+const EXIT_DOOR_FREEZE_FRAME = 3
 
 var _esbirro_battle_cooldown_until_msec = 0
 var options_ingame: CanvasLayer = null
 var _ambient_music_player: AudioStreamPlayer = null
 var _ambient_music_resume_position := 0.0
+var _player_can_exit_dungeon = false
+var _exit_door_unlocked = false
 
 
 func _ready() -> void:
 	_apply_battle_return_position()
 	_apply_defeated_encounter_state()
+	_setup_exit_door_interaction_area()
+	if _is_final_boss_defeated():
+		_set_exit_door_open(false)
 	_play_dungeon_ambient_music(_ambient_music_resume_position)
 
 
 func _input(event: InputEvent) -> void:
+	if _is_interact_event(event) and _exit_door_unlocked and _player_can_exit_dungeon:
+		var viewport = get_viewport()
+		if viewport != null:
+			viewport.set_input_as_handled()
+		_try_exit_to_credits()
+		return
+
 	if not _is_pause_event(event):
 		return
 
@@ -352,6 +370,8 @@ func _apply_battle_return_position() -> bool:
 		var encounter_id = str(return_data.get("encounter_id", ""))
 		if _should_hide_defeated_encounter(encounter_id):
 			_apply_defeated_encounter(encounter_id)
+		if encounter_id == DARK_QUEEN_FINAL_ENCOUNTER_ID:
+			_set_exit_door_open(true)
 	elif battle_result is Dictionary and str(battle_result.get("outcome", "")) == "escaped":
 		_esbirro_battle_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
 
@@ -385,6 +405,9 @@ func _apply_defeated_encounter_state() -> void:
 		var encounter_id_text = str(encounter_id)
 		if bool(defeated_encounters.get(encounter_id, false)) and _should_hide_defeated_encounter(encounter_id_text):
 			_apply_defeated_encounter(encounter_id_text)
+
+	if bool(defeated_encounters.get(DARK_QUEEN_FINAL_ENCOUNTER_ID, false)):
+		_exit_door_unlocked = true
 
 
 func _should_hide_defeated_encounter(encounter_id: String) -> bool:
@@ -436,6 +459,137 @@ func _get_encounter_npc_path(encounter_id: String) -> NodePath:
 			return DARK_QUEEN_NODE_PATH
 		_:
 			return NodePath("")
+
+
+func _setup_exit_door_interaction_area() -> void:
+	var door = get_node_or_null(EXIT_DOOR_NODE_PATH) as AnimatedSprite2D
+	if door == null:
+		push_warning("No se encontro la puerta de salida de la dungeon de agua.")
+		return
+
+	var exit_area = Area2D.new()
+	exit_area.name = "ExitDoorArea"
+	exit_area.collision_layer = 0
+	exit_area.monitorable = false
+	exit_area.monitoring = true
+	add_child(exit_area)
+	exit_area.global_position = door.global_position + Vector2(0.0, 12.0)
+
+	var exit_shape = CollisionShape2D.new()
+	exit_shape.name = "CollisionShape2D"
+	var rectangle_shape = RectangleShape2D.new()
+	rectangle_shape.size = Vector2(58.0, 44.0)
+	exit_shape.shape = rectangle_shape
+	exit_area.add_child(exit_shape)
+
+	exit_area.body_entered.connect(_on_exit_door_area_body_entered)
+	exit_area.body_exited.connect(_on_exit_door_area_body_exited)
+
+
+func _on_exit_door_area_body_entered(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_exit_dungeon = true
+
+
+func _on_exit_door_area_body_exited(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_exit_dungeon = false
+
+
+func _try_exit_to_credits() -> bool:
+	if not _exit_door_unlocked or not _player_can_exit_dungeon or is_instance_valid(options_ingame):
+		return false
+
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player != null and player.has_method("is_inventory_open") and bool(player.call("is_inventory_open")):
+		return false
+
+	_persist_player_inventory_state()
+	var tree = get_tree()
+	if tree == null:
+		return false
+	return tree.change_scene_to_file(CREDITS_SCENE) == OK
+
+
+func _set_exit_door_open(play_animation: bool) -> void:
+	_exit_door_unlocked = true
+	var door = get_node_or_null(EXIT_DOOR_NODE_PATH) as AnimatedSprite2D
+	if door == null or door.sprite_frames == null:
+		return
+
+	var animation_name = _get_exit_door_open_animation(door)
+	if animation_name == StringName():
+		return
+
+	door.visible = true
+	door.sprite_frames.set_animation_loop(animation_name, false)
+	door.animation = animation_name
+	if play_animation:
+		door.frame = 0
+		door.play(animation_name)
+		await door.animation_finished
+
+	door.stop()
+	door.animation = animation_name
+	var frame_count = door.sprite_frames.get_frame_count(animation_name)
+	door.frame = clampi(EXIT_DOOR_FREEZE_FRAME, 0, max(frame_count - 1, 0))
+	door.frame_progress = 0.0
+
+
+func _get_exit_door_open_animation(door: AnimatedSprite2D) -> StringName:
+	if door.sprite_frames == null:
+		return StringName()
+	if door.sprite_frames.has_animation(EXIT_DOOR_OPEN_ANIMATION):
+		return EXIT_DOOR_OPEN_ANIMATION
+	if door.sprite_frames.has_animation(EXIT_DOOR_FALLBACK_ANIMATION):
+		return EXIT_DOOR_FALLBACK_ANIMATION
+	var animation_names = door.sprite_frames.get_animation_names()
+	if animation_names.is_empty():
+		return StringName()
+	return animation_names[0]
+
+
+func _is_final_boss_defeated() -> bool:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("get_game_state"):
+		return false
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		return false
+
+	var important_flags = game_state.get("important_flags", {})
+	if important_flags is String:
+		important_flags = JSON.parse_string(important_flags)
+	if important_flags == null or important_flags is not Dictionary:
+		return false
+
+	var defeated_encounters = important_flags.get("defeated_encounters", {})
+	if defeated_encounters is String:
+		defeated_encounters = JSON.parse_string(defeated_encounters)
+	if defeated_encounters == null or defeated_encounters is not Dictionary:
+		return false
+	return bool(defeated_encounters.get(DARK_QUEEN_FINAL_ENCOUNTER_ID, false))
+
+
+func _is_player_body(body: Node2D) -> bool:
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	return body != null and player != null and body == player
+
+
+func _is_interact_event(event: InputEvent) -> bool:
+	if event is InputEventKey:
+		var key_event = event as InputEventKey
+		if not key_event.pressed or key_event.echo:
+			return false
+		if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
+			return true
+		return key_event.keycode == KEY_E or key_event.physical_keycode == KEY_E
+
+	if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
+		return true
+
+	return false
 
 
 func _is_pause_event(event: InputEvent) -> bool:
