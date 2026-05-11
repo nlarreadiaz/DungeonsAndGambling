@@ -12184,7 +12184,8 @@ texture = ExtResource("47_ncvew")
 position = Vector2(452.99997, 8)
 scale = Vector2(0.2968428, 0.2968428)
 npc_display_name = ""
-dialogue_text = ""
+dialogue_page_1 = ""
+dialogue_page_2 = ""
 
 [node name="Path2D" type="Path2D" parent="npcs/aldeano2" unique_id=526240222]
 curve = SubResource("Curve2D_fvara")
