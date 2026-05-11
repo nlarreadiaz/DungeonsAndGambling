@@ -595,6 +595,7 @@ func _on_play_pressed() -> void:
 	var role_name = str(_roles[_selected_role].get("name", "Rol"))
 	_cache_selected_role(_selected_role)
 	var persisted = _persist_selected_role(_selected_role)
+	_mark_game_started(_selected_role)
 	if persisted:
 		_status_label.text = "%s aplicado. Entrando a la aldea..." % role_name
 	else:
@@ -639,6 +640,37 @@ func _persist_selected_role(role_id: String) -> bool:
 		skill_ids,
 		_get_combat_character_name(role_id)
 	))
+
+
+func _mark_game_started(role_id: String) -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("get_game_state"):
+		return
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		game_state = {}
+
+	var important_flags = game_state.get("important_flags", {})
+	if important_flags is String:
+		important_flags = JSON.parse_string(important_flags)
+	if important_flags == null or important_flags is not Dictionary:
+		important_flags = {}
+
+	important_flags["game_started"] = true
+	important_flags["selected_role_id"] = role_id
+
+	if database_manager.has_method("save_basic_game_state"):
+		database_manager.call("save_basic_game_state", SAVE_SLOT_ID, {
+			"save_name": str(game_state.get("save_name", "Partida %d" % SAVE_SLOT_ID)),
+			"current_location": "aldea_principal",
+			"gold": int(game_state.get("gold", 0)),
+			"main_progress": max(int(game_state.get("main_progress", 0)), 1),
+			"important_flags": important_flags,
+			"playtime_seconds": int(game_state.get("playtime_seconds", 0))
+		})
+	if database_manager.has_method("commit_manual_save"):
+		database_manager.call("commit_manual_save", SAVE_SLOT_ID)
 
 
 func _get_combat_character_name(role_id: String) -> String:

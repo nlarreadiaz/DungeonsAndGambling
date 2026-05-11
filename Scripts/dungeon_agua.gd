@@ -35,7 +35,9 @@ var _exit_door_unlocked = false
 
 
 func _ready() -> void:
-	_apply_battle_return_position()
+	var used_battle_return = _apply_battle_return_position()
+	if not used_battle_return:
+		_apply_saved_player_position()
 	_apply_defeated_encounter_state()
 	_setup_exit_door_interaction_area()
 	if _is_final_boss_defeated():
@@ -314,6 +316,28 @@ func _persist_player_inventory_state() -> void:
 		player.call("save_inventory_layout")
 
 
+func save_current_game_from_pause() -> bool:
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if player == null or database_manager == null or not database_manager.has_method("save_player_world_position"):
+		return false
+
+	_persist_player_inventory_state()
+	return bool(database_manager.call(
+		"save_player_world_position",
+		SAVE_SLOT_ID,
+		_get_current_scene_path("res://Scenes/dungeonAgua.tscn"),
+		player.global_position
+	))
+
+
+func _get_current_scene_path(fallback_scene_path: String) -> String:
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null and not tree.current_scene.scene_file_path.is_empty():
+		return tree.current_scene.scene_file_path
+	return fallback_scene_path
+
+
 func _play_dungeon_ambient_music(from_position := 0.0) -> void:
 	var music_stream = load(DUNGEON_AMBIENT_MUSIC_PATH) as AudioStream
 	if music_stream == null:
@@ -376,8 +400,51 @@ func _apply_battle_return_position() -> bool:
 		_esbirro_battle_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
 
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
-		player.global_position = return_data["player_position"]
+		_set_player_saved_position(player, return_data["player_position"])
 	return true
+
+
+func _apply_saved_player_position() -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("get_game_state"):
+		return
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		return
+
+	var saved_location = str(game_state.get("current_location", ""))
+	if saved_location not in ["dungeonAgua", "dungeon_agua"]:
+		return
+
+	var important_flags = game_state.get("important_flags", {})
+	if important_flags is String:
+		important_flags = JSON.parse_string(important_flags)
+	if important_flags == null or important_flags is not Dictionary:
+		return
+
+	var player_position = important_flags.get("player_position", important_flags.get("autosave_position", {}))
+	if player_position is not Dictionary:
+		return
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if player == null:
+		return
+
+	var saved_position = Vector2(
+		float(player_position.get("x", player.global_position.x)),
+		float(player_position.get("y", player.global_position.y))
+	)
+	_set_player_saved_position(player, saved_position)
+
+
+func _set_player_saved_position(player: Node2D, saved_position: Vector2) -> void:
+	player.global_position = saved_position
+	if player.has_method("set_spawn_position"):
+		player.call("set_spawn_position", saved_position)
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager != null and database_manager.has_method("cache_player_world_position"):
+		database_manager.call("cache_player_world_position", "res://Scenes/dungeonAgua.tscn", saved_position)
 
 
 func _apply_defeated_encounter_state() -> void:

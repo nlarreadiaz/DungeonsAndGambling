@@ -32,7 +32,7 @@ func finish_battle(result: Dictionary) -> bool:
 	if _active_encounter.is_empty():
 		return false
 
-	var world_scene_path = str(_active_encounter.get("world_scene_path", ""))
+	var world_scene_path = str(result.get("return_scene_path", _active_encounter.get("world_scene_path", "")))
 	if world_scene_path.is_empty():
 		return false
 
@@ -52,6 +52,26 @@ func finish_battle(result: Dictionary) -> bool:
 		return false
 
 	return tree.change_scene_to_file(world_scene_path) == OK
+
+
+func return_to_scene(scene_path: String, player_position: Vector2, transition_id: String = "scene_transition") -> bool:
+	if scene_path.is_empty():
+		return false
+
+	_pending_return_data = {
+		"scene_path": scene_path,
+		"player_position": player_position,
+		"encounter_id": transition_id,
+		"battle_result": {
+			"outcome": "transition",
+			"player_should_respawn": false
+		}
+	}
+
+	var tree = get_tree()
+	if tree == null:
+		return false
+	return tree.change_scene_to_file(scene_path) == OK
 
 
 func has_active_encounter() -> bool:

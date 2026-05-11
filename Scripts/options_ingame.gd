@@ -69,6 +69,7 @@ func _on_menu_pressed() -> void:
 	if tree == null:
 		return
 
+	_save_current_game_if_possible()
 	tree.paused = false
 	tree.change_scene_to_file(MENU_SCENE)
 
@@ -144,6 +145,10 @@ func _play_intro() -> void:
 
 
 func _stage_current_game_for_save() -> bool:
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null and tree.current_scene.has_method("save_current_game_from_pause"):
+		return bool(tree.current_scene.call("save_current_game_from_pause"))
+
 	var database_manager = _get_database_manager()
 	if database_manager == null or not database_manager.has_method("save_basic_game_state"):
 		return false
@@ -157,7 +162,6 @@ func _stage_current_game_for_save() -> bool:
 	var important_flags = _parse_flags(game_state.get("important_flags", {}))
 	var current_location = str(game_state.get("current_location", "aldea_principal"))
 
-	var tree = get_tree()
 	if tree != null and tree.current_scene != null:
 		var scene_path = tree.current_scene.scene_file_path
 		if not scene_path.is_empty():
@@ -165,13 +169,25 @@ func _stage_current_game_for_save() -> bool:
 			important_flags["current_scene_path"] = scene_path
 
 	var player = _find_player_node()
-	if player != null:
-		if player.has_method("save_inventory_layout"):
-			player.call("save_inventory_layout")
-		important_flags["player_position"] = {
-			"x": player.global_position.x,
-			"y": player.global_position.y
-		}
+	if player == null:
+		push_warning("No se pudo guardar la posicion: no se encontro el nodo player en la escena actual.")
+		return false
+
+	if player.has_method("save_inventory_layout"):
+		player.call("save_inventory_layout")
+	var position_to_save = player.global_position
+	if database_manager.has_method("cache_player_world_position"):
+		var scene_path_to_cache = str(important_flags.get("current_scene_path", ""))
+		database_manager.call("cache_player_world_position", scene_path_to_cache, position_to_save)
+
+	important_flags["player_position"] = {
+		"x": position_to_save.x,
+		"y": position_to_save.y
+	}
+	important_flags["autosave_position"] = important_flags["player_position"]
+
+	important_flags["game_started"] = true
+	important_flags["autosave_location"] = current_location
 
 	return bool(database_manager.call("save_basic_game_state", SAVE_SLOT_ID, {
 		"save_name": str(game_state.get("save_name", "Partida %d" % SAVE_SLOT_ID)),
@@ -181,6 +197,13 @@ func _stage_current_game_for_save() -> bool:
 		"important_flags": important_flags,
 		"playtime_seconds": int(game_state.get("playtime_seconds", 0))
 	}))
+
+
+func _save_current_game_if_possible() -> void:
+	var saved = _stage_current_game_for_save()
+	var database_manager = _get_database_manager()
+	if saved and database_manager != null and database_manager.has_method("commit_manual_save"):
+		database_manager.call("commit_manual_save", SAVE_SLOT_ID)
 
 
 func _refresh_player_after_save() -> void:

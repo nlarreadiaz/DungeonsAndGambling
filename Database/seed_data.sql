@@ -73,6 +73,6 @@ INSERT OR IGNORE INTO battle_logs (id, save_slot_id, turn_number, attacker_chara
     (1, 1, 1, 1, 3, 1, 26, 'Golpe critico sobre Goblin Jefe.');
 
 INSERT OR IGNORE INTO game_state (id, save_slot_id, gold, current_location, main_progress, important_flags, updated_at) VALUES
-    (1, 1, 235, 'aldea_principal', 2, '{"tutorial_done":1,"blacksmith_unlocked":1,"queen_seen":1}', CURRENT_TIMESTAMP),
+    (1, 1, 0, 'aldea_principal', 0, '{}', CURRENT_TIMESTAMP),
     (2, 2, 0, 'campamento', 0, '{}', CURRENT_TIMESTAMP),
     (3, 3, 0, 'aldea_principal', 0, '{}', CURRENT_TIMESTAMP);

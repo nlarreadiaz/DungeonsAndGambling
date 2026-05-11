@@ -7,9 +7,11 @@ const VILLAGE_NODE_PATH = NodePath("aldea")
 const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const HERRERIA_SCENE = "res://Scenes/world/herreria.tscn"
 const DUNGEON_AGUA_SCENE = "res://Scenes/dungeonAgua.tscn"
+const TAVERN_SCENE = "res://Scenes/world/tavern.tscn"
 const INTERACT_ACTION = "interact"
 const SAVE_SLOT_ID = 1
 const CASTILLO_AGUA_ENTRY_SHAPE_PATH = NodePath("aldea/CastilloAgua/entrar")
+const TAVERN_ENTRY_SHAPE_PATH = NodePath("tavern/entrar/entrar")
 const BATTLE_REENTRY_COOLDOWN_MSEC = 2000
 const DARK_QUEEN_GATE_ENCOUNTER_ID = "dark_queen_gate"
 const DUNGEON_QUEEN_SANCTUM_ENCOUNTER_ID = "dungeon_queen_sanctum"
@@ -74,6 +76,7 @@ var _player_node: Node2D = null
 var _player_visual: CanvasItem = null
 var _player_can_enter_herreria = false
 var _player_can_enter_dungeon_agua = false
+var _player_can_enter_tavern = false
 var _battle_reentry_cooldown_until_msec = 0
 var _muelle_boy_amazed_cooldown_until_msec = 0
 var _muelle_boy_amazed_retry_scheduled = false
@@ -81,11 +84,12 @@ var _muelle_boy_amazed_retry_scheduled = false
 
 func _ready() -> void:
 	var used_battle_return = _apply_battle_return_position()
-	if not used_battle_return:
+	if not used_battle_return and not _apply_transition_spawn_position():
 		_apply_saved_player_position()
 	_apply_defeated_encounter_state()
 	_configure_player_camera()
 	_setup_castillo_agua_entry_area()
+	_setup_tavern_entry_area()
 	_setup_village_buildings()
 
 
@@ -102,6 +106,13 @@ func _input(event: InputEvent) -> void:
 		if viewport != null:
 			viewport.set_input_as_handled()
 		_try_enter_dungeon_agua()
+		return
+
+	if _is_interact_event(event) and _player_can_enter_tavern:
+		var viewport = get_viewport()
+		if viewport != null:
+			viewport.set_input_as_handled()
+		_try_enter_tavern()
 		return
 
 	if not _is_pause_event(event):
@@ -262,6 +273,22 @@ func _try_enter_dungeon_agua() -> bool:
 	return tree.change_scene_to_file(DUNGEON_AGUA_SCENE) == OK
 
 
+func _try_enter_tavern() -> bool:
+	if not _player_can_enter_tavern or is_instance_valid(options_ingame):
+		return false
+
+	var player = get_node_or_null(PLAYER_NODE_PATH)
+	if player != null and player.has_method("is_inventory_open") and bool(player.call("is_inventory_open")):
+		return false
+
+	var tree = get_tree()
+	if tree == null:
+		return false
+
+	_persist_player_inventory_state()
+	return tree.change_scene_to_file(TAVERN_SCENE) == OK
+
+
 func _is_player_body(body: Node2D) -> bool:
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	return body != null and player != null and body == player
@@ -298,6 +325,39 @@ func _on_castillo_agua_entry_area_body_entered(body: Node2D) -> void:
 func _on_castillo_agua_entry_area_body_exited(body: Node2D) -> void:
 	if _is_player_body(body):
 		_player_can_enter_dungeon_agua = false
+
+
+func _setup_tavern_entry_area() -> void:
+	var entry_shape = get_node_or_null(TAVERN_ENTRY_SHAPE_PATH) as CollisionShape2D
+	if entry_shape == null or entry_shape.shape == null:
+		push_warning("No se encontro la CollisionShape2D entrar de la taberna.")
+		return
+
+	var entry_area = Area2D.new()
+	entry_area.name = "TavernEntryArea"
+	entry_area.collision_layer = 0
+	entry_area.monitorable = false
+	entry_area.monitoring = true
+	add_child(entry_area)
+	entry_area.global_transform = entry_shape.global_transform
+
+	var area_shape = CollisionShape2D.new()
+	area_shape.name = "CollisionShape2D"
+	area_shape.shape = entry_shape.shape
+	entry_area.add_child(area_shape)
+
+	entry_area.body_entered.connect(_on_tavern_entry_area_body_entered)
+	entry_area.body_exited.connect(_on_tavern_entry_area_body_exited)
+
+
+func _on_tavern_entry_area_body_entered(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_enter_tavern = true
+
+
+func _on_tavern_entry_area_body_exited(body: Node2D) -> void:
+	if _is_player_body(body):
+		_player_can_enter_tavern = false
 
 
 func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: String, battle_subtitle: String, status_message: String, _return_offset: Vector2, experience_reward: int, gold_reward: int, enemies: Array = [], battle_background_path: String = "") -> void:
@@ -472,6 +532,28 @@ func _persist_player_inventory_state() -> void:
 		player.call("save_inventory_layout")
 
 
+func save_current_game_from_pause() -> bool:
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if player == null or database_manager == null or not database_manager.has_method("save_player_world_position"):
+		return false
+
+	_persist_player_inventory_state()
+	return bool(database_manager.call(
+		"save_player_world_position",
+		SAVE_SLOT_ID,
+		_get_current_scene_path("res://Scenes/world/aldea_principal.tscn"),
+		player.global_position
+	))
+
+
+func _get_current_scene_path(fallback_scene_path: String) -> String:
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null and not tree.current_scene.scene_file_path.is_empty():
+		return tree.current_scene.scene_file_path
+	return fallback_scene_path
+
+
 func _apply_battle_return_position() -> bool:
 	var battle_manager = get_node_or_null(BATTLE_MANAGER_ROOT_PATH)
 	if battle_manager == null:
@@ -491,8 +573,14 @@ func _apply_battle_return_position() -> bool:
 
 	var battle_result = return_data.get("battle_result", {})
 	if battle_result is Dictionary and bool(battle_result.get("player_should_respawn", false)):
-		if player.has_method("morir"):
-			player.call_deferred("morir")
+		if bool(battle_result.get("restore_full_health", false)):
+			if return_data.has("player_position") and return_data["player_position"] is Vector2:
+				_set_player_saved_position(player, return_data["player_position"])
+			_restore_active_party_to_full_health()
+			_save_respawn_state(player.global_position)
+		elif not _restore_player_from_autosave(player):
+			if player.has_method("morir"):
+				player.call_deferred("morir")
 		return true
 
 	if battle_result is Dictionary and str(battle_result.get("outcome", "")) == "victory":
@@ -505,8 +593,105 @@ func _apply_battle_return_position() -> bool:
 			_muelle_boy_amazed_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
 
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
-		player.global_position = return_data["player_position"]
+		_set_player_saved_position(player, return_data["player_position"])
 	return true
+
+
+func _restore_active_party_to_full_health() -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null:
+		return
+	if database_manager.has_method("discard_pending_changes"):
+		database_manager.call("discard_pending_changes", SAVE_SLOT_ID)
+	if database_manager.has_method("restore_active_party_to_full"):
+		database_manager.call("restore_active_party_to_full", SAVE_SLOT_ID)
+
+
+func _save_respawn_state(player_position: Vector2) -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("save_basic_game_state"):
+		return
+
+	var game_state = {}
+	if database_manager.has_method("get_game_state"):
+		game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		game_state = {}
+
+	var important_flags = game_state.get("important_flags", {})
+	if important_flags is String:
+		important_flags = JSON.parse_string(important_flags)
+	if important_flags == null or important_flags is not Dictionary:
+		important_flags = {}
+
+	var saved_position = {
+		"x": player_position.x,
+		"y": player_position.y
+	}
+	important_flags["game_started"] = true
+	important_flags["player_position"] = saved_position
+	important_flags["autosave_position"] = saved_position
+	important_flags["autosave_location"] = "aldea_principal"
+
+	database_manager.call("save_basic_game_state", SAVE_SLOT_ID, {
+		"save_name": str(game_state.get("save_name", "Partida %d" % SAVE_SLOT_ID)),
+		"current_location": "aldea_principal",
+		"gold": int(game_state.get("gold", 0)),
+		"main_progress": int(game_state.get("main_progress", 0)),
+		"important_flags": important_flags,
+		"playtime_seconds": int(game_state.get("playtime_seconds", 0))
+	})
+	if database_manager.has_method("commit_manual_save"):
+		database_manager.call("commit_manual_save", SAVE_SLOT_ID)
+
+
+func _restore_player_from_autosave(player: Node2D) -> bool:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null:
+		return false
+	if database_manager.has_method("discard_pending_changes"):
+		database_manager.call("discard_pending_changes", SAVE_SLOT_ID)
+	if not database_manager.has_method("get_game_state"):
+		return false
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		return false
+
+	var saved_location = str(game_state.get("current_location", "aldea_principal"))
+	if saved_location not in ["aldea_principal", "aldea"]:
+		var scene_path = _get_scene_path_for_saved_location(saved_location)
+		if not scene_path.is_empty():
+			get_tree().call_deferred("change_scene_to_file", scene_path)
+			return true
+		return false
+
+	var important_flags = game_state.get("important_flags", {})
+	if important_flags is String:
+		important_flags = JSON.parse_string(important_flags)
+	if important_flags == null or important_flags is not Dictionary:
+		return false
+
+	var player_position = important_flags.get("player_position", important_flags.get("autosave_position", {}))
+	if player_position is not Dictionary:
+		return false
+
+	var saved_position = Vector2(
+		float(player_position.get("x", player.global_position.x)),
+		float(player_position.get("y", player.global_position.y))
+	)
+	_set_player_saved_position(player, saved_position)
+	return true
+
+
+func _get_scene_path_for_saved_location(location_name: String) -> String:
+	if location_name.begins_with("res://"):
+		return location_name
+	match location_name:
+		"dungeonAgua", "dungeon_agua":
+			return DUNGEON_AGUA_SCENE
+		_:
+			return ""
 
 
 func _apply_saved_player_position() -> void:
@@ -524,7 +709,7 @@ func _apply_saved_player_position() -> void:
 	if important_flags == null or important_flags is not Dictionary:
 		return
 
-	var player_position = important_flags.get("player_position", {})
+	var player_position = important_flags.get("player_position", important_flags.get("autosave_position", {}))
 	if player_position is not Dictionary:
 		return
 
@@ -532,10 +717,45 @@ func _apply_saved_player_position() -> void:
 	if player == null:
 		return
 
-	player.global_position = Vector2(
+	var saved_position = Vector2(
 		float(player_position.get("x", player.global_position.x)),
 		float(player_position.get("y", player.global_position.y))
 	)
+	_set_player_saved_position(player, saved_position)
+
+
+func _apply_transition_spawn_position() -> bool:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null or not database_manager.has_method("consume_next_scene_spawn"):
+		return false
+
+	var tree = get_tree()
+	if tree == null or tree.current_scene == null:
+		return false
+
+	var spawn_data = database_manager.call("consume_next_scene_spawn", tree.current_scene.scene_file_path)
+	if spawn_data is not Dictionary or spawn_data.is_empty():
+		return false
+
+	var saved_position = spawn_data.get("position", null)
+	if saved_position is not Vector2:
+		return false
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if player == null:
+		return false
+
+	_set_player_saved_position(player, saved_position)
+	return true
+
+
+func _set_player_saved_position(player: Node2D, saved_position: Vector2) -> void:
+	player.global_position = saved_position
+	if player.has_method("set_spawn_position"):
+		player.call("set_spawn_position", saved_position)
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager != null and database_manager.has_method("cache_player_world_position"):
+		database_manager.call("cache_player_world_position", "res://Scenes/world/aldea_principal.tscn", saved_position)
 
 
 func _is_muelle_boy_amazed_battle_on_cooldown() -> bool:

@@ -2,6 +2,8 @@ extends Node2D
 
 const PLAYER_NODE_PATH = NodePath("player")
 const ALDEA_SCENE = "res://Scenes/world/aldea_principal.tscn"
+const ALDEA_SMITH_DOOR_POSITION = Vector2(354, 122)
+const BATTLE_MANAGER_ROOT_PATH = NodePath("/root/BattleManager")
 const INTERACT_ACTION = "interact"
 const SAVE_SLOT_ID = 1
 const SHOP_LAYER_PATH = NodePath("ShopLayer")
@@ -74,6 +76,7 @@ var _shop_item_cards: Array = []
 
 
 func _ready() -> void:
+	_apply_saved_player_position()
 	_bind_shop_nodes()
 	_connect_shop_signals()
 	if _shop_layer != null:
@@ -140,6 +143,9 @@ func _try_exit_herreria() -> bool:
 		return false
 
 	_persist_player_inventory_state()
+	var battle_manager = get_node_or_null(BATTLE_MANAGER_ROOT_PATH)
+	if battle_manager != null and battle_manager.has_method("return_to_scene"):
+		return bool(battle_manager.call("return_to_scene", ALDEA_SCENE, ALDEA_SMITH_DOOR_POSITION, "herreria_exit"))
 	return tree.change_scene_to_file(ALDEA_SCENE) == OK
 
 
@@ -398,6 +404,72 @@ func _persist_player_inventory_state() -> void:
 	var player = get_node_or_null(PLAYER_NODE_PATH)
 	if player != null and player.has_method("save_inventory_layout"):
 		player.call("save_inventory_layout")
+
+
+func save_current_game_from_pause() -> bool:
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	var database_manager = _get_database_manager()
+	if player == null or database_manager == null or not database_manager.has_method("save_player_world_position"):
+		return false
+
+	_persist_player_inventory_state()
+	return bool(database_manager.call(
+		"save_player_world_position",
+		SAVE_SLOT_ID,
+		_get_current_scene_path("res://Scenes/world/herreria.tscn"),
+		player.global_position
+	))
+
+
+func _get_current_scene_path(fallback_scene_path: String) -> String:
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null and not tree.current_scene.scene_file_path.is_empty():
+		return tree.current_scene.scene_file_path
+	return fallback_scene_path
+
+
+func _apply_saved_player_position() -> void:
+	var database_manager = _get_database_manager()
+	if database_manager == null or not database_manager.has_method("get_game_state"):
+		return
+
+	var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		return
+
+	var important_flags = _parse_flags(game_state.get("important_flags", {}))
+	var saved_scene_path = str(important_flags.get("current_scene_path", ""))
+	var saved_location = str(game_state.get("current_location", ""))
+	if saved_scene_path != "res://Scenes/world/herreria.tscn" and saved_location != "herreria":
+		return
+
+	var player_position = important_flags.get("player_position", important_flags.get("autosave_position", {}))
+	if player_position is not Dictionary:
+		return
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if player == null:
+		return
+
+	var saved_position = Vector2(
+		float(player_position.get("x", player.global_position.x)),
+		float(player_position.get("y", player.global_position.y))
+	)
+	player.global_position = saved_position
+	if player.has_method("set_spawn_position"):
+		player.call("set_spawn_position", saved_position)
+	if database_manager.has_method("cache_player_world_position"):
+		database_manager.call("cache_player_world_position", "res://Scenes/world/herreria.tscn", saved_position)
+
+
+func _parse_flags(raw_flags: Variant) -> Dictionary:
+	if raw_flags is Dictionary:
+		return raw_flags.duplicate(true)
+	if raw_flags is String:
+		var parsed = JSON.parse_string(raw_flags)
+		if parsed is Dictionary:
+			return parsed.duplicate(true)
+	return {}
 
 
 func _is_shop_open() -> bool:

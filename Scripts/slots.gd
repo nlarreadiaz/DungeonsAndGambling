@@ -1,5 +1,7 @@
 extends Node2D
 
+signal closed
+
 const SLOT_SHEET: Texture2D = preload("res://assets/slots/slots.png")
 const SLOT_MASK_SHEET: Texture2D = preload("res://assets/slots/slotcarcasa.png")
 const GEM_TEXTURES: Array[Texture2D] = [
@@ -19,6 +21,32 @@ const REEL_BASE_POSITIONS := [
 const SPIN_STEP_SECONDS := 0.05
 const SPIN_DURATION_SECONDS := 1.1
 const REEL_STOP_DELAY_SECONDS := 0.13
+const SAVE_SLOT_ID = 1
+const BET_STEP = 10
+const MIN_BET = 10
+const GEM_PURPLE = 0
+const GEM_YELLOW = 1
+const GEM_BLUE = 2
+const GEM_WEIGHTS := [
+	{"gem": GEM_BLUE, "weight": 60},
+	{"gem": GEM_PURPLE, "weight": 30},
+	{"gem": GEM_YELLOW, "weight": 10}
+]
+const GEM_NAMES := {
+	GEM_BLUE: "azules",
+	GEM_PURPLE: "moradas",
+	GEM_YELLOW: "amarillas"
+}
+const PAIR_MULTIPLIERS := {
+	GEM_BLUE: 1.5,
+	GEM_PURPLE: 2.0,
+	GEM_YELLOW: 3.0
+}
+const TRIPLE_MULTIPLIERS := {
+	GEM_BLUE: 5.0,
+	GEM_PURPLE: 20.0,
+	GEM_YELLOW: 40.0
+}
 
 @onready var _slot_machine: AnimatedSprite2D = $SlotMachine
 @onready var _slot_mask: Sprite2D = $SlotMachine/SlotMask
@@ -32,6 +60,11 @@ var _rng := RandomNumberGenerator.new()
 var _spinning := false
 var _reels: Array[Sprite2D] = []
 var _reel_base_positions: Array[Vector2] = []
+var _bet := MIN_BET
+var _gold := 0
+var _gold_label: Label = null
+var _bet_label: Label = null
+var _spin_button: Button = null
 
 
 func _ready() -> void:
@@ -40,9 +73,17 @@ func _ready() -> void:
 	_setup_machine_frames()
 	_setup_slot_mask()
 	_setup_reels()
+	_setup_betting_ui()
+	_refresh_gold()
 	if _lever_hitbox != null:
 		_lever_hitbox.input_event.connect(_on_lever_input_event)
-	_result_label.text = "Tira de la palanca"
+	_result_label.text = "Elige apuesta"
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		closed.emit()
 
 
 func _setup_machine_frames() -> void:
@@ -106,34 +147,132 @@ func _on_lever_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) 
 	if _spinning:
 		return
 
+	_try_spin()
+
+
+func _setup_betting_ui() -> void:
+	if _result_label != null:
+		_result_label.position = Vector2(137, 176)
+		_result_label.size = Vector2(206, 25)
+
+	var root = Control.new()
+	root.name = "BettingUI"
+	root.position = Vector2.ZERO
+	root.size = Vector2(480, 270)
+	root.z_index = 100
+	add_child(root)
+
+	var panel = PanelContainer.new()
+	panel.name = "Panel"
+	panel.position = Vector2(118, 204)
+	panel.size = Vector2(244, 56)
+	panel.custom_minimum_size = Vector2(244, 56)
+	root.add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 8)
+	margin.add_theme_constant_override("margin_top", 5)
+	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_bottom", 5)
+	panel.add_child(margin)
+
+	var layout = VBoxContainer.new()
+	layout.add_theme_constant_override("separation", 3)
+	margin.add_child(layout)
+
+	_gold_label = Label.new()
+	_gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_gold_label.add_theme_font_size_override("font_size", 8)
+	layout.add_child(_gold_label)
+
+	var row = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 5)
+	layout.add_child(row)
+
+	var minus_button = Button.new()
+	minus_button.text = "-"
+	minus_button.custom_minimum_size = Vector2(24, 20)
+	minus_button.pressed.connect(_decrease_bet)
+	row.add_child(minus_button)
+
+	_bet_label = Label.new()
+	_bet_label.custom_minimum_size = Vector2(72, 20)
+	_bet_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_bet_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_bet_label.add_theme_font_size_override("font_size", 8)
+	row.add_child(_bet_label)
+
+	var plus_button = Button.new()
+	plus_button.text = "+"
+	plus_button.custom_minimum_size = Vector2(24, 20)
+	plus_button.pressed.connect(_increase_bet)
+	row.add_child(plus_button)
+
+	_spin_button = Button.new()
+	_spin_button.text = "Tirar"
+	_spin_button.custom_minimum_size = Vector2(58, 20)
+	_spin_button.pressed.connect(_try_spin)
+	row.add_child(_spin_button)
+
+	var close_button = Button.new()
+	close_button.text = "X"
+	close_button.custom_minimum_size = Vector2(24, 20)
+	close_button.pressed.connect(func(): closed.emit())
+	row.add_child(close_button)
+
+	_update_bet_ui()
+
+
+func _decrease_bet() -> void:
+	_bet = max(_bet - BET_STEP, MIN_BET)
+	_update_bet_ui()
+
+
+func _increase_bet() -> void:
+	var max_bet = max(_gold, MIN_BET)
+	_bet = min(_bet + BET_STEP, max_bet)
+	_update_bet_ui()
+
+
+func _try_spin() -> void:
+	if _spinning:
+		return
+	if _gold < _bet:
+		_result_label.text = "No tienes oro suficiente"
+		return
 	_pull_lever()
 
 
 func _pull_lever() -> void:
 	_spinning = true
+	_set_controls_enabled(false)
+	_change_gold(-_bet)
 	_result_label.text = "Girando..."
 	_slot_machine.play(&"pull")
-	await _spin_reels()
+	var final_indices = await _spin_reels()
 	_slot_machine.stop()
 	_slot_machine.animation = &"idle"
 	_slot_machine.frame = 0
+	_resolve_spin(final_indices)
 	_spinning = false
+	_set_controls_enabled(true)
 
 
-func _spin_reels() -> void:
+func _spin_reels() -> Array[int]:
 	var elapsed := 0.0
 	while elapsed < SPIN_DURATION_SECONDS:
 		for reel_index in range(_reels.size()):
 			var reel = _reels[reel_index]
 			var base_position = _reel_base_positions[reel_index]
-			_set_reel_gem(reel, _rng.randi_range(0, GEM_TEXTURES.size() - 1))
+			_set_reel_gem(reel, _get_weighted_gem_index())
 			reel.position.y = base_position.y + sin((elapsed * 28.0) + (reel_index * 1.7)) * 2.0
 		await get_tree().create_timer(SPIN_STEP_SECONDS).timeout
 		elapsed += SPIN_STEP_SECONDS
 
 	var final_indices: Array[int] = []
 	for _index in range(_reels.size()):
-		final_indices.append(_rng.randi_range(0, GEM_TEXTURES.size() - 1))
+		final_indices.append(_get_weighted_gem_index())
 
 	for reel_index in range(_reels.size()):
 		await get_tree().create_timer(REEL_STOP_DELAY_SECONDS).timeout
@@ -143,7 +282,7 @@ func _spin_reels() -> void:
 		reel.position = base_position
 		await _pop_reel(reel)
 
-	_show_spin_result(final_indices)
+	return final_indices
 
 
 func _pop_reel(reel: Sprite2D) -> void:
@@ -161,7 +300,7 @@ func _set_reel_gem(reel: Sprite2D, gem_index: int) -> void:
 	reel.centered = true
 
 
-func _show_spin_result(final_indices: Array[int]) -> void:
+func _resolve_spin(final_indices: Array[int]) -> void:
 	if final_indices.size() < 3:
 		_result_label.text = "Error en tirada"
 		return
@@ -170,9 +309,68 @@ func _show_spin_result(final_indices: Array[int]) -> void:
 	var second = final_indices[1]
 	var third = final_indices[2]
 
+	var payout = 0
+	var matched_gem = -1
+	var match_count = 0
 	if first == second and second == third:
-		_result_label.text = "JACKPOT! 3 gemas iguales"
-	elif first == second or second == third or first == third:
-		_result_label.text = "Premio menor: pareja de gemas"
+		matched_gem = first
+		match_count = 3
+		payout = int(round(float(_bet) * float(TRIPLE_MULTIPLIERS.get(matched_gem, 0.0))))
+	elif first == second or first == third:
+		matched_gem = first
+		match_count = 2
+		payout = int(round(float(_bet) * float(PAIR_MULTIPLIERS.get(matched_gem, 0.0))))
+	elif second == third:
+		matched_gem = second
+		match_count = 2
+		payout = int(round(float(_bet) * float(PAIR_MULTIPLIERS.get(matched_gem, 0.0))))
+
+	if payout > 0:
+		_change_gold(payout)
+		_result_label.text = "%d %s: +%d oro" % [match_count, str(GEM_NAMES.get(matched_gem, "gemas")), payout]
 	else:
-		_result_label.text = "Sin premio, prueba otra vez"
+		_result_label.text = "Sin premio: -%d oro" % _bet
+
+
+func _get_weighted_gem_index() -> int:
+	var roll = _rng.randi_range(1, 100)
+	var accumulated = 0
+	for entry in GEM_WEIGHTS:
+		accumulated += int(entry.get("weight", 0))
+		if roll <= accumulated:
+			return int(entry.get("gem", GEM_BLUE))
+	return GEM_BLUE
+
+
+func _refresh_gold() -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager != null and database_manager.has_method("get_game_state"):
+		var game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+		if game_state is Dictionary:
+			_gold = int(game_state.get("gold", 0))
+	_update_bet_ui()
+
+
+func _change_gold(amount: int) -> void:
+	var database_manager = get_node_or_null("/root/GameDatabase")
+	if database_manager == null:
+		_gold = max(_gold + amount, 0)
+		_update_bet_ui()
+		return
+	if database_manager.has_method("add_gold"):
+		database_manager.call("add_gold", SAVE_SLOT_ID, amount)
+	if database_manager.has_method("commit_manual_save"):
+		database_manager.call("commit_manual_save", SAVE_SLOT_ID)
+	_refresh_gold()
+
+
+func _update_bet_ui() -> void:
+	if _gold_label != null:
+		_gold_label.text = "Oro: %d" % _gold
+	if _bet_label != null:
+		_bet_label.text = "Apuesta: %d" % _bet
+
+
+func _set_controls_enabled(enabled: bool) -> void:
+	if _spin_button != null:
+		_spin_button.disabled = not enabled

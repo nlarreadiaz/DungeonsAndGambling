@@ -9,6 +9,9 @@ const RESULT_SCRIPT = preload("res://Scripts/battle/battle_result.gd")
 const DisplaySettings = preload("res://Scripts/display_settings.gd")
 const ENEMY_THINK_DELAY = 0.55
 const ACTION_READ_DELAY = 1.45
+const ALDEA_PRINCIPAL_SCENE = "res://Scenes/world/aldea_principal.tscn"
+const DUNGEON_AGUA_SCENE_BASENAME = "dungeonAgua"
+const ALDEA_FOUNTAIN_RESPAWN_POSITION = Vector2(405, 232)
 
 @onready var battle_ui = $BattleUI
 
@@ -551,15 +554,42 @@ func _apply_battle_persistence(result: Dictionary) -> void:
 			defeated_encounters[encounter_id] = true
 			important_flags["defeated_encounters"] = defeated_encounters
 
-	if str(result.get("outcome", "")) == "defeat":
-		result["return_player_position"] = null
-
 	important_flags["last_battle_outcome"] = str(result.get("outcome", ""))
 	important_flags["last_battle_encounter"] = str(_context.encounter_id)
 	var world_scene_path = str(_encounter_data.get("world_scene_path", ""))
 	var location_name = "aldea_principal"
 	if not world_scene_path.is_empty():
 		location_name = world_scene_path.get_file().get_basename()
+
+	if str(result.get("outcome", "")) == "defeat":
+		if location_name == DUNGEON_AGUA_SCENE_BASENAME:
+			result["return_scene_path"] = ALDEA_PRINCIPAL_SCENE
+			result["return_player_position"] = ALDEA_FOUNTAIN_RESPAWN_POSITION
+			result["restore_full_health"] = true
+		else:
+			result["return_player_position"] = null
+		if database_manager.has_method("discard_pending_changes"):
+			database_manager.call("discard_pending_changes", save_slot_id)
+		return
+
+	if str(result.get("outcome", "")) == "victory":
+		important_flags["game_started"] = true
+		important_flags["autosave_location"] = location_name
+		important_flags["autosave_scene_path"] = world_scene_path
+		var return_position = result.get("return_player_position", _encounter_data.get("return_player_position", null))
+		if database_manager.has_method("get_cached_player_world_position"):
+			var cached_position_data = database_manager.call("get_cached_player_world_position")
+			if cached_position_data is Dictionary and cached_position_data.get("position", null) is Vector2:
+				var cached_scene_path = str(cached_position_data.get("scene_path", ""))
+				if cached_scene_path.is_empty() or cached_scene_path == world_scene_path:
+					return_position = cached_position_data["position"]
+		if return_position is Vector2:
+			var saved_position = {
+				"x": return_position.x,
+				"y": return_position.y
+			}
+			important_flags["player_position"] = saved_position
+			important_flags["autosave_position"] = saved_position
 
 	if database_manager.has_method("save_basic_game_state"):
 		database_manager.call("save_basic_game_state", save_slot_id, {

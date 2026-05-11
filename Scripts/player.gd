@@ -9,6 +9,8 @@ const INVENTORY_UI_SCENE: PackedScene = preload("res://Scenes/ui/inventory_ui.ts
 const INVENTORY_TOGGLE_ACTION = "inventory_toggle"
 const INVENTORY_SLOT_COUNT = 34
 const SAVE_SLOT_ID = 1
+const POSITION_SAVE_INTERVAL = 0.75
+const POSITION_SAVE_MIN_DISTANCE = 1.0
 
 const ANIM_IDLE = "idle"
 const ANIM_WALK = "walk"
@@ -64,6 +66,8 @@ var is_dead = false
 var is_hurt = false
 var is_running = false
 var spawn_position = Vector2.ZERO
+var _position_save_elapsed = 0.0
+var _last_persisted_world_position = Vector2.INF
 var _base_anim_offset_x = 0.0
 var _active_role_id = "guerrero"
 var _role_sprites: Dictionary = {}
@@ -117,6 +121,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	handle_movement(delta)
+	_cache_world_position(delta)
 	handle_jump(delta)
 	handle_attack()
 	update_animations()
@@ -427,9 +432,88 @@ func _on_inventory_slots_moved(_from_index: int, _to_index: int) -> void:
 func _commit_inventory_autosave(database_manager: Node) -> bool:
 	if database_manager == null:
 		return false
+	_stage_current_position_for_save(database_manager)
 	if not database_manager.has_method("commit_manual_save"):
 		return true
 	return bool(database_manager.call("commit_manual_save", SAVE_SLOT_ID))
+
+
+func _cache_world_position(delta: float = 0.0) -> void:
+	var database_manager = _get_database_manager()
+	if database_manager == null:
+		return
+
+	var scene_path = ""
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null:
+		scene_path = tree.current_scene.scene_file_path
+	if database_manager.has_method("cache_player_world_position"):
+		database_manager.call("cache_player_world_position", scene_path, global_position)
+
+	_position_save_elapsed += delta
+	if _position_save_elapsed < POSITION_SAVE_INTERVAL:
+		return
+	if _last_persisted_world_position != Vector2.INF and global_position.distance_to(_last_persisted_world_position) < POSITION_SAVE_MIN_DISTANCE:
+		_position_save_elapsed = 0.0
+		return
+
+	_position_save_elapsed = 0.0
+	_last_persisted_world_position = global_position
+	if database_manager.has_method("save_player_world_position"):
+		database_manager.call("save_player_world_position", SAVE_SLOT_ID, scene_path, global_position)
+
+
+func _stage_current_position_for_save(database_manager: Node) -> void:
+	if not database_manager.has_method("save_basic_game_state"):
+		return
+
+	var game_state = {}
+	if database_manager.has_method("get_game_state"):
+		game_state = database_manager.call("get_game_state", SAVE_SLOT_ID)
+	if game_state is not Dictionary:
+		game_state = {}
+
+	var important_flags = _parse_save_flags(game_state.get("important_flags", {}))
+	var current_location = str(game_state.get("current_location", "aldea_principal"))
+	var position_to_save = global_position
+	var tree = get_tree()
+	if tree != null and tree.current_scene != null:
+		var scene_path = tree.current_scene.scene_file_path
+		if not scene_path.is_empty():
+			current_location = scene_path.get_file().get_basename()
+			important_flags["current_scene_path"] = scene_path
+
+	if database_manager.has_method("cache_player_world_position"):
+		var scene_path_to_cache = str(important_flags.get("current_scene_path", ""))
+		database_manager.call("cache_player_world_position", scene_path_to_cache, position_to_save)
+
+	var saved_position = {
+		"x": position_to_save.x,
+		"y": position_to_save.y
+	}
+	important_flags["game_started"] = true
+	important_flags["player_position"] = saved_position
+	important_flags["autosave_position"] = saved_position
+	important_flags["autosave_location"] = current_location
+
+	database_manager.call("save_basic_game_state", SAVE_SLOT_ID, {
+		"save_name": str(game_state.get("save_name", "Partida %d" % SAVE_SLOT_ID)),
+		"current_location": current_location,
+		"gold": int(game_state.get("gold", 0)),
+		"main_progress": int(game_state.get("main_progress", 0)),
+		"important_flags": important_flags,
+		"playtime_seconds": int(game_state.get("playtime_seconds", 0))
+	})
+
+
+func _parse_save_flags(raw_flags: Variant) -> Dictionary:
+	if raw_flags is Dictionary:
+		return raw_flags.duplicate(true)
+	if raw_flags is String:
+		var parsed = JSON.parse_string(raw_flags)
+		if parsed is Dictionary:
+			return parsed.duplicate(true)
+	return {}
 
 
 func _build_item_data_from_database_row(row: Dictionary) -> ItemData:

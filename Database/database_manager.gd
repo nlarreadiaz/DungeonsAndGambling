@@ -6,7 +6,7 @@ const TEMPLATE_DATABASE_PATH = "res://Database/game_database.db"
 const RUNTIME_DIRECTORY_PATH = "user://Database"
 const RUNTIME_DATABASE_PATH = "user://Database/game_database.db"
 const FALLBACK_STATE_PATH = "user://Database/fallback_game_state.json"
-const STARTING_GOLD = 235
+const STARTING_GOLD = 0
 const SCHEMA_PATH = "res://Database/schema.sql"
 const SEED_PATH = "res://Database/seed_data.sql"
 const QUERIES_SCRIPT = preload("res://Database/queries.gd")
@@ -24,6 +24,9 @@ var _fallback_state_loaded = false
 var _pending_game_states: Dictionary = {}
 var _pending_character_rows: Dictionary = {}
 var _pending_inventories: Dictionary = {}
+var _cached_player_scene_path = ""
+var _cached_player_position: Variant = null
+var _next_scene_spawn: Dictionary = {}
 var _next_pending_inventory_id = -1
 var _next_fallback_inventory_id = 1
 var _next_fallback_item_id = 1000
@@ -350,6 +353,91 @@ func commit_manual_save(save_slot_id: int = 1, state_data: Dictionary = {}) -> b
 	return true
 
 
+func discard_pending_changes(save_slot_id: int = 1) -> void:
+	_clear_pending_for_slot(save_slot_id)
+
+
+func reset_game(save_slot_id: int = 1) -> bool:
+	close_connection()
+	_initialized = false
+	_selected_player_role_data.clear()
+	_clear_pending_for_slot(save_slot_id)
+	_fallback_game_states.clear()
+	_fallback_inventories.clear()
+	_fallback_items.clear()
+	_fallback_state_loaded = false
+	_next_pending_inventory_id = -1
+	_next_fallback_inventory_id = 1
+	_next_fallback_item_id = 1000
+	_sqlite_unavailable = false
+
+	var runtime_database_path = ProjectSettings.globalize_path(RUNTIME_DATABASE_PATH)
+	if FileAccess.file_exists(RUNTIME_DATABASE_PATH):
+		DirAccess.remove_absolute(runtime_database_path)
+
+	var fallback_state_path = ProjectSettings.globalize_path(FALLBACK_STATE_PATH)
+	if FileAccess.file_exists(FALLBACK_STATE_PATH):
+		DirAccess.remove_absolute(fallback_state_path)
+
+	if not has_sqlite_support():
+		_sqlite_unavailable = true
+		return _save_fallback_game_state(save_slot_id, _build_default_fallback_game_state(save_slot_id))
+
+	if not initialize_database(true):
+		return false
+
+	if not _clear_save_slot_for_new_game(save_slot_id):
+		return false
+
+	return commit_manual_save(save_slot_id, _build_default_fallback_game_state(save_slot_id))
+
+
+func restore_active_party_to_full(save_slot_id: int = 1) -> bool:
+	var rows = get_characters(save_slot_id)
+	if rows is not Array:
+		return false
+
+	var changed = false
+	for row in rows:
+		if row is not Dictionary:
+			continue
+		if str(row.get("character_type", "")) != "player":
+			continue
+		if int(row.get("is_active", 1)) != 1:
+			continue
+
+		var character_id = int(row.get("id", 0))
+		if character_id <= 0:
+			continue
+		if update_character_battle_state(
+			character_id,
+			int(row.get("max_hp", row.get("current_hp", 1))),
+			int(row.get("max_mana", row.get("current_mana", 0))),
+			"normal",
+			save_slot_id
+		):
+			changed = true
+
+	if not changed:
+		return false
+	return commit_manual_save(save_slot_id)
+
+
+func _clear_save_slot_for_new_game(save_slot_id: int) -> bool:
+	if not _ensure_ready():
+		return true
+
+	var ok = true
+	ok = _queries.execute("DELETE FROM inventory WHERE save_slot_id = ?;", [save_slot_id]) and ok
+	ok = _queries.execute("DELETE FROM equipment WHERE save_slot_id = ?;", [save_slot_id]) and ok
+	ok = _queries.execute("DELETE FROM battle_logs WHERE save_slot_id = ?;", [save_slot_id]) and ok
+	ok = _queries.execute(
+		"UPDATE characters SET current_hp = max_hp, current_mana = max_mana, current_state = 'normal' WHERE save_slot_id = ? AND character_type = 'player';",
+		[save_slot_id]
+	) and ok
+	return ok
+
+
 func has_pending_manual_save(save_slot_id: int = 1) -> bool:
 	return (
 		_pending_game_states.has(str(save_slot_id))
@@ -370,6 +458,72 @@ func get_runtime_database_path() -> String:
 
 func get_template_database_path() -> String:
 	return TEMPLATE_DATABASE_PATH
+
+
+func cache_player_world_position(scene_path: String, player_position: Vector2) -> void:
+	_cached_player_scene_path = scene_path
+	_cached_player_position = player_position
+
+
+func get_cached_player_world_position() -> Dictionary:
+	if _cached_player_position is not Vector2:
+		return {}
+	return {
+		"scene_path": _cached_player_scene_path,
+		"position": _cached_player_position
+	}
+
+
+func set_next_scene_spawn(scene_path: String, player_position: Vector2) -> void:
+	_next_scene_spawn = {
+		"scene_path": scene_path,
+		"position": player_position
+	}
+
+
+func consume_next_scene_spawn(scene_path: String) -> Dictionary:
+	if _next_scene_spawn.is_empty():
+		return {}
+	if str(_next_scene_spawn.get("scene_path", "")) != scene_path:
+		return {}
+	var spawn_data = _next_scene_spawn.duplicate(true)
+	_next_scene_spawn.clear()
+	return spawn_data
+
+
+func save_player_world_position(save_slot_id: int, scene_path: String, player_position: Vector2) -> bool:
+	cache_player_world_position(scene_path, player_position)
+
+	var game_state = get_game_state(save_slot_id)
+	if game_state is not Dictionary:
+		game_state = {}
+
+	var important_flags = _normalize_flags_value(game_state.get("important_flags", {}))
+	var current_location = str(game_state.get("current_location", "aldea_principal"))
+	if not scene_path.is_empty():
+		current_location = scene_path.get_file().get_basename()
+		important_flags["current_scene_path"] = scene_path
+
+	var saved_position = {
+		"x": player_position.x,
+		"y": player_position.y
+	}
+	important_flags["game_started"] = true
+	important_flags["player_position"] = saved_position
+	important_flags["autosave_position"] = saved_position
+	important_flags["autosave_location"] = current_location
+
+	if not save_basic_game_state(save_slot_id, {
+		"save_name": str(game_state.get("save_name", "Partida %d" % save_slot_id)),
+		"current_location": current_location,
+		"gold": int(game_state.get("gold", STARTING_GOLD)),
+		"main_progress": int(game_state.get("main_progress", 0)),
+		"important_flags": important_flags,
+		"playtime_seconds": int(game_state.get("playtime_seconds", 0))
+	}):
+		return false
+
+	return commit_manual_save(save_slot_id)
 
 
 func _stage_basic_game_state(save_slot_id: int, state_data: Dictionary) -> bool:
