@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://b56wavw522nnd" path="res://assets/npcs/Peasants_4/Idle.png" id="1_piavu"]
 [ext_resource type="Texture2D" uid="uid://bjub0uep4sno4" path="res://assets/npcs/Peasants_4/Walk.png" id="2_onpdk"]
+[ext_resource type="Script" uid="uid://c7xlgp8glugfu" path="res://Scripts/world/aldeano2_path_dialogue.gd" id="3_dialogue_script"]
+[ext_resource type="Texture2D" uid="uid://b878aukdiv5b3" path="res://assets/npcs/Peasants_4/Aggression.png" id="4_aggression"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_eur1j"]
 atlas = ExtResource("1_piavu")
@@ -138,7 +140,32 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8s2vu"]
 size = Vector2(29, 23)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_dialogue_area"]
+radius = 54.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dialogue_panel"]
+bg_color = Color(0.11, 0.11, 0.11, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.74, 0.7, 0.58, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_dialogue"]
+font_size = 8
+font_color = Color(0.95, 0.95, 0.9, 1)
+outline_size = 1
+outline_color = Color(0.08, 0.08, 0.08, 1)
+
 [node name="aldeano3" type="CharacterBody2D" unique_id=2125021718]
+script = ExtResource("3_dialogue_script")
+npc_display_name = "Fabio"
+dialogue_page_1 = "Bienvenido a 'El Ancla'. Descansa un poco, que el camino al castillo es peligroso y húmedo."
+dialogue_page_2 = "Te recomiendo usar todo tu dinero en la máquina de tu derecha."
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1900112172]
 sprite_frames = SubResource("SpriteFrames_h0npi")
@@ -147,3 +174,55 @@ animation = &"idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1229559769]
 position = Vector2(0, 51)
 shape = SubResource("RectangleShape2D_8s2vu")
+
+[node name="DialogueArea" type="Area2D" parent="." unique_id=1248785128]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DialogueArea" unique_id=1417304567]
+position = Vector2(-2, 45)
+shape = SubResource("CircleShape2D_dialogue_area")
+
+[node name="DialogueLayer" type="CanvasLayer" parent="." unique_id=1162311223]
+layer = 40
+visible = false
+
+[node name="DialoguePanel" type="PanelContainer" parent="DialogueLayer" unique_id=138763562]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -72.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_dialogue_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="DialogueLayer/DialoguePanel" unique_id=558993061]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 5
+
+[node name="Row" type="HBoxContainer" parent="DialogueLayer/DialoguePanel/MarginContainer" unique_id=266952342]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Portrait" type="TextureRect" parent="DialogueLayer/DialoguePanel/MarginContainer/Row" unique_id=857926768]
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+texture = ExtResource("4_aggression")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Message" type="Label" parent="DialogueLayer/DialoguePanel/MarginContainer/Row" unique_id=2113409035]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Bienvenido a 'El Ancla'."
+label_settings = SubResource("LabelSettings_dialogue")
+vertical_alignment = 1
+autowrap_mode = 3

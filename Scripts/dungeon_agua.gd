@@ -25,6 +25,26 @@ const CREDITS_SCENE = "res://Scenes/ui/credits.tscn"
 const EXIT_DOOR_OPEN_ANIMATION = &"abrir"
 const EXIT_DOOR_FALLBACK_ANIMATION = &"cerrar abrir"
 const EXIT_DOOR_FREEZE_FRAME = 3
+const DARK_QUEEN_KILL_ZONE_PATH = NodePath("ReinaOscura/KillZone")
+const DARK_QUEEN_TALK_PORTRAIT = "res://assets/Boss-DarkQueen/Talk.png"
+const DARK_QUEEN_AGGRESSION_PORTRAIT = "res://assets/Boss-DarkQueen/Aggression.png"
+const DARK_QUEEN_DEFEATED_PORTRAIT = "res://assets/Boss-DarkQueen/Defeated.png"
+const DARK_QUEEN_PRE_BATTLE_DIALOGUE = [
+	{
+		"portrait": DARK_QUEEN_TALK_PORTRAIT,
+		"text": "Qué decepción... Has llegado hasta aquí solo para perderlo todo en la última jugada. El destino ya ha repartido las cartas, y tu mano es perdedora."
+	},
+	{
+		"portrait": DARK_QUEEN_AGGRESSION_PORTRAIT,
+		"text": "¡Basta de juegos! ¡Ahora conocerás el peso de un mar de sombras! ¡Paga tu deuda con tu alma y húndete en el abismo!"
+	}
+]
+const DARK_QUEEN_DEFEATED_DIALOGUE = [
+	{
+		"portrait": DARK_QUEEN_DEFEATED_PORTRAIT,
+		"text": "Imposible... La marea ha cambiado... Mi corona se desvanece entre la espuma del olvido."
+	}
+]
 
 var _esbirro_battle_cooldown_until_msec = 0
 var options_ingame: CanvasLayer = null
@@ -32,6 +52,14 @@ var _ambient_music_player: AudioStreamPlayer = null
 var _ambient_music_resume_position := 0.0
 var _player_can_exit_dungeon = false
 var _exit_door_unlocked = false
+var _dark_queen_pending_battle_body: Node2D = null
+var _dialogue_layer: CanvasLayer = null
+var _dialogue_portrait: TextureRect = null
+var _dialogue_message: Label = null
+var _dialogue_name = ""
+var _dialogue_pages: Array = []
+var _dialogue_page_index = 0
+var _dialogue_finished_callback: Callable = Callable()
 
 
 func _ready() -> void:
@@ -40,12 +68,21 @@ func _ready() -> void:
 		_apply_saved_player_position()
 	_apply_defeated_encounter_state()
 	_setup_exit_door_interaction_area()
-	if _is_final_boss_defeated():
+	_setup_dark_queen_dialogue_cancel()
+	if _is_final_boss_defeated() and not _is_dialogue_open():
 		_set_exit_door_open(false)
 	_play_dungeon_ambient_music(_ambient_music_resume_position)
 
 
 func _input(event: InputEvent) -> void:
+	if _is_dialogue_open():
+		if _is_dialogue_advance_event(event):
+			var viewport = get_viewport()
+			if viewport != null:
+				viewport.set_input_as_handled()
+			_advance_dialogue()
+		return
+
 	if _is_interact_event(event) and _exit_door_unlocked and _player_can_exit_dungeon:
 		var viewport = get_viewport()
 		if viewport != null:
@@ -149,6 +186,27 @@ func _on_reina_oscura_kill_zone_body_entered(body: Node2D) -> void:
 	if Time.get_ticks_msec() < _esbirro_battle_cooldown_until_msec:
 		return
 
+	if _is_dialogue_open() or _dark_queen_pending_battle_body != null:
+		return
+
+	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
+	if body == null or player == null or body != player:
+		return
+
+	_dark_queen_pending_battle_body = body
+	_show_dialogue(
+		"Reina Oscura",
+		DARK_QUEEN_PRE_BATTLE_DIALOGUE,
+		Callable(self, "_start_dark_queen_battle_after_dialogue")
+	)
+
+
+func _start_dark_queen_battle_after_dialogue() -> void:
+	var body = _dark_queen_pending_battle_body
+	_dark_queen_pending_battle_body = null
+	if body == null or not is_instance_valid(body):
+		return
+
 	_start_battle_encounter(
 		body,
 		DARK_QUEEN_FINAL_ENCOUNTER_ID,
@@ -159,6 +217,14 @@ func _on_reina_oscura_kill_zone_body_entered(body: Node2D) -> void:
 		[_build_dark_queen_final_enemy()],
 		BOSS_FIGHT_MUSIC_PATH
 	)
+
+
+func _on_reina_oscura_kill_zone_body_exited(body: Node2D) -> void:
+	if not _is_player_body(body):
+		return
+	if _dark_queen_pending_battle_body == body:
+		_dark_queen_pending_battle_body = null
+		_hide_dialogue()
 
 
 func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: String, battle_subtitle: String, status_message: String, _return_offset: Vector2, enemies: Array, battle_music_path := "") -> void:
@@ -316,6 +382,142 @@ func _persist_player_inventory_state() -> void:
 		player.call("save_inventory_layout")
 
 
+func _setup_dark_queen_dialogue_cancel() -> void:
+	var kill_zone = get_node_or_null(DARK_QUEEN_KILL_ZONE_PATH) as Area2D
+	if kill_zone == null:
+		return
+	if not kill_zone.body_exited.is_connected(_on_reina_oscura_kill_zone_body_exited):
+		kill_zone.body_exited.connect(_on_reina_oscura_kill_zone_body_exited)
+
+
+func _show_dialogue(npc_name: String, pages: Array, finished_callback: Callable = Callable()) -> void:
+	if pages.is_empty():
+		if finished_callback.is_valid():
+			finished_callback.call()
+		return
+
+	_ensure_dialogue_ui()
+	if _dialogue_layer == null or _dialogue_message == null:
+		if finished_callback.is_valid():
+			finished_callback.call()
+		return
+
+	_dialogue_name = npc_name
+	_dialogue_pages = pages.duplicate(true)
+	_dialogue_page_index = 0
+	_dialogue_finished_callback = finished_callback
+	_dialogue_layer.visible = true
+	_refresh_dialogue_page()
+
+
+func _ensure_dialogue_ui() -> void:
+	if _dialogue_layer != null:
+		return
+
+	_dialogue_layer = CanvasLayer.new()
+	_dialogue_layer.name = "DarkQueenDialogueLayer"
+	_dialogue_layer.layer = 40
+	add_child(_dialogue_layer)
+
+	var panel = PanelContainer.new()
+	panel.name = "DialoguePanel"
+	panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	panel.offset_left = 8.0
+	panel.offset_top = -76.0
+	panel.offset_right = -8.0
+	panel.offset_bottom = -8.0
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.075, 0.09, 0.94)
+	style.border_color = Color(0.52, 0.64, 0.8, 0.95)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_left = 2
+	style.corner_radius_bottom_right = 2
+	panel.add_theme_stylebox_override("panel", style)
+	_dialogue_layer.add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 6)
+	margin.add_theme_constant_override("margin_top", 5)
+	margin.add_theme_constant_override("margin_right", 6)
+	margin.add_theme_constant_override("margin_bottom", 5)
+	panel.add_child(margin)
+
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 7)
+	margin.add_child(row)
+
+	_dialogue_portrait = TextureRect.new()
+	_dialogue_portrait.custom_minimum_size = Vector2(58, 58)
+	_dialogue_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_dialogue_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row.add_child(_dialogue_portrait)
+
+	_dialogue_message = Label.new()
+	_dialogue_message.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_dialogue_message.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_dialogue_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_dialogue_message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var label_settings = LabelSettings.new()
+	label_settings.font_size = 8
+	label_settings.font_color = Color(0.95, 0.95, 0.9, 1)
+	label_settings.outline_size = 1
+	label_settings.outline_color = Color(0.03, 0.03, 0.04, 1)
+	_dialogue_message.label_settings = label_settings
+	row.add_child(_dialogue_message)
+
+	_dialogue_layer.visible = false
+
+
+func _refresh_dialogue_page() -> void:
+	if _dialogue_message == null or _dialogue_pages.is_empty():
+		return
+
+	_dialogue_page_index = clampi(_dialogue_page_index, 0, _dialogue_pages.size() - 1)
+	var page = _dialogue_pages[_dialogue_page_index]
+	if page is not Dictionary:
+		return
+
+	var portrait_path = str(page.get("portrait", ""))
+	if _dialogue_portrait != null:
+		_dialogue_portrait.texture = load(portrait_path) as Texture2D
+
+	var page_text = str(page.get("text", ""))
+	if _dialogue_name.strip_edges().is_empty():
+		_dialogue_message.text = page_text
+	else:
+		_dialogue_message.text = "%s\n%s" % [_dialogue_name, page_text]
+
+
+func _advance_dialogue() -> void:
+	if _dialogue_page_index < _dialogue_pages.size() - 1:
+		_dialogue_page_index += 1
+		_refresh_dialogue_page()
+		return
+
+	var finished_callback = _dialogue_finished_callback
+	_hide_dialogue()
+	if finished_callback.is_valid():
+		finished_callback.call()
+
+
+func _hide_dialogue() -> void:
+	if _dialogue_layer != null:
+		_dialogue_layer.visible = false
+	_dialogue_name = ""
+	_dialogue_pages = []
+	_dialogue_page_index = 0
+	_dialogue_finished_callback = Callable()
+
+
+func _is_dialogue_open() -> bool:
+	return _dialogue_layer != null and _dialogue_layer.visible
+
+
 func save_current_game_from_pause() -> bool:
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	var database_manager = get_node_or_null("/root/GameDatabase")
@@ -392,16 +594,29 @@ func _apply_battle_return_position() -> bool:
 
 	if battle_result is Dictionary and str(battle_result.get("outcome", "")) == "victory":
 		var encounter_id = str(return_data.get("encounter_id", ""))
-		if _should_hide_defeated_encounter(encounter_id):
-			_apply_defeated_encounter(encounter_id)
 		if encounter_id == DARK_QUEEN_FINAL_ENCOUNTER_ID:
-			_set_exit_door_open(true)
+			_show_dark_queen_defeated_dialogue()
+		elif _should_hide_defeated_encounter(encounter_id):
+			_apply_defeated_encounter(encounter_id)
 	elif battle_result is Dictionary and str(battle_result.get("outcome", "")) == "escaped":
 		_esbirro_battle_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
 
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
 		_set_player_saved_position(player, return_data["player_position"])
 	return true
+
+
+func _show_dark_queen_defeated_dialogue() -> void:
+	_show_dialogue(
+		"Reina Oscura",
+		DARK_QUEEN_DEFEATED_DIALOGUE,
+		Callable(self, "_finish_dark_queen_defeated_dialogue")
+	)
+
+
+func _finish_dark_queen_defeated_dialogue() -> void:
+	_apply_defeated_encounter(DARK_QUEEN_FINAL_ENCOUNTER_ID)
+	_set_exit_door_open(true)
 
 
 func _apply_saved_player_position() -> void:
@@ -470,6 +685,8 @@ func _apply_defeated_encounter_state() -> void:
 
 	for encounter_id in defeated_encounters.keys():
 		var encounter_id_text = str(encounter_id)
+		if encounter_id_text == DARK_QUEEN_FINAL_ENCOUNTER_ID and _is_dialogue_open():
+			continue
 		if bool(defeated_encounters.get(encounter_id, false)) and _should_hide_defeated_encounter(encounter_id_text):
 			_apply_defeated_encounter(encounter_id_text)
 
@@ -656,6 +873,15 @@ func _is_interact_event(event: InputEvent) -> bool:
 	if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
 		return true
 
+	return false
+
+
+func _is_dialogue_advance_event(event: InputEvent) -> bool:
+	if _is_interact_event(event):
+		return true
+	if event is InputEventMouseButton:
+		var mouse_event = event as InputEventMouseButton
+		return mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT
 	return false
 
 

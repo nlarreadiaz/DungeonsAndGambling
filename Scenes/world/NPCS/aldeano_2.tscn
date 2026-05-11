@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://djnlgs1022udh" path="res://assets/npcs/Peasants_3/Dialogue.png" id="1_tbeei"]
 [ext_resource type="Texture2D" uid="uid://d3b7fmgu122fo" path="res://assets/npcs/Peasants_3/Idle.png" id="2_8j88g"]
 [ext_resource type="Texture2D" uid="uid://cr8hvxuhiskm2" path="res://assets/npcs/Peasants_3/Walk.png" id="3_c2qbl"]
-[ext_resource type="Script" path="res://Scripts/world/aldeano2_path_dialogue.gd" id="4_aldeano2"]
+[ext_resource type="Script" uid="uid://c7xlgp8glugfu" path="res://Scripts/world/aldeano2_path_dialogue.gd" id="4_aldeano2"]
 [ext_resource type="Texture2D" uid="uid://dgr56r30nb74q" path="res://assets/npcs/Peasants_3/Talk.png" id="5_talk"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_isxxx"]
@@ -245,28 +245,34 @@ outline_size = 1
 outline_color = Color(0.08, 0.08, 0.08, 1)
 
 [node name="aldeano2" type="CharacterBody2D" unique_id=1953832550]
+scale = Vector2(0.7227944, 0.7227944)
 script = ExtResource("4_aldeano2")
+npc_display_name = "Willson"
+dialogue_page_1 = "¡Ey, tú! Qué bueno ver una cara nueva. Ten cuidado al este... la Reina Oscura ha tomado el castillo del agua y el mar está furioso."
+dialogue_page_2 = "Si necesitas recargar fuerzas te recomiendo ir a la taberna El Ancla y mejorar tu equipo en la herrería."
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=220163258]
 sprite_frames = SubResource("SpriteFrames_6xbi8")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=824969978]
-position = Vector2(3, 49)
+position = Vector2(4.150558, 33.20446)
+scale = Vector2(1.0962534, 1.1024914)
 shape = SubResource("RectangleShape2D_b6g0j")
 
-[node name="DialogueArea" type="Area2D" parent="."]
+[node name="DialogueArea" type="Area2D" parent="." unique_id=550902754]
 collision_layer = 0
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DialogueArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DialogueArea" unique_id=1528101491]
+scale = Vector2(0.9395342, 1.047356)
 shape = SubResource("CircleShape2D_dialogue_area")
 
-[node name="DialogueLayer" type="CanvasLayer" parent="."]
-visible = false
+[node name="DialogueLayer" type="CanvasLayer" parent="." unique_id=1363265280]
 layer = 40
+visible = false
 
-[node name="DialoguePanel" type="PanelContainer" parent="DialogueLayer"]
+[node name="DialoguePanel" type="PanelContainer" parent="DialogueLayer" unique_id=2048713741]
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -279,29 +285,29 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_dialogue_panel")
 
-[node name="MarginContainer" type="MarginContainer" parent="DialogueLayer/DialoguePanel"]
+[node name="MarginContainer" type="MarginContainer" parent="DialogueLayer/DialoguePanel" unique_id=1768957370]
 layout_mode = 2
 theme_override_constants/margin_left = 6
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 5
 
-[node name="Row" type="HBoxContainer" parent="DialogueLayer/DialoguePanel/MarginContainer"]
+[node name="Row" type="HBoxContainer" parent="DialogueLayer/DialoguePanel/MarginContainer" unique_id=584180557]
 layout_mode = 2
 theme_override_constants/separation = 7
 
-[node name="Portrait" type="TextureRect" parent="DialogueLayer/DialoguePanel/MarginContainer/Row"]
+[node name="Portrait" type="TextureRect" parent="DialogueLayer/DialoguePanel/MarginContainer/Row" unique_id=691226536]
 custom_minimum_size = Vector2(54, 54)
 layout_mode = 2
 texture = ExtResource("5_talk")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Message" type="Label" parent="DialogueLayer/DialoguePanel/MarginContainer/Row"]
+[node name="Message" type="Label" parent="DialogueLayer/DialoguePanel/MarginContainer/Row" unique_id=656975513]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "Dicen que la puerta del castillo de agua solo se abre ante quien no tiembla."
+text = "¡Ey, tú! Qué bueno ver una cara nueva."
 label_settings = SubResource("LabelSettings_dialogue")
-autowrap_mode = 3
 vertical_alignment = 1
+autowrap_mode = 3

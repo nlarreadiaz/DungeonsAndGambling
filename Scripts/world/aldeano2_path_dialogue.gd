@@ -7,6 +7,13 @@ const INTERACT_ACTION = "interact"
 @export var collision_shape_path: NodePath = NodePath("CollisionShape2D")
 @export var interaction_area_path: NodePath = NodePath("DialogueArea")
 @export var dialogue_layer_path: NodePath = NodePath("DialogueLayer")
+@export var dialogue_message_path: NodePath = NodePath("DialogueLayer/DialoguePanel/MarginContainer/Row/Message")
+@export var npc_display_name := ""
+@export_multiline var dialogue_page_1 := ""
+@export_multiline var dialogue_page_2 := ""
+@export_multiline var dialogue_page_3 := ""
+@export_multiline var dialogue_text := ""
+@export var dialogue_pages: PackedStringArray = []
 @export var walk_animation: StringName = &"walk"
 @export var idle_animation: StringName = &"idle"
 @export var path_speed := 34.0
@@ -19,8 +26,10 @@ var _sprite: AnimatedSprite2D = null
 var _collision_shape: CollisionShape2D = null
 var _interaction_area: Area2D = null
 var _dialogue_layer: CanvasLayer = null
+var _dialogue_message: Label = null
 var _player_near = false
 var _dialogue_open = false
+var _dialogue_page_index = 0
 var _is_walking = true
 var _state_time_left = 0.0
 var _base_sprite_offset = Vector2.ZERO
@@ -84,13 +93,13 @@ func _process(delta: float) -> void:
 		_sprite.flip_h = moved_x < 0.0
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if not _player_near or not _is_interact_event(event):
+func _input(event: InputEvent) -> void:
+	if not _player_near or not _is_dialogue_advance_event(event):
 		return
 
 	get_viewport().set_input_as_handled()
 	if _dialogue_open:
-		_close_dialogue()
+		_advance_dialogue()
 	else:
 		_open_dialogue()
 
@@ -131,7 +140,60 @@ func _setup_dialogue_ui() -> void:
 		push_warning("aldeano2 necesita un DialogueLayer configurado en la escena.")
 		return
 
+	_dialogue_message = get_node_or_null(dialogue_message_path) as Label
+	if _dialogue_message == null and _dialogue_layer != null:
+		_dialogue_message = _dialogue_layer.find_child("Message", true, false) as Label
+	_prepare_dialogue_pages()
+
 	_dialogue_layer.visible = false
+
+
+func _prepare_dialogue_pages() -> void:
+	var explicit_pages = _build_explicit_dialogue_pages()
+	if not explicit_pages.is_empty():
+		dialogue_pages = explicit_pages
+		return
+
+	if not dialogue_text.strip_edges().is_empty():
+		dialogue_pages = _split_dialogue_text(dialogue_text)
+		return
+
+	if _dialogue_message == null or not dialogue_pages.is_empty():
+		return
+
+	var existing_text = _strip_duplicate_name(_dialogue_message.text.strip_edges())
+	if not existing_text.is_empty():
+		dialogue_pages.append(existing_text)
+
+
+func _build_explicit_dialogue_pages() -> PackedStringArray:
+	var pages := PackedStringArray()
+	for page in [dialogue_page_1, dialogue_page_2, dialogue_page_3]:
+		var clean_page = _strip_duplicate_name(str(page).strip_edges())
+		if not clean_page.is_empty():
+			pages.append(clean_page)
+	return pages
+
+
+func _split_dialogue_text(text: String) -> PackedStringArray:
+	var pages := PackedStringArray()
+	var normalized_text = text.replace("\r\n", "\n").replace("\r", "\n")
+	for page in normalized_text.split("---", false):
+		var clean_page = _strip_duplicate_name(str(page).strip_edges())
+		if not clean_page.is_empty():
+			pages.append(clean_page)
+	return pages
+
+
+func _strip_duplicate_name(text: String) -> String:
+	var clean_name = npc_display_name.strip_edges()
+	if clean_name.is_empty():
+		return text
+	if text == clean_name:
+		return ""
+	if text.begins_with(clean_name + "\n"):
+		return text.substr(clean_name.length() + 1).strip_edges()
+	return text
 
 
 func _open_dialogue() -> void:
@@ -139,9 +201,34 @@ func _open_dialogue() -> void:
 		return
 
 	_dialogue_open = true
+	_dialogue_page_index = 0
 	_state_time_left = idle_seconds
 	_play_animation(idle_animation)
+	_refresh_dialogue_message()
 	_dialogue_layer.visible = true
+
+
+func _advance_dialogue() -> void:
+	if _dialogue_page_index < dialogue_pages.size() - 1:
+		_dialogue_page_index += 1
+		_refresh_dialogue_message()
+		return
+	_close_dialogue()
+
+
+func _refresh_dialogue_message() -> void:
+	if _dialogue_message == null:
+		return
+
+	var page_text = ""
+	if not dialogue_pages.is_empty():
+		_dialogue_page_index = clampi(_dialogue_page_index, 0, dialogue_pages.size() - 1)
+		page_text = dialogue_pages[_dialogue_page_index]
+
+	if npc_display_name.strip_edges().is_empty():
+		_dialogue_message.text = page_text
+	else:
+		_dialogue_message.text = "%s\n%s" % [npc_display_name, page_text]
 
 
 func _close_dialogue() -> void:
@@ -182,8 +269,22 @@ func _is_interact_event(event: InputEvent) -> bool:
 			return false
 		if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
 			return true
-		return key_event.keycode == KEY_E or key_event.physical_keycode == KEY_E
+		return (
+			key_event.keycode == KEY_E
+			or key_event.physical_keycode == KEY_E
+			or key_event.keycode == KEY_SPACE
+			or key_event.keycode == KEY_ENTER
+		)
 
 	if InputMap.has_action(INTERACT_ACTION) and event.is_action_pressed(INTERACT_ACTION):
 		return true
+	return false
+
+
+func _is_dialogue_advance_event(event: InputEvent) -> bool:
+	if _is_interact_event(event):
+		return true
+	if event is InputEventMouseButton:
+		var mouse_event = event as InputEventMouseButton
+		return mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT
 	return false

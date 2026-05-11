@@ -796,52 +796,52 @@ region = Rect2(1920, 0, 128, 128)
 [sub_resource type="SpriteFrames" id="SpriteFrames_q5qp5"]
 animations = [{
 "frames": [{
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_2uyug")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_y0sx3")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_hlpc3")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_ja8ya")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_1wqku")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_h2ew7")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_p2mrw")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_k30hb")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_p16w1")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_iyrtm")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_e67ei")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_sm5jl")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_swgbr")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_odrwd")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_egu81")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": SubResource("AtlasTexture_hw1c0")
 }],
 "loop": true,
@@ -947,11 +947,12 @@ animations = [{
 script = ExtResource("2_ky8r3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=673658993]
-position = Vector2(3.5, 40.5)
+position = Vector2(4, 14)
 scale = Vector2(0.8399997, 1)
 shape = SubResource("RectangleShape2D_1cxpq")
 
 [node name="GuerreroSprite" type="AnimatedSprite2D" parent="." unique_id=489945668]
+visible = false
 position = Vector2(0, 6.000001)
 scale = Vector2(0.87718356, 0.87718356)
 sprite_frames = SubResource("SpriteFrames_4i5vk")
@@ -967,12 +968,11 @@ animation = &"attack"
 frame_progress = 0.41662928
 
 [node name="MagoSprite" type="AnimatedSprite2D" parent="." unique_id=1383961288]
-visible = false
 position = Vector2(7, 10)
 scale = Vector2(0.92, 0.92)
 sprite_frames = SubResource("SpriteFrames_q5qp5")
-animation = &"idle"
-frame_progress = 0.31940934
+animation = &"attack"
+frame_progress = 0.47917786
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=709968110]
 position = Vector2(13, 1)

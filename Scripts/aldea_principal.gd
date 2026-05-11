@@ -21,6 +21,8 @@ const MUELLE_BOY_AMAZED_NODE_PATH = NodePath("npcs/Niño Millonario")
 const MUELLE_BOY_AMAZED_BATTLE_AREA_PATH = NodePath("npcs/Niño Millonario/BattleArea")
 const FARO_BATTLE_BACKGROUND_PATH = "res://assets/battle/batalla_faro.png"
 const MUELLE_BOY_AMAZED_SPRITE_PATH = "res://assets/muelle/Characters/Boy_amazed.png"
+const MUELLE_BOY_PRE_BATTLE_DIALOGUE = "¿Ves esta caña? Es de oro macizo. ¡Te apuesto 1000 monedas a que no me vences en un duelo! ¿Aceptas?"
+const MUELLE_BOY_POST_BATTLE_DIALOGUE = "¡Maldición! Mi equipo era mejor... Toma tu oro y lárgate, suertudo."
 const CAMERA_LIMIT_LEFT = -560
 const CAMERA_LIMIT_TOP = -360
 const CAMERA_LIMIT_RIGHT = 780
@@ -80,6 +82,14 @@ var _player_can_enter_tavern = false
 var _battle_reentry_cooldown_until_msec = 0
 var _muelle_boy_amazed_cooldown_until_msec = 0
 var _muelle_boy_amazed_retry_scheduled = false
+var _muelle_boy_pending_battle_body: Node2D = null
+var _world_dialogue_layer: CanvasLayer = null
+var _world_dialogue_portrait: TextureRect = null
+var _world_dialogue_message: Label = null
+var _world_dialogue_npc_name = ""
+var _world_dialogue_pages: PackedStringArray = []
+var _world_dialogue_page_index = 0
+var _world_dialogue_finished_callback: Callable = Callable()
 
 
 func _ready() -> void:
@@ -90,10 +100,19 @@ func _ready() -> void:
 	_configure_player_camera()
 	_setup_castillo_agua_entry_area()
 	_setup_tavern_entry_area()
+	_setup_muelle_boy_dialogue_cancel()
 	_setup_village_buildings()
 
 
 func _input(event: InputEvent) -> void:
+	if _is_world_dialogue_open():
+		if _is_dialogue_advance_event(event):
+			var viewport = get_viewport()
+			if viewport != null:
+				viewport.set_input_as_handled()
+			_advance_world_dialogue()
+		return
+
 	if _is_interact_event(event) and _player_can_enter_herreria:
 		var viewport = get_viewport()
 		if viewport != null:
@@ -204,8 +223,26 @@ func _on_muelle_boy_amazed_battle_area_body_entered(body: Node2D) -> void:
 	if not _is_player_body(body):
 		return
 
+	if _is_world_dialogue_open() or _muelle_boy_pending_battle_body != null:
+		return
+
 	if _is_muelle_boy_amazed_battle_on_cooldown():
 		_schedule_muelle_boy_amazed_battle_retry()
+		return
+
+	_muelle_boy_pending_battle_body = body
+	_show_world_dialogue(
+		"Niño Millonario",
+		PackedStringArray([MUELLE_BOY_PRE_BATTLE_DIALOGUE]),
+		MUELLE_BOY_AMAZED_SPRITE_PATH,
+		Callable(self, "_start_muelle_boy_battle_after_dialogue")
+	)
+
+
+func _start_muelle_boy_battle_after_dialogue() -> void:
+	var body = _muelle_boy_pending_battle_body
+	_muelle_boy_pending_battle_body = null
+	if body == null or not is_instance_valid(body) or _is_muelle_boy_amazed_battle_on_cooldown():
 		return
 
 	_start_battle_encounter(
@@ -220,6 +257,14 @@ func _on_muelle_boy_amazed_battle_area_body_entered(body: Node2D) -> void:
 		[_build_muelle_boy_amazed_enemy()],
 		FARO_BATTLE_BACKGROUND_PATH
 	)
+
+
+func _on_muelle_boy_amazed_battle_area_body_exited(body: Node2D) -> void:
+	if not _is_player_body(body):
+		return
+	if _muelle_boy_pending_battle_body == body:
+		_muelle_boy_pending_battle_body = null
+		_hide_world_dialogue()
 
 
 func _on_dungeon_trap_body_entered(body: Node2D) -> void:
@@ -358,6 +403,14 @@ func _on_tavern_entry_area_body_entered(body: Node2D) -> void:
 func _on_tavern_entry_area_body_exited(body: Node2D) -> void:
 	if _is_player_body(body):
 		_player_can_enter_tavern = false
+
+
+func _setup_muelle_boy_dialogue_cancel() -> void:
+	var battle_area = get_node_or_null(MUELLE_BOY_AMAZED_BATTLE_AREA_PATH) as Area2D
+	if battle_area == null:
+		return
+	if not battle_area.body_exited.is_connected(_on_muelle_boy_amazed_battle_area_body_exited):
+		battle_area.body_exited.connect(_on_muelle_boy_amazed_battle_area_body_exited)
 
 
 func _start_battle_encounter(body: Node2D, encounter_id: String, battle_title: String, battle_subtitle: String, status_message: String, _return_offset: Vector2, experience_reward: int, gold_reward: int, enemies: Array = [], battle_background_path: String = "") -> void:
@@ -532,6 +585,146 @@ func _persist_player_inventory_state() -> void:
 		player.call("save_inventory_layout")
 
 
+func _show_world_dialogue(npc_name: String, pages: PackedStringArray, portrait_path: String, finished_callback: Callable = Callable()) -> void:
+	if pages.is_empty():
+		if finished_callback.is_valid():
+			finished_callback.call()
+		return
+
+	_ensure_world_dialogue_ui()
+	if _world_dialogue_layer == null or _world_dialogue_message == null:
+		if finished_callback.is_valid():
+			finished_callback.call()
+		return
+
+	_world_dialogue_pages = pages
+	_world_dialogue_page_index = 0
+	_world_dialogue_npc_name = npc_name
+	_world_dialogue_finished_callback = finished_callback
+	if _world_dialogue_portrait != null:
+		_world_dialogue_portrait.texture = _load_dialogue_portrait(portrait_path)
+	_world_dialogue_layer.visible = true
+	_set_world_dialogue_text(npc_name, _world_dialogue_pages[_world_dialogue_page_index])
+
+
+func _ensure_world_dialogue_ui() -> void:
+	if _world_dialogue_layer != null:
+		return
+
+	_world_dialogue_layer = CanvasLayer.new()
+	_world_dialogue_layer.name = "WorldDialogueLayer"
+	_world_dialogue_layer.layer = 40
+	add_child(_world_dialogue_layer)
+
+	var panel = PanelContainer.new()
+	panel.name = "DialoguePanel"
+	panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	panel.offset_left = 8.0
+	panel.offset_top = -72.0
+	panel.offset_right = -8.0
+	panel.offset_bottom = -8.0
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.11, 0.11, 0.11, 0.92)
+	style.border_color = Color(0.74, 0.7, 0.58, 1)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_left = 2
+	style.corner_radius_bottom_right = 2
+	panel.add_theme_stylebox_override("panel", style)
+	_world_dialogue_layer.add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 6)
+	margin.add_theme_constant_override("margin_top", 5)
+	margin.add_theme_constant_override("margin_right", 6)
+	margin.add_theme_constant_override("margin_bottom", 5)
+	panel.add_child(margin)
+
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 7)
+	margin.add_child(row)
+
+	_world_dialogue_portrait = TextureRect.new()
+	_world_dialogue_portrait.custom_minimum_size = Vector2(54, 54)
+	_world_dialogue_portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_world_dialogue_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row.add_child(_world_dialogue_portrait)
+
+	_world_dialogue_message = Label.new()
+	_world_dialogue_message.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_world_dialogue_message.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_world_dialogue_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_world_dialogue_message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var label_settings = LabelSettings.new()
+	label_settings.font_size = 8
+	label_settings.font_color = Color(0.95, 0.95, 0.9, 1)
+	label_settings.outline_size = 1
+	label_settings.outline_color = Color(0.08, 0.08, 0.08, 1)
+	_world_dialogue_message.label_settings = label_settings
+	row.add_child(_world_dialogue_message)
+
+	_world_dialogue_layer.visible = false
+
+
+func _load_dialogue_portrait(texture_path: String) -> Texture2D:
+	var texture = load(texture_path) as Texture2D
+	if texture == null:
+		return null
+	if texture_path == MUELLE_BOY_AMAZED_SPRITE_PATH:
+		var atlas = AtlasTexture.new()
+		atlas.atlas = texture
+		atlas.region = Rect2(0, 0, 32, 48)
+		return atlas
+	return texture
+
+
+func _set_world_dialogue_text(npc_name: String, page_text: String) -> void:
+	if _world_dialogue_message == null:
+		return
+	if npc_name.strip_edges().is_empty():
+		_world_dialogue_message.text = page_text
+	else:
+		_world_dialogue_message.text = "%s\n%s" % [npc_name, page_text]
+
+
+func _advance_world_dialogue() -> void:
+	if _world_dialogue_page_index < _world_dialogue_pages.size() - 1:
+		_world_dialogue_page_index += 1
+		_set_world_dialogue_text(_world_dialogue_npc_name, _world_dialogue_pages[_world_dialogue_page_index])
+		return
+
+	var finished_callback = _world_dialogue_finished_callback
+	_hide_world_dialogue()
+	if finished_callback.is_valid():
+		finished_callback.call()
+
+
+func _hide_world_dialogue() -> void:
+	if _world_dialogue_layer != null:
+		_world_dialogue_layer.visible = false
+	_world_dialogue_pages = []
+	_world_dialogue_npc_name = ""
+	_world_dialogue_page_index = 0
+	_world_dialogue_finished_callback = Callable()
+
+
+func _is_world_dialogue_open() -> bool:
+	return _world_dialogue_layer != null and _world_dialogue_layer.visible
+
+
+func _is_dialogue_advance_event(event: InputEvent) -> bool:
+	if _is_interact_event(event):
+		return true
+	if event is InputEventMouseButton:
+		var mouse_event = event as InputEventMouseButton
+		return mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT
+	return false
+
+
 func save_current_game_from_pause() -> bool:
 	var player = get_node_or_null(PLAYER_NODE_PATH) as Node2D
 	var database_manager = get_node_or_null("/root/GameDatabase")
@@ -585,7 +778,9 @@ func _apply_battle_return_position() -> bool:
 
 	if battle_result is Dictionary and str(battle_result.get("outcome", "")) == "victory":
 		var encounter_id = str(return_data.get("encounter_id", ""))
-		if _should_hide_defeated_encounter(encounter_id):
+		if encounter_id == MUELLE_BOY_AMAZED_ENCOUNTER_ID:
+			_show_muelle_boy_post_battle_dialogue()
+		elif _should_hide_defeated_encounter(encounter_id):
 			_apply_defeated_encounter(encounter_id)
 	elif battle_result is Dictionary and str(battle_result.get("outcome", "")) == "escaped":
 		_battle_reentry_cooldown_until_msec = Time.get_ticks_msec() + BATTLE_REENTRY_COOLDOWN_MSEC
@@ -595,6 +790,19 @@ func _apply_battle_return_position() -> bool:
 	if return_data.has("player_position") and return_data["player_position"] is Vector2:
 		_set_player_saved_position(player, return_data["player_position"])
 	return true
+
+
+func _show_muelle_boy_post_battle_dialogue() -> void:
+	_show_world_dialogue(
+		"Niño Millonario",
+		PackedStringArray([MUELLE_BOY_POST_BATTLE_DIALOGUE]),
+		MUELLE_BOY_AMAZED_SPRITE_PATH,
+		Callable(self, "_finish_muelle_boy_post_battle_dialogue")
+	)
+
+
+func _finish_muelle_boy_post_battle_dialogue() -> void:
+	_apply_defeated_encounter(MUELLE_BOY_AMAZED_ENCOUNTER_ID)
 
 
 func _restore_active_party_to_full_health() -> void:
